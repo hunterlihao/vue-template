@@ -1,4 +1,7 @@
 {
+  "compilerOptions": {
+    "types": ["element-plus/global"], //  解决element-plus全局类型提示
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
