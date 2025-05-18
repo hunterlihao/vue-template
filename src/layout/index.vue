@@ -106,11 +106,13 @@ export default {
     flex-direction: column;
 
     .tabbar_component {
+      margin-top: 20px;
       height: 50px;
       border-bottom: 1px solid #f0f0f0;
     }
 
     .tabs_component {
+      margin-top: 25px;
       flex: 1;
       display: flex;
       justify-content: space-between;

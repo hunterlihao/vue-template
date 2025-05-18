@@ -82,16 +82,8 @@ export default {
 };
 </script>
 <template>
-  <el-button
-    circle
-    icon="Refresh"
-    @click="updateRefsh"
-  ></el-button>
-  <el-button
-    circle
-    icon="FullScreen"
-    @click="fullScreen"
-  ></el-button>
+  <el-button circle icon="Refresh" @click="updateRefsh"></el-button>
+  <el-button circle icon="FullScreen" @click="fullScreen"></el-button>
   <img
     :src="userStore.avatar"
     style="width: 28px; height: 28px; margin: 0px 10px; border-radius: 50%"

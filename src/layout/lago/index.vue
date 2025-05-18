@@ -12,8 +12,9 @@ export default {
 <template>
   <div v-if="setting.logoHidden" class="logo">
     <img :src="setting.logo" />
-    <p style="white-space: nowrap;text-overflow: ellipsis">
-      {{ setting.title }}</p>
+    <p style="white-space: nowrap; text-overflow: ellipsis">
+      {{ setting.title }}
+    </p>
   </div>
 </template>
 

@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
-    "types": [
-      "element-plus/global"
-    ]
+    "types": ["element-plus/global"]
     //  解决element-plus全局类型提示
   },
   "files": [],
