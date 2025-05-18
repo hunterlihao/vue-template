@@ -13,7 +13,7 @@ export const useUserStore = defineStore('User', {
   state: (): UserState => {
     return {
       token: GET_TOKEN(), // token
-      menuRouters: constantRoute, //  菜单路由
+      menuRoutes: constantRoute, //  菜单路由
       username: '',
       avatar: '',
       //存储当前用户是否包含某一个按钮

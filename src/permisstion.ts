@@ -7,10 +7,12 @@ import 'nprogress/nprogress.css';
 //获取用户相关的小仓库内部token数据,去判断用户是否登录成功
 import { useUserStore } from './store/modules/user';
 import pinia from './store';
+import { useTabsStore } from '@/store/modules/tabs.ts';
 
 nprogress.configure({ showSpinner: false });
 
 let userStore = useUserStore(pinia);
+let tabsStore = useTabsStore(pinia);
 //全局守卫:项目当中任意路由切换都会触发的钩子
 //全局前置守卫
 router.beforeEach(async (to, _from, next) => {
@@ -32,6 +34,10 @@ router.beforeEach(async (to, _from, next) => {
       //登录成功访问其余六个路由(登录排除)
       //有用户信息
       if (username) {
+        // 如果有meta.title且不是登录/404页面，将路由添加到标签页
+        if (to.meta.title && to.path !== '/login' && to.path !== '/404') {
+          tabsStore.addTab(to);
+        }
         //放行
         next();
       } else {

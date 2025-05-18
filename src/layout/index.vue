@@ -10,6 +10,8 @@ import Menu from '@/layout/menu/index.vue';
 import Main from '@/layout/main/index.vue';
 // 引入顶部导航栏组件
 import Tabbar from '@/layout/tabbar/index.vue';
+// 引入标签组件
+import Tabs from '@/layout/tabbar/tabs/index.vue';
 // 获取用户相关的仓库
 import { useUserStore } from '@/store/modules/user.ts';
 
@@ -43,16 +45,19 @@ export default {
           text-color="black"
         >
           <!-- 根据路由动态生成菜单 -->
-          <Menu :menuList="useStore.menuRouters"></Menu>
+          <Menu :menuList="useStore.menuRoutes"></Menu>
         </el-menu>
       </el-scrollbar>
     </div>
-    <!--  顶部导航  -->
+    <!--  顶部导航区域  -->
     <div
       :class="{ fold: LayOutSettingStore.fold ? true : false }"
       class="layout_tabbar"
     >
-      <Tabbar></Tabbar>
+      <!-- 顶部导航栏 -->
+      <Tabbar class="tabbar_component"></Tabbar>
+      <!-- 标签栏 -->
+      <Tabs class="tabs_component"></Tabs>
     </div>
     <!--  内容区域  -->
     <div
@@ -97,6 +102,20 @@ export default {
     top: 0px;
     left: $base-menu-width;
     transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+
+    .tabbar_component {
+      height: 50px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .tabs_component {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
     &.fold {
       width: calc(100vw - $base-menu-min-width);
