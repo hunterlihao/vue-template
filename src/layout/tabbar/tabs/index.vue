@@ -1,59 +1,3 @@
-<template>
-  <div class="tabs-box">
-    <div class="tabs-menu">
-      <el-tabs
-        v-model="activeTab"
-        type="card"
-        @tab-click="tabClick"
-        @tab-remove="removeTab"
-      >
-        <!-- 固定的首页标签，不可关闭 -->
-        <el-tab-pane
-          :key="'/home'"
-          :label="formatLabel(homeTab)"
-          name="/home"
-          :closable="false"
-        ></el-tab-pane>
-        <!-- 动态标签页列表，可关闭 -->
-        <el-tab-pane
-          v-for="item in otherTabs"
-          :key="item.path"
-          :label="formatLabel(item)"
-          :name="item.path"
-          :closable="true"
-        ></el-tab-pane>
-      </el-tabs>
-    </div>
-    <div class="tabs-action">
-      <el-dropdown @command="tabsMenuHandle" style="margin-right: 10px">
-        <el-icon color="rgba(0, 0, 0, 0.65)" :size="20">
-          <Menu />
-        </el-icon>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item command="refreshCurrentTab">
-              <el-icon :size="14"><RefreshRight /></el-icon>
-              刷新当前
-            </el-dropdown-item>
-            <el-dropdown-item command="closeCurrentTab">
-              <el-icon :size="14"><FolderRemove /></el-icon>
-              关闭当前
-            </el-dropdown-item>
-            <el-dropdown-item command="closeOtherTabs">
-              <el-icon :size="14"><Close /></el-icon>
-              关闭其他
-            </el-dropdown-item>
-            <el-dropdown-item command="closeAllTabs">
-              <el-icon :size="14"><FolderDelete /></el-icon>
-              关闭所有
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed, watch, ref, h } from 'vue';
 import { useTabsStore } from '@/store/modules/tabs';
@@ -182,108 +126,62 @@ const tabsMenuHandle = (command: string) => {
   }
 };
 </script>
+<template>
+  <div class="tabs-box">
+    <div class="tabs-menu">
+      <el-tabs
+        v-model="activeTab"
+        type="card"
+        @tab-click="tabClick"
+        @tab-remove="removeTab"
+      >
+        <!-- 固定的首页标签，不可关闭 -->
+        <el-tab-pane
+          :key="'/home'"
+          :label="formatLabel(homeTab)"
+          name="/home"
+          :closable="false"
+        ></el-tab-pane>
+        <!-- 动态标签页列表，可关闭 -->
+        <el-tab-pane
+          v-for="item in otherTabs"
+          :key="item.path"
+          :label="formatLabel(item)"
+          :name="item.path"
+          :closable="true"
+        ></el-tab-pane>
+      </el-tabs>
+    </div>
+    <div class="tabs-action">
+      <el-dropdown @command="tabsMenuHandle" style="margin-right: 10px">
+        <el-icon color="rgba(0, 0, 0, 0.65)" :size="20">
+          <Menu />
+        </el-icon>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="refreshCurrentTab">
+              <el-icon :size="14"><RefreshRight /></el-icon>
+              刷新当前
+            </el-dropdown-item>
+            <el-dropdown-item command="closeCurrentTab">
+              <el-icon :size="14"><FolderRemove /></el-icon>
+              关闭当前
+            </el-dropdown-item>
+            <el-dropdown-item command="closeOtherTabs">
+              <el-icon :size="14"><Close /></el-icon>
+              关闭其他
+            </el-dropdown-item>
+            <el-dropdown-item command="closeAllTabs">
+              <el-icon :size="14"><FolderDelete /></el-icon>
+              关闭所有
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
-.tabs-box {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 10px;
-  height: 40px;
-  background-color: #fff;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-  border-bottom: none;
-
-  .tabs-menu {
-    flex: 1;
-    overflow-x: auto;
-    white-space: nowrap;
-
-    /* 隐藏滚动条但保留滚动功能 */
-    &::-webkit-scrollbar {
-      display: none;
-    }
-    scrollbar-width: none; /* Firefox */
-
-    :deep(.el-tabs__header) {
-      margin: 0;
-      border: none;
-    }
-
-    :deep(.el-tabs__nav) {
-      border: none !important;
-    }
-
-    :deep(.el-tabs__item) {
-      height: 36px;
-      line-height: 36px;
-      color: #666;
-      font-weight: 400;
-      border: none;
-      transition: all 0.2s;
-      position: relative;
-
-      &.is-active {
-        color: #409eff;
-        background-color: rgba(64, 158, 255, 0.08);
-        border-radius: 2px;
-        font-weight: 600;
-
-        &::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 70%;
-          height: 2px;
-          background-color: #409eff;
-          border-radius: 2px;
-        }
-      }
-
-      &:hover {
-        color: #409eff;
-      }
-
-      .custom-tab-label {
-        display: flex;
-        align-items: center;
-
-        .custom-tab-icon {
-          margin-right: 4px;
-          font-size: 16px;
-        }
-      }
-    }
-
-    :deep(.el-tabs__nav-wrap::after) {
-      display: none;
-    }
-
-    :deep(.el-tabs__nav-next),
-    :deep(.el-tabs__nav-prev) {
-      color: #909399;
-      font-size: 16px;
-      line-height: 36px;
-    }
-  }
-
-  .tabs-action {
-    display: flex;
-    align-items: center;
-
-    .dropdown-icon {
-      cursor: pointer;
-      transition: all 0.2s;
-      padding: 6px;
-      border-radius: 4px;
-
-      &:hover {
-        color: #409eff;
-        background-color: rgba(64, 158, 255, 0.1);
-      }
-    }
-  }
-}
+@import 'index';
 </style>
