@@ -1,19 +1,13 @@
 <script setup lang="ts">
-import { computed, watch, ref, h } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useTabsStore } from '@/store/modules/tabs';
 import { useRoute, useRouter } from 'vue-router';
 import { useLayOutSettingStore } from '@/store/modules/setting';
 import {
-  Menu,
-  FolderRemove,
   Close,
   FolderDelete,
-  HomeFilled,
-  Monitor,
-  User,
-  Goods,
-  Platform,
-  Setting,
+  FolderRemove,
+  Menu,
   RefreshRight,
 } from '@element-plus/icons-vue';
 
@@ -27,13 +21,14 @@ const tabsList = computed(() => tabsStore.tabsList);
 
 // 固定的首页标签
 const homeTab = computed(() => {
-  // 尝试从标签页列表中获取首页
-  const existingHome = tabsList.value.find((tab) => tab.path === '/home');
-  // 如果存在则返回，否则创建一个默认的首页对象
+  //从标签页列表中获取首页并返回
   return (
-    existingHome || {
+    tabsList.value.find((tab) => tab.path === '/home') || {
       path: '/home',
-      meta: { title: '首页' },
+      meta: {
+        title: '首页',
+        icon: 'HomeFilled',
+      },
     }
   );
 });
@@ -55,29 +50,6 @@ watch(
   },
   { immediate: true },
 );
-
-// 格式化标签文本，添加图标
-const formatLabel = (item: any) => {
-  // 图标映射
-  const iconMap: { [key: string]: any } = {
-    '/home': HomeFilled,
-    '/screen': Platform,
-    '/acl': Monitor,
-    '/acl/user': User,
-    '/acl/role': User,
-    '/acl/permission': Setting,
-    '/product': Goods,
-  };
-
-  // 默认图标组件
-  const IconComponent = iconMap[item.path] || Setting;
-
-  // 返回带图标的标签
-  return h('div', { class: 'custom-tab-label' }, [
-    h(IconComponent, { class: 'custom-tab-icon' }),
-    h('span', {}, item.meta.title),
-  ]);
-};
 
 // 点击标签页
 const tabClick = (tab: any) => {
@@ -136,20 +108,32 @@ const tabsMenuHandle = (command: string) => {
         @tab-remove="removeTab"
       >
         <!-- 固定的首页标签，不可关闭 -->
-        <el-tab-pane
-          :key="'/home'"
-          :label="formatLabel(homeTab)"
-          name="/home"
-          :closable="false"
-        ></el-tab-pane>
+        <el-tab-pane :key="'/home'" name="/home" :closable="false">
+          <template #label>
+            <div class="custom-tab-label">
+              <el-icon class="custom-tab-icon">
+                <component :is="homeTab.meta.icon" />
+              </el-icon>
+              <span>{{ homeTab.meta.title }}</span>
+            </div>
+          </template>
+        </el-tab-pane>
         <!-- 动态标签页列表，可关闭 -->
         <el-tab-pane
           v-for="item in otherTabs"
           :key="item.path"
-          :label="formatLabel(item)"
           :name="item.path"
           :closable="true"
-        ></el-tab-pane>
+        >
+          <template #label>
+            <div class="custom-tab-label">
+              <el-icon class="custom-tab-icon">
+                <component :is="item.meta?.icon || 'Setting'" />
+              </el-icon>
+              <span>{{ item.meta.title }}</span>
+            </div>
+          </template>
+        </el-tab-pane>
       </el-tabs>
     </div>
     <div class="tabs-action">
