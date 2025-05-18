@@ -111,7 +111,7 @@ export default {
     background-color: #ffffff;
     top: $base-tabbar-height;
     left: $base-menu-width;
-    padding: 10px;
+    padding: 20px;
     overflow: auto;
     transition: all 0.3s;
 

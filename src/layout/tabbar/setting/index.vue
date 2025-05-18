@@ -85,18 +85,16 @@ export default {
   <el-button
     circle
     icon="Refresh"
-    size="small"
     @click="updateRefsh"
   ></el-button>
   <el-button
     circle
     icon="FullScreen"
-    size="small"
     @click="fullScreen"
   ></el-button>
   <img
     :src="userStore.avatar"
-    style="width: 24px; height: 24px; margin: 0px 10px; border-radius: 50%"
+    style="width: 28px; height: 28px; margin: 0px 10px; border-radius: 50%"
   />
   <!-- 下拉菜单 -->
   <el-dropdown placement="top" style="margin-right: 10px">
@@ -134,7 +132,7 @@ export default {
       </el-form-item>
     </el-form>
     <template #reference>
-      <el-button circle icon="Setting" size="small"></el-button>
+      <el-button circle icon="Setting"></el-button>
     </template>
   </el-popover>
 </template>
