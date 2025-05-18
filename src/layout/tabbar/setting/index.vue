@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+//import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 //获取用户相关的小仓库
 import { useUserStore } from '@/store/modules/user';
@@ -13,7 +13,7 @@ const $router = useRouter();
 //获取路由对向
 const $route = useRoute();
 //收集开关的数据
-const dark = ref<boolean>(false);
+// const dark = ref<boolean>(false);
 //刷新按钮点击回调
 const updateRefsh = () => {
   layoutSettingStore.refsh = !layoutSettingStore.refsh;
@@ -41,7 +41,7 @@ const logout = () => {
   $router.push({ path: '/login', query: { redirect: $route.path } });
 };
 
-//颜色组件组件的数据
+/*//颜色组件组件的数据
 const color = ref('rgba(255, 69, 0, 0.68)');
 const predefineColors = ref([
   '#ff4500',
@@ -73,7 +73,7 @@ const setColor = () => {
   //通知js修改根节点的样式对象的属性与属性值
   const html = document.documentElement;
   html.style.setProperty('--el-color-primary', color.value);
-};
+};*/
 </script>
 
 <script lang="ts">
@@ -99,8 +99,9 @@ export default {
       </el-dropdown-menu>
     </template>
   </el-dropdown>
+  <!--
   <el-popover :width="300" placement="bottom" title="主题设置" trigger="hover">
-    <!-- 表单元素 -->
+    &lt;!&ndash; 表单元素 &ndash;&gt;
     <el-form>
       <el-form-item label="主题颜色">
         <el-color-picker
@@ -127,6 +128,6 @@ export default {
       <el-button circle icon="Setting"></el-button>
     </template>
   </el-popover>
-</template>
+--></template>
 
 <style lang="scss" scoped></style>
