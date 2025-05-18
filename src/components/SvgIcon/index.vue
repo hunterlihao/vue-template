@@ -35,6 +35,4 @@ defineProps({
   </div>
 </template>
 
-<style scoped lang="sass">
-
-</style>
+<style lang="sass" scoped></style>

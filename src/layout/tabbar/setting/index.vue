@@ -1,0 +1,142 @@
+<script lang="ts" setup>
+import { ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+//获取用户相关的小仓库
+import { useUserStore } from '@/store/modules/user';
+//获取骨架的小仓库
+import { useLayOutSettingStore } from '@/store/modules/setting';
+
+const layoutSettingStore = useLayOutSettingStore();
+const userStore = useUserStore();
+//获取路由器对象
+const $router = useRouter();
+//获取路由对向
+const $route = useRoute();
+//收集开关的数据
+const dark = ref<boolean>(false);
+//刷新按钮点击回调
+const updateRefsh = () => {
+  layoutSettingStore.refsh = !layoutSettingStore.refsh;
+};
+//全屏按钮点击的回调
+const fullScreen = () => {
+  //DOM对象的一个属性:可以用来判断当前是不是全屏模式[全屏:true,不是全屏:false]
+  const full = document.fullscreenElement;
+  //切换为全屏模式
+  if (!full) {
+    //文档根节点的方法requestFullscreen,实现全屏模式
+    document.documentElement.requestFullscreen();
+  } else {
+    //变为不是全屏模式->退出全屏模式
+    document.exitFullscreen();
+  }
+};
+//退出登录点击回调
+const logout = () => {
+  //第一件事情:需要向服务器发请求[退出登录接口]******
+  //第二件事情:仓库当中关于用于相关的数据清空[token|username|avatar]
+  //第三件事情:跳转到登录页面
+  userStore.userLogout();
+  //跳转到登录页面
+  $router.push({ path: '/login', query: { redirect: $route.path } });
+};
+
+//颜色组件组件的数据
+const color = ref('rgba(255, 69, 0, 0.68)');
+const predefineColors = ref([
+  '#ff4500',
+  '#ff8c00',
+  '#ffd700',
+  '#90ee90',
+  '#00ced1',
+  '#1e90ff',
+  '#c71585',
+  'rgba(255, 69, 0, 0.68)',
+  'rgb(255, 120, 0)',
+  'hsv(51, 100, 98)',
+  'hsva(120, 40, 94, 0.5)',
+  'hsl(181, 100%, 37%)',
+  'hsla(209, 100%, 56%, 0.73)',
+  '#c7158577',
+]);
+
+//switch开关的chang事件进行暗黑模式的切换
+const changeDark = () => {
+  //获取HTML根节点
+  const html = document.documentElement;
+  //判断HTML标签是否有类名dark
+  dark.value ? (html.className = 'dark') : (html.className = '');
+};
+
+//主题颜色的设置
+const setColor = () => {
+  //通知js修改根节点的样式对象的属性与属性值
+  const html = document.documentElement;
+  html.style.setProperty('--el-color-primary', color.value);
+};
+</script>
+
+<script lang="ts">
+export default {
+  name: 'Setting',
+};
+</script>
+<template>
+  <el-button
+    circle
+    icon="Refresh"
+    size="small"
+    @click="updateRefsh"
+  ></el-button>
+  <el-button
+    circle
+    icon="FullScreen"
+    size="small"
+    @click="fullScreen"
+  ></el-button>
+  <img
+    :src="userStore.avatar"
+    style="width: 24px; height: 24px; margin: 0px 10px; border-radius: 50%"
+  />
+  <!-- 下拉菜单 -->
+  <el-dropdown placement="top" style="margin-right: 10px">
+    <el-button link>{{ userStore.username }}</el-button>
+    <template #dropdown>
+      <el-dropdown-menu>
+        <el-dropdown-item icon="SwitchButton" @click="logout">
+          退出登录
+        </el-dropdown-item>
+      </el-dropdown-menu>
+    </template>
+  </el-dropdown>
+  <el-popover :width="300" placement="bottom" title="主题设置" trigger="hover">
+    <!-- 表单元素 -->
+    <el-form>
+      <el-form-item label="主题颜色">
+        <el-color-picker
+          v-model="color"
+          :predefine="predefineColors"
+          show-alpha
+          size="small"
+          @change="setColor"
+        />
+      </el-form-item>
+      <el-form-item label="暗黑模式">
+        <el-switch
+          v-model="dark"
+          active-icon="MoonNight"
+          class="mt-2"
+          inactive-icon="Sunny"
+          inline-prompt
+          style="margin-left: 24px"
+          @change="changeDark"
+        />
+      </el-form-item>
+    </el-form>
+    <template #reference>
+      <el-button circle icon="Setting" size="small"></el-button>
+    </template>
+  </el-popover>
+</template>
+
+<style lang="scss" scoped></style>

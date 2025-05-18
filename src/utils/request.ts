@@ -1,6 +1,7 @@
 // 对axios进行封装
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
+import { useUserStore } from '@/store/modules/user.ts';
 // 利用create方法创建axios实例
 const request = axios.create({
   // 设置请求的根路径 基础路径会携带/api
@@ -11,6 +12,11 @@ const request = axios.create({
 request.interceptors.request.use((config) => {
   // config配置对象，里面有headers请求头，经常给服务器携带token
   // 返回配置对象
+  //获取用户相关的小仓库:获取仓库内部token,登录成功以后携带给服务器
+  const userStore = useUserStore();
+  if (userStore.token) {
+    config.headers.token = userStore.token;
+  }
   return config;
 });
 

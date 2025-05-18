@@ -1,12 +1,13 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import {fileURLToPath,URL} from 'node:url';
+import { fileURLToPath, URL } from 'node:url';
 
 // 引入svg插件
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 // https://vite.dev/config/
 import path from 'path';
 import { viteMockServe } from 'vite-plugin-mock';
+
 export default defineConfig({
   plugins: [
     vue(),
@@ -28,11 +29,11 @@ export default defineConfig({
     },
   },
   // scss全局变量配置
-  css:{
+  css: {
     preprocessorOptions: {
       scss: {
         additionalData: '@import "@/styles/variable.scss";',
       },
     },
-  }
+  },
 });

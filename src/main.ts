@@ -15,6 +15,15 @@ import globalComponent from './components/index';
 // 引入全局样式
 import '@/styles/index.scss';
 
+//  引入路由
+import router from '@/router';
+// 引入自定义路由守卫
+import './permisstion';
+// 引入pinia
+import pinia from '@/store';
+//暗黑模式需要的样式
+import 'element-plus/theme-chalk/dark/css-vars.css';
+
 const app = createApp(App);
 // 安装element-plus 并国际化
 app.use(ElementPlus, {
@@ -22,6 +31,11 @@ app.use(ElementPlus, {
 });
 // 注册项目全局组件
 app.use(globalComponent);
+// 注册路由
+app.use(router);
+
+// 注册pinia
+app.use(pinia);
 
 // 将app挂载到dom中
 app.mount('#app');
