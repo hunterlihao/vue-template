@@ -31,6 +31,10 @@
         </el-icon>
         <template #dropdown>
           <el-dropdown-menu>
+            <el-dropdown-item command="refreshCurrentTab">
+              <el-icon :size="14"><RefreshRight /></el-icon>
+              刷新当前
+            </el-dropdown-item>
             <el-dropdown-item command="closeCurrentTab">
               <el-icon :size="14"><FolderRemove /></el-icon>
               关闭当前
@@ -54,6 +58,7 @@
 import { computed, watch, ref, h } from 'vue';
 import { useTabsStore } from '@/store/modules/tabs';
 import { useRoute, useRouter } from 'vue-router';
+import { useLayOutSettingStore } from '@/store/modules/setting';
 import {
   Menu,
   FolderRemove,
@@ -65,11 +70,13 @@ import {
   Goods,
   Platform,
   Setting,
+  RefreshRight,
 } from '@element-plus/icons-vue';
 
 const route = useRoute();
 const router = useRouter();
 const tabsStore = useTabsStore();
+const layOutSettingStore = useLayOutSettingStore();
 
 // 获取标签页列表
 const tabsList = computed(() => tabsStore.tabsList);
@@ -144,9 +151,19 @@ const removeTab = (targetPath: string) => {
   }
 };
 
+// 刷新当前页面
+const refreshCurrentPage = () => {
+  // 切换刷新状态，触发main组件的监听器
+  layOutSettingStore.refsh = !layOutSettingStore.refsh;
+};
+
 // 标签页操作
 const tabsMenuHandle = (command: string) => {
   switch (command) {
+    case 'refreshCurrentTab':
+      // 刷新当前页面
+      refreshCurrentPage();
+      break;
     case 'closeCurrentTab':
       // 当前不是首页才能关闭
       if (route.path !== '/home') {

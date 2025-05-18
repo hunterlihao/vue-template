@@ -19,7 +19,7 @@ export default {
 </script>
 <template>
   <!-- 顶部左侧静态 -->
-  <el-icon style="margin-right: 10px" @click="changeIcon">
+  <el-icon style="margin-right: 10px" @click="changeIcon" size="22px">
     <component :is="LayOutSettingStore.fold ? 'Fold' : 'Expand'"></component>
   </el-icon>
   <!-- 左侧面包屑 -->
@@ -31,12 +31,12 @@ export default {
       :key="index"
       :to="item.path"
     >
-      <!-- 图标 -->
-      <el-icon>
-        <component :is="item.meta.icon"></component>
-      </el-icon>
-      <!-- 面包屑展示匹配路由的标题 -->
-      <span style="margin-left: 5px">{{ item.meta.title }}</span>
+      <div style="display: flex; align-items: center; font-size: 20px">
+        <el-icon size="20px">
+          <component :is="item.meta.icon"></component>
+        </el-icon>
+        <span style="margin-left: 5px">{{ item.meta.title }}</span>
+      </div>
     </el-breadcrumb-item>
   </el-breadcrumb>
 </template>
