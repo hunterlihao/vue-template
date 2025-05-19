@@ -1,6 +1,6 @@
 // 用户相关仓库
 import { defineStore } from 'pinia';
-import { reqLogin, reqUserInfo } from '@/api/user';
+import { reqLogin, reqLogout, reqUserInfo } from '@/api/user';
 import type { LoginForm, LoginResponseData } from '@/api/user/type.ts';
 import { GET_TOKEN, REMOVE_TOKEN, SET_TOKEN } from '@/utils/token.ts';
 import type { UserState } from '@/store/modules/types/type.ts';
@@ -50,19 +50,18 @@ export const useUserStore = defineStore('User', {
       }
     },
     //退出登录
-    userLogout() {
-      /*//退出登录请求
+    async userLogout() {
       const result: any = await reqLogout();
-      if (result.code == 200) {*/
-      //目前没有mock接口:退出登录接口(通知服务器本地用户唯一标识失效)
-      this.token = '';
-      this.username = '';
-      this.avatar = '';
-      REMOVE_TOKEN();
-      return 'ok';
-      /*} else {
+      if (result.code == 200) {
+        //目前没有mock接口:退出登录接口(通知服务器本地用户唯一标识失效)
+        this.token = '';
+        this.username = '';
+        this.avatar = '';
+        REMOVE_TOKEN();
+        return 'ok';
+      } else {
         return Promise.reject(new Error(result.message));
-      }*/
+      }
     },
   },
   // 计算属性

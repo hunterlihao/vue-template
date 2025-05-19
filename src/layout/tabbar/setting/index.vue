@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '@/store/modules/user';
 //获取骨架的小仓库
 import { useLayOutSettingStore } from '@/store/modules/setting';
+import { ElMessage } from 'element-plus';
 
 const layoutSettingStore = useLayOutSettingStore();
 const userStore = useUserStore();
@@ -32,13 +33,14 @@ const fullScreen = () => {
   }
 };
 //退出登录点击回调
-const logout = () => {
+const logout = async () => {
   //第一件事情:需要向服务器发请求[退出登录接口]******
   //第二件事情:仓库当中关于用于相关的数据清空[token|username|avatar]
   //第三件事情:跳转到登录页面
-  userStore.userLogout();
+  await userStore.userLogout();
+  ElMessage.success('退出登录成功');
   //跳转到登录页面
-  $router.push({ path: '/login', query: { redirect: $route.path } });
+  await $router.push({ path: '/login', query: { redirect: $route.path } });
 };
 
 /*//颜色组件组件的数据

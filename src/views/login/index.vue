@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { Lock, User } from '@element-plus/icons-vue';
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
 //引入获取当前时间的函数
@@ -9,6 +8,7 @@ import { getTime } from '@/utils/time';
 import { useUserStore } from '@/store/modules/user.ts';
 //引入登录表单校验规则
 import { loginRules } from './utils/rule';
+import { reqGetCode } from '@/api/user';
 
 const useStore = useUserStore();
 //获取el-form组件
@@ -23,7 +23,33 @@ const loading = ref(false);
 const loginForm = reactive({
   username: 'admin',
   password: '111111',
+  captchaKey: '',
+  captchaCode: 'NAFG',
 });
+// 验证码数据
+const captcha = ref({
+  image: '',
+  key: '',
+});
+
+onMounted(async () => {
+  //获取验证码
+  const result = await reqGetCode();
+  captcha.value.image = result.data.image;
+  captcha.value.key = result.data.key;
+});
+// 获取验证码
+const getCaptcha = async () => {
+  try {
+    const result = await reqGetCode();
+    captcha.value.image = result.data.image;
+    captcha.value.key = result.data.key;
+    loginForm.captchaKey = result.data.key;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 //登录按钮回调
 const login = async () => {
   //保证全部表单相校验通过再发请求
@@ -80,18 +106,32 @@ const rules = loginRules;
         <el-form-item class="form_item" prop="username">
           <el-input
             v-model="loginForm.username"
-            :prefix-icon="User"
+            prefix-icon="User"
             placeholder="请输入用户名"
           ></el-input>
         </el-form-item>
         <el-form-item class="form_item" prop="password">
           <el-input
             v-model="loginForm.password"
-            :prefix-icon="Lock"
+            prefix-icon="Lock"
             placeholder="请输入密码"
             show-password
             type="password"
           ></el-input>
+        </el-form-item>
+        <el-form-item class="form_item" prop="captchaCode">
+          <el-input
+            v-model.trim="loginForm.captchaCode"
+            prefix-icon="Key"
+            autocomplete="off"
+            placeholder="请输入验证码"
+          >
+            <template #append>
+              <div class="captcha-container" @click="getCaptcha">
+                <img :src="captcha.image" alt="验证码" class="captcha-img" />
+              </div>
+            </template>
+          </el-input>
         </el-form-item>
         <el-form-item class="form_item">
           <el-button

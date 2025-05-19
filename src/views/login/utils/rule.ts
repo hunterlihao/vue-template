@@ -33,6 +33,20 @@ export const validatorPassword = (_rule: any, value: any, callback: any) => {
 };
 
 /**
+ * 验证码校验规则
+ * @param _rule
+ * @param value 表单元素文本内容
+ * @param callback 回调函数
+ */
+export const validatorCaptcha = (_rule: any, value: any, callback: any) => {
+  if (value.length === 4) {
+    callback();
+  } else {
+    callback(new Error('验证码长度必须为4位'));
+  }
+};
+
+/**
  * 登录表单校验规则配置对象
  * 规则对象属性:
  * required: 代表这个字段务必要校验的
@@ -49,5 +63,9 @@ export const loginRules = {
   password: [
     // { required: true, min: 6, max: 15, message: '密码长度至少6位', trigger: 'change' }
     { trigger: 'change', validator: validatorPassword },
+  ],
+  captchaCode: [
+    { required: true, message: '请输入验证码', trigger: 'blur' },
+    { trigger: 'change', validator: validatorCaptcha },
   ],
 };

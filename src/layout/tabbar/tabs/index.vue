@@ -147,7 +147,10 @@ const tabsMenuHandle = (command: string) => {
               <el-icon :size="14"><RefreshRight /></el-icon>
               刷新当前
             </el-dropdown-item>
-            <el-dropdown-item command="closeCurrentTab">
+            <el-dropdown-item
+              command="closeCurrentTab"
+              v-if="route.path !== '/home'"
+            >
               <el-icon :size="14"><FolderRemove /></el-icon>
               关闭当前
             </el-dropdown-item>

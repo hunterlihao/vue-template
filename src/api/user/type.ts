@@ -1,6 +1,8 @@
 export interface LoginForm {
   username: string;
   password: string;
+  captchaKey: string;
+  captchaCode: string;
 }
 
 interface dataType {
@@ -31,4 +33,13 @@ interface UserInfo {
 export interface UserInfoResponseData {
   code: number;
   data: User;
+}
+
+export interface CodeData {
+  image: string;
+  key: string;
+}
+export interface ValidateUCodeData {
+  code: number;
+  data: CodeData;
 }
