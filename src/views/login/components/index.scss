@@ -1,0 +1,107 @@
+.register_form {
+  position: relative;
+  width: 450px;
+  max-width: 90%;
+  background: url('@/assets/images/login_form.png') no-repeat;
+  background-size: cover;
+  padding: 40px 50px;
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+  animation: fadeIn 0.8s ease-out;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  }
+
+  .form_header {
+    margin-bottom: 30px;
+
+    h1 {
+      color: white;
+      font-size: 42px;
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: 600;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 15px 0 0;
+      text-align: center;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .form_item {
+    margin-bottom: 25px;
+    opacity: 0;
+    animation: slideUp 0.5s ease forwards;
+
+    &:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0.2s;
+    }
+
+    &:nth-child(4) {
+      animation-delay: 0.3s;
+    }
+
+    &:nth-child(5) {
+      animation-delay: 0.4s;
+    }
+  }
+
+  .register_btn {
+    width: 100%;
+    height: 45px;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border-radius: 8px;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #42b983, #33a06f);
+    border: none;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(66, 185, 131, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  .form_footer {
+    margin-top: 20px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    opacity: 0;
+    animation: slideUp 0.5s ease 0.5s forwards;
+
+    a {
+      color: #42b983;
+      margin-left: 5px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+
+      &:hover {
+        text-decoration: underline;
+        color: #5ccb9a;
+      }
+    }
+  }
+}

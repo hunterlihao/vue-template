@@ -9,6 +9,8 @@ import { useUserStore } from '@/store/modules/user.ts';
 //引入登录表单校验规则
 import { loginRules } from './utils/rule';
 import { reqGetCode } from '@/api/user';
+// 引入注册组件
+import Register from './components/Register.vue';
 
 const useStore = useUserStore();
 //获取el-form组件
@@ -31,6 +33,8 @@ const captcha = ref({
   image: '',
   key: '',
 });
+// 控制显示登录还是注册表单
+const formMode = ref('login');
 
 onMounted(async () => {
   //获取验证码
@@ -87,6 +91,11 @@ const login = async () => {
 };
 //定义表单校验需要配置对象
 const rules = loginRules;
+
+// 切换表单模式（登录/注册）
+const switchMode = (mode: string) => {
+  formMode.value = mode;
+};
 </script>
 
 <template>
@@ -94,6 +103,7 @@ const rules = loginRules;
     <div class="login_form_wrapper">
       <!-- 登录的表单 -->
       <el-form
+        v-if="formMode === 'login'"
         ref="loginForms"
         :model="loginForm"
         :rules="rules"
@@ -144,7 +154,17 @@ const rules = loginRules;
             登录
           </el-button>
         </el-form-item>
+        <div class="form_footer">
+          <span>没有账号？</span>
+          <a href="javascript:;" @click="switchMode('register')">注册</a>
+        </div>
       </el-form>
+      
+      <!-- 注册表单组件 -->
+      <Register 
+        v-if="formMode === 'register'" 
+        @switch-mode="switchMode"
+      />
     </div>
   </div>
 </template>

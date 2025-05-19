@@ -1,4 +1,4 @@
-// 登录表单校验规则
+// 登录和注册表单校验规则
 
 /**
  * 用户名校验规则
@@ -47,6 +47,26 @@ export const validatorCaptcha = (_rule: any, value: any, callback: any) => {
 };
 
 /**
+ * 确认密码校验规则
+ * @param _rule
+ * @param value 表单元素文本内容
+ * @param callback 回调函数
+ * @param password 密码值
+ */
+export const validatorConfirmPassword = (
+  _rule: any,
+  value: any,
+  callback: any,
+  password: string,
+) => {
+  if (value === password) {
+    callback();
+  } else {
+    callback(new Error('两次输入的密码不一致'));
+  }
+};
+
+/**
  * 登录表单校验规则配置对象
  * 规则对象属性:
  * required: 代表这个字段务必要校验的
@@ -69,3 +89,34 @@ export const loginRules = {
     { trigger: 'change', validator: validatorCaptcha },
   ],
 };
+
+/**
+ * 注册表单校验规则配置对象
+ */
+export const registerRules = (registerForm: any) => ({
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { trigger: 'change', validator: validatorUserName },
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { trigger: 'change', validator: validatorPassword },
+  ],
+  confirmPassword: [
+    { required: true, message: '请确认密码', trigger: 'blur' },
+    {
+      validator: (_rule: any, value: string, callback: any) => {
+        if (value !== registerForm.password) {
+          callback(new Error('两次输入的密码不一致'));
+        } else {
+          callback();
+        }
+      },
+      trigger: 'blur',
+    },
+  ],
+  captchaCode: [
+    { required: true, message: '请输入验证码', trigger: 'blur' },
+    { trigger: 'change', validator: validatorCaptcha },
+  ],
+});
