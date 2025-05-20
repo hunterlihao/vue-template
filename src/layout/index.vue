@@ -30,16 +30,13 @@ export default {
 <template>
   <div class="layout_container">
     <!--  左侧菜单  -->
-    <div
-      :class="{ fold: LayOutSettingStore.fold ? true : false }"
-      class="layout_slider"
-    >
+    <div :class="{ fold: !!LayOutSettingStore.fold }" class="layout_slider">
       <Logo />
       <!-- 滚动样式 -->
       <el-scrollbar class="scrollbar">
         <!-- 菜单组件 -->
         <el-menu
-          :collapse="LayOutSettingStore.fold ? true : false"
+          :collapse="!!LayOutSettingStore.fold"
           :default-active="$route.path"
           background-color="#ffffff"
           text-color="black"
@@ -50,20 +47,14 @@ export default {
       </el-scrollbar>
     </div>
     <!--  顶部导航区域  -->
-    <div
-      :class="{ fold: LayOutSettingStore.fold ? true : false }"
-      class="layout_tabbar"
-    >
+    <div :class="{ fold: !!LayOutSettingStore.fold }" class="layout_tabbar">
       <!-- 顶部导航栏 -->
       <Tabbar class="tabbar_component"></Tabbar>
       <!-- 标签栏 -->
       <Tabs class="tabs_component"></Tabs>
     </div>
     <!--  内容区域  -->
-    <div
-      :class="{ fold: LayOutSettingStore.fold ? true : false }"
-      class="layout_main"
-    >
+    <div :class="{ fold: !!LayOutSettingStore.fold }" class="layout_main">
       <Main></Main>
     </div>
   </div>

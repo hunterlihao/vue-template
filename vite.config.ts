@@ -36,4 +36,8 @@ export default defineConfig({
       },
     },
   },
+  server: {
+    allowedHosts : true,
+    open: true
+  }
 });

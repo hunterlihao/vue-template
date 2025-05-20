@@ -1,3 +1,4 @@
+import Layout from '@/layout/index.vue';
 //对外暴露配置路由(常量路由):全部用户都可以访问到的路由
 export const constantRoute = [
   {
@@ -14,7 +15,7 @@ export const constantRoute = [
   {
     //登录成功以后展示数据的路由
     path: '/',
-    component: () => import('@/layout/index.vue'),
+    component: Layout,
     name: 'layout',
     meta: {
       title: '',
@@ -47,7 +48,7 @@ export const constantRoute = [
   },
   {
     path: '/acl',
-    component: () => import('@/layout/index.vue'),
+    component: Layout,
     name: 'Acl',
     meta: {
       title: '权限管理',
@@ -86,7 +87,7 @@ export const constantRoute = [
   },
   {
     path: '/product',
-    component: () => import('@/layout/index.vue'),
+    component: Layout,
     name: 'Product',
     meta: {
       title: '商品管理',
