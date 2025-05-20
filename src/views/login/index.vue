@@ -111,7 +111,7 @@ const switchMode = (mode: string) => {
       >
         <div class="form_header">
           <h1>登录</h1>
-          <h2>欢迎来到后台管理系统</h2>
+          <h2>SYSTEM MANAGEMENT</h2>
         </div>
         <el-form-item class="form_item" prop="username">
           <el-input
@@ -159,12 +159,9 @@ const switchMode = (mode: string) => {
           <a href="javascript:;" @click="switchMode('register')">注册</a>
         </div>
       </el-form>
-      
+
       <!-- 注册表单组件 -->
-      <Register 
-        v-if="formMode === 'register'" 
-        @switch-mode="switchMode"
-      />
+      <Register v-if="formMode === 'register'" @switch-mode="switchMode" />
     </div>
   </div>
 </template>
