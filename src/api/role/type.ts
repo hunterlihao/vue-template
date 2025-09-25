@@ -7,7 +7,7 @@ export type SysRole = {
 
 // 列表查询的参数
 export type RoleListParm = {
-  roleName: string;
+  params: string;
   current: number;
   size: number;
   total: number;
