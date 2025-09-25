@@ -26,6 +26,8 @@
     "element-plus": "^2.9.10",
     "nprogress": "^0.2.0",
     "pinia": "^3.0.2",
+    "pinia-plugin-persist": "^1.0.0",
+    "pinia-plugin-persistedstate": "^4.5.0",
     "progress": "^2.0.3",
     "stylelint-config-html": "^1.1.0",
     "stylelint-config-recommended-vue": "^1.6.0",

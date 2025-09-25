@@ -11,6 +11,8 @@ import 'virtual:svg-icons-register';
 
 // 引入自定义插件对象
 import globalComponent from './components/index';
+// 引入持久化插件
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 
 // 引入全局样式
 import '@/styles/index.scss';
@@ -29,6 +31,8 @@ const app = createApp(App);
 app.use(ElementPlus, {
   locale: zhCn, // 国际化配置
 });
+// 使用持久化插件
+pinia.use(piniaPluginPersistedstate);
 // 注册项目全局组件
 app.use(globalComponent);
 // 注册路由

@@ -20,7 +20,7 @@ export default defineConfig({
     viteMockServe({
       // default
       mockPath: 'mock',
-      enable: true,
+      enable: false,
     }),
   ],
   resolve: {
@@ -37,7 +37,18 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts : true,
-    open: true
-  }
+    allowedHosts: true,
+    open: true,
+    hmr: true,
+    host: '0.0.0.0',
+    port: 5050,
+    // 添加代理配置
+    // proxy: {
+    //   '/api': {
+    //     target: process.env.VITE_SERVER || 'http://localhost:8100',
+    //     changeOrigin: true,
+    //     rewrite: (path) => path.replace(/^\/api/, '/api')
+    //   }
+    // }
+  },
 });

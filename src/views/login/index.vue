@@ -24,9 +24,9 @@ const loading = ref(false);
 //收集账号与密码的数据
 const loginForm = reactive({
   username: 'admin',
-  password: '111111',
+  password: '123456',
   captchaKey: '',
-  captchaCode: 'NAFG',
+  captchaCode: '',
 });
 // 验证码数据
 const captcha = ref({

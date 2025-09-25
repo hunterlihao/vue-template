@@ -1,6 +1,12 @@
 <script lang="ts" setup>
 // 引入标题与logo的配置文件
 import setting from '@/setting.ts';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const goToHome = () => {
+  router.push('/home');
+};
 </script>
 
 <script lang="ts">
@@ -10,7 +16,12 @@ export default {
 </script>
 
 <template>
-  <div v-if="setting.logoHidden" class="logo">
+  <div
+    v-if="setting.logoHidden"
+    class="logo"
+    @click="goToHome"
+    style="cursor: pointer"
+  >
     <img :src="setting.logo" />
     <p style="white-space: nowrap; text-overflow: ellipsis">
       {{ setting.title }}
