@@ -4,8 +4,11 @@ import SysDialog from '@/components/SysDialog.vue';
 import useDialog from '@/hocks/useDialog.ts';
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 import type { SysRole } from '@/api/role/type.ts';
-import { addApi, getListApi } from '@/api/role';
+import { addApi, deleteApi, getListApi, updateApi } from '@/api/role';
+import useInstance from '@/hocks/useInstance.ts';
 //-----------------------------上面导入依赖---------------------------
+//获取全局global
+const { global } = useInstance();
 //表单绑定对象
 const searchParm = reactive({
   current: 1,
@@ -37,6 +40,8 @@ const currentChange = (current: number) => {
 };
 //表格高度
 const tableHeight = ref(0);
+//判断新增还是编辑 0新增 1编辑
+const tags = ref('');
 // --------------------- 上面定义参数 下面定义方法--------------------
 //搜索按钮
 const searchBtn = () => {
@@ -50,9 +55,17 @@ const resetBtn = () => {
 };
 //新增按钮
 const addBtn = () => {
+  tags.value = '0';
   dialog.title = '新增角色';
   dialog.height = 120;
   dialog.width = 400;
+  // 清除之前的表单校验结果
+  addRef.value?.clearValidate();
+  Object.assign(addModel, {
+    roleId: '',
+    roleName: '',
+    remark: '',
+  });
   //显示弹窗
   onShow();
 };
@@ -62,7 +75,7 @@ const rules = reactive<FormRules<SysRole>>({
     {
       required: true,
       message: '请输入角色名称',
-      trigger: 'change',
+      trigger: 'blur',
     },
   ],
 });
@@ -72,11 +85,18 @@ const commit = () => {
     if (valid) {
       //提交表单
       console.log('提交表单');
+      let res = null;
       //提交请求
-      let res = await addApi(addModel);
+      if (tags.value === '0') {
+        //新增
+        res = await addApi(addModel);
+      } else {
+        //编辑
+        res = await updateApi(addModel);
+      }
       if (res && res.code === 200) {
         await getList();
-        ElMessage.success('新增成功');
+        ElMessage.success('操作成功');
         onClose();
       }
     }
@@ -95,11 +115,29 @@ const getList = async () => {
 };
 //编辑按钮
 const editBtn = (row: SysRole) => {
+  tags.value = '1';
   console.log(row);
+  //显示弹窗
+  dialog.visible = true;
+  dialog.title = '编辑角色';
+  dialog.height = 120;
+  dialog.width = 400;
+  addRef.value?.clearValidate();
+  //回显数据
+  Object.assign(addModel, row);
 };
 //删除按钮
-const deleteBtn = (roleId: string) => {
+const deleteBtn = async (roleId: string) => {
   console.log(roleId);
+  console.log(global);
+  const confirm = await global.$myConfirm('确定要删除该数据吗？');
+  if (confirm) {
+    let res = await deleteApi(roleId);
+    if (res && res.code === 200) {
+      await getList();
+      ElMessage.success('删除成功');
+    }
+  }
 };
 //挂载时操作
 onMounted(() => {

@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { DialogProps } from '@/types';
+import { type DialogProps } from '@/types';
 
 /**
  * 接收父组件传递的数据
@@ -58,6 +58,7 @@ const onConfirm = () => {
   padding: 0;
   border-top-left-radius: 7px !important;
   border-top-right-radius: 7px !important;
+
   .el-dialog__header {
     margin-right: 0px;
     border-top-left-radius: 7px !important;
@@ -67,21 +68,26 @@ const onConfirm = () => {
     height: 54px;
     line-height: 54px;
     padding-left: 10px;
+
     .el-dialog__title {
       color: #000000;
       font-size: 16px;
       font-weight: 600;
     }
   }
+
   .el-dialog__headerbtn {
     height: 54px !important;
+
     .el-dialog__close {
       color: #fff;
     }
   }
+
   .el-dialog__body {
     padding: 10px;
   }
+
   .el-dialog__footer {
     border-top: 1px solid #ffffff !important;
     padding: 10px;

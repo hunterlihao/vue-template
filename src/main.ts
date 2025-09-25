@@ -26,6 +26,8 @@ import pinia from '@/store';
 //暗黑模式需要的样式
 import 'element-plus/theme-chalk/dark/css-vars.css';
 
+import myConfirm from '@/utils/myConfirm.ts';
+
 const app = createApp(App);
 // 安装element-plus 并国际化
 app.use(ElementPlus, {
@@ -43,3 +45,5 @@ app.use(pinia);
 
 // 将app挂载到dom中
 app.mount('#app');
+//全局挂载
+app.config.globalProperties.$myConfirm = myConfirm;
