@@ -8,9 +8,9 @@ const userStore = useUserStore();
 <template>
   <el-card>
     <div class="box">
-      <img :src="userStore.avatar" alt="" class="avatar" />
+      <img :src="userStore.avatarUrl" alt="" class="avatar" />
       <div class="bottom">
-        <h3 class="title">{{ getTime() }}好呀{{ userStore.username }}</h3>
+        <h3 class="title">{{ getTime() }}好呀{{ userStore.nickName }}</h3>
         <p class="subtitle">System</p>
       </div>
     </div>

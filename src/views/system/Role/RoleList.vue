@@ -6,6 +6,7 @@ import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 import type { SysRole } from '@/api/role/type.ts';
 import { addApi, deleteApi, getListApi, updateApi } from '@/api/role';
 import useInstance from '@/hocks/useInstance.ts';
+import AssignTree from '@/views/system/Role/AssignTree.vue';
 //-----------------------------上面导入依赖---------------------------
 //获取全局global
 const { global } = useInstance();
@@ -42,6 +43,7 @@ const currentChange = (current: number) => {
 const tableHeight = ref(0);
 //判断新增还是编辑 0新增 1编辑
 const tags = ref('');
+const assignTree = ref();
 // --------------------- 上面定义参数 下面定义方法--------------------
 //搜索按钮
 const searchBtn = () => {
@@ -139,6 +141,10 @@ const deleteBtn = async (roleId: string) => {
     }
   }
 };
+// 分配菜单
+const assignTreeEdit = (row: SysRole) => {
+  assignTree.value.show(row.roleId, row.roleName);
+};
 //挂载时操作
 onMounted(() => {
   nextTick(() => {
@@ -183,6 +189,13 @@ onMounted(() => {
         <template #default="scope">
           <el-button type="primary" icon="Edit" @click="editBtn(scope.row)">
             编辑
+          </el-button>
+          <el-button
+            type="success"
+            icon="Setting"
+            @click="assignTreeEdit(scope.row)"
+          >
+            分配菜单
           </el-button>
           <el-button
             type="danger"
@@ -235,6 +248,8 @@ onMounted(() => {
         </el-form>
       </template>
     </SysDialog>
+    <!-- 分配菜单 -->
+    <AssignTree ref="assignTree" />
   </el-card>
 </template>
 
