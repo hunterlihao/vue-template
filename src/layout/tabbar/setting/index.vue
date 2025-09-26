@@ -6,7 +6,9 @@ import { useUserStore } from '@/store/modules/user';
 //获取骨架的小仓库
 import { useLayOutSettingStore } from '@/store/modules/setting';
 import { ElMessage } from 'element-plus';
-
+import useInstance from '@/hocks/useInstance.ts';
+//获取全局global
+const { global } = useInstance();
 const layoutSettingStore = useLayOutSettingStore();
 const userStore = useUserStore();
 //获取路由器对象
@@ -34,48 +36,17 @@ const fullScreen = () => {
 };
 //退出登录点击回调
 const logout = async () => {
+  const confirm = await global.$myConfirm('确定要退出登录吗？');
   //第一件事情:需要向服务器发请求[退出登录接口]******
   //第二件事情:仓库当中关于用于相关的数据清空[token|username|avatar]
   //第三件事情:跳转到登录页面
-  await userStore.userLogout();
-  ElMessage.success('退出登录成功');
-  //跳转到登录页面
-  await $router.push({ path: '/login', query: { redirect: $route.path } });
+  if (confirm) {
+    await userStore.logout();
+    ElMessage.success('退出登录成功');
+    //跳转到登录页面
+    await $router.push({ path: '/login', query: { redirect: $route.path } });
+  }
 };
-
-/*//颜色组件组件的数据
-const color = ref('rgba(255, 69, 0, 0.68)');
-const predefineColors = ref([
-  '#ff4500',
-  '#ff8c00',
-  '#ffd700',
-  '#90ee90',
-  '#00ced1',
-  '#1e90ff',
-  '#c71585',
-  'rgba(255, 69, 0, 0.68)',
-  'rgb(255, 120, 0)',
-  'hsv(51, 100, 98)',
-  'hsva(120, 40, 94, 0.5)',
-  'hsl(181, 100%, 37%)',
-  'hsla(209, 100%, 56%, 0.73)',
-  '#c7158577',
-]);
-
-//switch开关的chang事件进行暗黑模式的切换
-const changeDark = () => {
-  //获取HTML根节点
-  const html = document.documentElement;
-  //判断HTML标签是否有类名dark
-  dark.value ? (html.className = 'dark') : (html.className = '');
-};
-
-//主题颜色的设置
-const setColor = () => {
-  //通知js修改根节点的样式对象的属性与属性值
-  const html = document.documentElement;
-  html.style.setProperty('--el-color-primary', color.value);
-};*/
 </script>
 
 <script lang="ts">
@@ -87,12 +58,12 @@ export default {
   <el-button circle icon="Refresh" @click="updateRefsh"></el-button>
   <el-button circle icon="FullScreen" @click="fullScreen"></el-button>
   <img
-    :src="userStore.avatar"
+    :src="userStore.avatarUrl"
     style="width: 28px; height: 28px; margin: 0px 10px; border-radius: 50%"
   />
   <!-- 下拉菜单 -->
   <el-dropdown placement="top" style="margin-right: 10px">
-    <el-button link>{{ userStore.username }}</el-button>
+    <el-button link>{{ userStore.nickName }}</el-button>
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item icon="SwitchButton" @click="logout">

@@ -12,3 +12,9 @@ export type RoleListParm = {
   size: number;
   total: number;
 };
+
+// 分配菜单数据类型
+export type saveMenuParm = {
+  roleId: string;
+  list: Array<string>;
+};

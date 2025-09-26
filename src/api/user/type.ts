@@ -39,3 +39,23 @@ export interface AddModel {
   nickName: string;
   roleId: string;
 }
+
+export interface Login {
+  username: string;
+  password: string;
+  captchaKey: string;
+  captchaCode: string;
+}
+
+// 菜单树参数
+export type AssignParm = {
+  userId: string;
+  roleId: string;
+};
+
+// 修改密码参数
+export type UpdatePwd = {
+  userId: string;
+  oldPassword: string;
+  password: string;
+};

@@ -67,7 +67,7 @@ export const useTabsStore = defineStore('tabs', {
   persist: [
     {
       key: 'tabsList',
-      storage: sessionStorage,
+      storage: localStorage,
     },
   ],
 });

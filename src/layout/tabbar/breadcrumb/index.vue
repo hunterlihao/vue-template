@@ -29,7 +29,6 @@ export default {
       v-for="(item, index) in $route.matched"
       v-show="item.meta.title"
       :key="index"
-      :to="item.path"
     >
       <div style="display: flex; align-items: center; font-size: 20px">
         <el-icon size="20px">
