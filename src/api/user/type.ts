@@ -1,45 +1,41 @@
-export interface LoginForm {
+// 用户数据类型
+export type SysUser = {
+  userId: string;
   username: string;
   password: string;
-  captchaKey: string;
-  captchaCode: string;
-}
+  phone: string;
+  email: string;
+  sex: string;
+  nickName: string;
+  roleId: string;
+};
 
-interface dataType {
-  token?: string;
-  message?: string;
-}
-
-export interface LoginResponseData {
-  code: number;
-  data: dataType;
-}
-
-interface User {
-  checkUser: UserInfo;
-}
-
-interface UserInfo {
-  userid: string;
-  avatar: string;
+export interface AddModel {
+  userId: string;
   username: string;
-  desc: string;
-  roles: string[];
-  buttons: string[];
-  routes: string[];
-  token: string;
+  password: string;
+  phone: string;
+  email: string;
+  sex: string;
+  nickName: string;
+  roleId: string;
 }
 
-export interface UserInfoResponseData {
-  code: number;
-  data: User;
-}
+// 列表查询的参数
+export type UserListParm = {
+  params: string;
+  current: number;
+  size: number;
+  total: number;
+};
 
-export interface CodeData {
-  image: string;
-  key: string;
-}
-export interface ValidateUCodeData {
-  code: number;
-  data: CodeData;
+export interface AddModel {
+  userId: string;
+  username: string;
+  password: string;
+  phone: string;
+  email: string;
+  sex: string;
+  nickName: string;
+  roleId: string;
 }

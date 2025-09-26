@@ -49,7 +49,7 @@ export const constantRoute = [
   {
     path: '/system',
     component: Layout,
-    name: 'system',
+    name: 'System',
     redirect: '/userList',
     meta: {
       title: '系统管理',
@@ -60,7 +60,7 @@ export const constantRoute = [
       {
         path: '/system/userList',
         component: () => import('@/views/system/User/UserList.vue'),
-        name: 'userList',
+        name: 'UserList',
         meta: {
           title: '用户管理',
           icon: 'User',
@@ -70,7 +70,7 @@ export const constantRoute = [
       {
         path: '/system/roleList',
         component: () => import('@/views/system/Role/RoleList.vue'),
-        name: 'roleList',
+        name: 'RoleList',
         meta: {
           title: '角色管理',
           icon: 'UserFilled',
@@ -80,7 +80,7 @@ export const constantRoute = [
       {
         path: '/system/menuList',
         component: () => import('@/views/system/Menu/MenuList.vue'),
-        name: 'menuList',
+        name: 'MenuList',
         meta: {
           title: '菜单管理',
           icon: 'Monitor',
@@ -92,7 +92,7 @@ export const constantRoute = [
   {
     path: '/goodsRoot',
     component: Layout,
-    name: 'goodsRoot',
+    name: 'GoodsRoot',
     redirect: '/category',
     meta: {
       title: '商品管理',
@@ -103,7 +103,7 @@ export const constantRoute = [
       {
         path: '/goodsRoot/category',
         component: () => import('@/views/category/CategoryList.vue'),
-        name: 'category',
+        name: 'Category',
         meta: {
           title: '商品类型',
           icon: 'UserFilled',
@@ -113,7 +113,7 @@ export const constantRoute = [
       {
         path: '/goodsRoot/goodsList',
         component: () => import('@/views/goods/GoodsList.vue'),
-        name: 'goodsList',
+        name: 'GoodsList',
         meta: {
           title: '商品信息',
           icon: 'Wallet',

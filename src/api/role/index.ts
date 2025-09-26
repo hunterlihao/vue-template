@@ -7,6 +7,7 @@ const API = {
   ADD_URI: '/admin/role',
   GET_LIST_URI: '/admin/role/list',
   UPDATE_URI: '/admin/role',
+  Select_URI: '/admin/role/selectList',
 } as const;
 
 // 新增角色
@@ -27,4 +28,9 @@ export const updateApi = (parm: SysRole) => {
 // 删除角色
 export const deleteApi = (roleId: string) => {
   return http.delete(`/admin/role/${roleId}`);
+};
+
+//角色下拉列表
+export const getSelectApi = () => {
+  return http.get(API.Select_URI);
 };

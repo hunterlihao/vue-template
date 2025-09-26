@@ -12,7 +12,7 @@ const { global } = useInstance();
 //表单绑定对象
 const searchParm = reactive({
   current: 1,
-  size: 5,
+  size: 10,
   params: '',
   total: 0,
 });
