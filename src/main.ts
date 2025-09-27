@@ -27,6 +27,7 @@ import pinia from '@/store';
 import 'element-plus/theme-chalk/dark/css-vars.css';
 
 import myConfirm from '@/utils/myConfirm.ts';
+import * as echarts from 'echarts';
 
 // 按钮权限
 // 方式一：自定义指令
@@ -54,3 +55,4 @@ app.mount('#app');
 //全局挂载
 app.config.globalProperties.$myConfirm = myConfirm;
 app.config.globalProperties.$hasPerm = hasPerm;
+app.config.globalProperties.$echarts = echarts;

@@ -64,7 +64,7 @@ class Http {
       (response: AxiosResponse) => {
         let userStore = useUserStore();
         // let menuStore = useMenuStore();
-        if (response.data.code === 600) {
+        if (response.data.code === 401) {
           // token过期，调到登录页面
           // 清空缓存
           sessionStorage.clear();
@@ -169,14 +169,6 @@ class Http {
   // Delete
   delete<T = Result>(url: string): Promise<T> {
     return this.instance.delete(url);
-  }
-  // 图片上传
-  upload<T = Result>(url: string, params?: object): Promise<T> {
-    return this.instance.post(url, params, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
   }
 }
 

@@ -23,6 +23,7 @@
     "@types/nprogress": "^0.2.3",
     "axios": "^1.9.0",
     "commitlint": "^19.8.1",
+    "echarts": "^6.0.0",
     "element-plus": "^2.9.10",
     "nprogress": "^0.2.0",
     "pinia": "^3.0.2",
