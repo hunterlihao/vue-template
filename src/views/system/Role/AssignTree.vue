@@ -85,7 +85,7 @@ const commit = async () => {
   }
   let res = await saveRoleMenuApi(commitParm);
   if (res && res.code === 200) {
-    ElMessage.success(res.message);
+    ElMessage.success('分配成功');
     onClose();
   }
 };

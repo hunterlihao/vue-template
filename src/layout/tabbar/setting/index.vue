@@ -7,10 +7,18 @@ import { useUserStore } from '@/store/modules/user';
 import { useLayOutSettingStore } from '@/store/modules/setting';
 import { ElMessage } from 'element-plus';
 import useInstance from '@/hocks/useInstance.ts';
+//获取标签页仓库
+import { useTabsStore } from '@/store/modules/tabs.ts';
+//获取菜单仓库
+import { useMenuStore } from '@/store/modules/menu/index.ts';
+import router from '@/router/index.ts';
+
 //获取全局global
 const { global } = useInstance();
 const layoutSettingStore = useLayOutSettingStore();
 const userStore = useUserStore();
+const tabsStore = useTabsStore();
+const menuStore = useMenuStore();
 //获取路由器对象
 const $router = useRouter();
 //获取路由对向
@@ -42,9 +50,13 @@ const logout = async () => {
   //第三件事情:跳转到登录页面
   if (confirm) {
     await userStore.logout();
+    // 清除标签页状态
+    tabsStore.closeAllTabs();
+    // 清除菜单路由状态
+    menuStore.clearMenuRoutes();
     ElMessage.success('退出登录成功');
-    //跳转到登录页面
-    await $router.push({ path: '/login', query: { redirect: $route.path } });
+    //跳转到登录页面，退出登录后不需要携带redirect参数
+    await $router.push({ path: '/login' });
   }
 };
 </script>
@@ -59,7 +71,7 @@ export default {
   <el-button circle icon="FullScreen" @click="fullScreen"></el-button>
   <img
     :src="userStore.avatarUrl"
-    style="width: 28px; height: 28px; margin: 0px 10px; border-radius: 50%"
+    style="width: 28px; height: 28px; margin: 0 10px; border-radius: 50%"
   />
   <!-- 下拉菜单 -->
   <el-dropdown placement="top" style="margin-right: 10px">

@@ -47,90 +47,14 @@ export const constantRoute = [
     },
   },
   {
-    path: '/system',
-    component: Layout,
-    name: 'System',
-    redirect: '/userList',
+    //任意路由
+    path: '/:pathMatch(.*)*',
+    redirect: '/404',
+    name: 'Any',
     meta: {
-      title: '系统管理',
-      icon: 'Setting',
-      roles: ['sys:manage'],
+      title: '任意路由',
+      hidden: true,
+      icon: 'DataLine',
     },
-    children: [
-      {
-        path: '/system/userList',
-        component: () => import('@/views/system/User/UserList.vue'),
-        name: 'UserList',
-        meta: {
-          title: '用户管理',
-          icon: 'User',
-          roles: ['sys:user'],
-        },
-      },
-      {
-        path: '/system/roleList',
-        component: () => import('@/views/system/Role/RoleList.vue'),
-        name: 'RoleList',
-        meta: {
-          title: '角色管理',
-          icon: 'UserFilled',
-          roles: ['sys:role'],
-        },
-      },
-      {
-        path: '/system/menuList',
-        component: () => import('@/views/system/Menu/MenuList.vue'),
-        name: 'MenuList',
-        meta: {
-          title: '菜单管理',
-          icon: 'Monitor',
-          roles: ['sys:menu'],
-        },
-      },
-    ],
-  },
-  {
-    path: '/goodsRoot',
-    component: Layout,
-    name: 'GoodsRoot',
-    redirect: '/category',
-    meta: {
-      title: '商品管理',
-      icon: 'Goods',
-      roles: ['sys:goodsRoot'],
-    },
-    children: [
-      {
-        path: '/goodsRoot/category',
-        component: () => import('@/views/category/CategoryList.vue'),
-        name: 'Category',
-        meta: {
-          title: '商品类型',
-          icon: 'UserFilled',
-          roles: ['sys:category'],
-        },
-      },
-      {
-        path: '/goodsRoot/goodsList',
-        component: () => import('@/views/goods/GoodsList.vue'),
-        name: 'GoodsList',
-        meta: {
-          title: '商品信息',
-          icon: 'Wallet',
-          roles: ['sys:goodsList'],
-        },
-      },
-      {
-        //任意路由
-        path: '/:pathMatch(.*)*',
-        redirect: '/404',
-        name: 'Any',
-        meta: {
-          title: '任意路由',
-          hidden: true,
-          icon: 'DataLine',
-        },
-      },
-    ],
   },
 ];

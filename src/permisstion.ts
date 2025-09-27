@@ -8,11 +8,38 @@ import 'nprogress/nprogress.css';
 import { useUserStore } from './store/modules/user';
 import pinia from './store';
 import { useTabsStore } from '@/store/modules/tabs.ts';
+import { useMenuStore } from '@/store/modules/menu/index.ts';
+import { constantRoute } from '@/router/router.ts';
 
 nprogress.configure({ showSpinner: false });
 
 let userStore = useUserStore(pinia);
 let tabsStore = useTabsStore(pinia);
+let menuStore = useMenuStore(pinia);
+
+// 应用初始化时恢复动态路由
+function restoreDynamicRoutesOnStartup() {
+  const token = userStore.token;
+  if (token) {
+    // 尝试从本地存储恢复动态路由
+    const dynamicRoutes = menuStore.restoreDynamicRoutes();
+    if (dynamicRoutes && dynamicRoutes.length > 0) {
+      // 合并常量路由和动态路由
+      userStore.menuRoutes = [...constantRoute, ...dynamicRoutes];
+
+      // 添加动态路由到路由器
+      dynamicRoutes.forEach((route) => {
+        if (!router.hasRoute(route.name as string)) {
+          router.addRoute(route);
+        }
+      });
+    }
+  }
+}
+
+// 在应用启动时调用
+restoreDynamicRoutesOnStartup();
+
 //全局守卫:项目当中任意路由切换都会触发的钩子
 //全局前置守卫
 router.beforeEach(async (to, _from, next) => {
@@ -26,6 +53,10 @@ router.beforeEach(async (to, _from, next) => {
   // 判断是否已加载权限码
   let hasPermissions =
     Array.isArray(userStore.codeList) && userStore.codeList.length > 0;
+
+  // 检查是否已经添加了动态路由
+  let hasDynamicRoutes = menuStore.getDynamicRoutes.length > 0;
+
   //用户登录判断
   if (token) {
     //登录成功,访问login,不能访问,指向首页
@@ -33,8 +64,8 @@ router.beforeEach(async (to, _from, next) => {
       next({ path: '/' });
     } else {
       //登录成功访问其余六个路由(登录排除)
-      //已具备权限数据
-      if (hasPermissions) {
+      //已具备权限数据和动态路由
+      if (hasPermissions && hasDynamicRoutes) {
         // 如果有meta.title且不是登录/404页面，将路由添加到标签页
         if (to.meta.title && to.path !== '/login' && to.path !== '/404') {
           tabsStore.addTab(to);
@@ -46,6 +77,19 @@ router.beforeEach(async (to, _from, next) => {
         try {
           //获取用户信息
           await userStore.getUserInfo();
+
+          // 动态添加路由
+          const dynamicRoutes = userStore.menuRoutes.filter(
+            (route) => !['/login', '/404'].includes(route.path as string),
+          );
+
+          // 添加动态路由到路由器
+          dynamicRoutes.forEach((route) => {
+            if (!router.hasRoute(route.name as string)) {
+              router.addRoute(route);
+            }
+          });
+
           //放行
           //万一:刷新的时候是异步路由,有可能获取到用户信息、异步路由还没有加载完毕,出现空白的效果
           next({ ...to });
@@ -55,6 +99,8 @@ router.beforeEach(async (to, _from, next) => {
           //用户手动修改本地存储token
           //退出登录->用户相关的数据清空
           await userStore.logout();
+          // 清除菜单路由状态
+          menuStore.clearMenuRoutes();
           next({ path: '/login', query: { redirect: to.path } });
         }
       }

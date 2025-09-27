@@ -6,11 +6,15 @@ import { ElNotification } from 'element-plus';
 import { getTime } from '@/utils/time';
 //引入用户相关的小仓库
 import { useUserStore } from '@/store/modules/user.ts';
+//引入标签页仓库
+import { useTabsStore } from '@/store/modules/tabs.ts';
 //引入登录表单校验规则
 import { loginRules } from './utils/rule';
 import { getCaptchaApi, loginApi } from '@/api/user';
 import { SET_TOKEN } from '@/utils/token.ts';
+
 const { setUserId, setNickName, setToken, setAvatar } = useUserStore(); //获取el-form组件
+const tabsStore = useTabsStore();
 const loginForms = ref();
 //获取路由器
 const $router = useRouter();
@@ -55,13 +59,29 @@ const login = async () => {
   //保证登录成功
   let res = await loginApi(loginForm);
   if (res && res.code === 200) {
-    //编程式导航跳转到展示数据首页
-    //判断登录的时候,路由路径当中是否有query参数，如果有就往query参数挑战，没有跳转到首页
+    // 编程式导航跳转到展示数据首页
+    // 判断登录的时候,路由路径当中是否有query参数，如果有就往query参数挑战，没有跳转到首页
+
+    // 清除之前的标签页状态
+    tabsStore.closeAllTabs();
+
+    // 设置用户信息并保存到本地存储
     setUserId(res.data.userId);
     setNickName(res.data.nickName);
     setToken(res.data.token);
-    SET_TOKEN(res.data.token);
     setAvatar(res.data.avatarUrl);
+
+    // 保存用户信息到本地存储
+    localStorage.setItem(
+      'user',
+      JSON.stringify({
+        userId: res.data.userId,
+        nickName: res.data.nickName,
+        avatarUrl: res.data.avatarUrl,
+      }),
+    );
+
+    SET_TOKEN(res.data.token);
     const redirect: any = $route.query.redirect;
     await $router.push({ path: redirect || '/' });
 
