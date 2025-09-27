@@ -336,7 +336,7 @@ onMounted(() => {
         <template #default="scope">
           <el-tag
             type="primary"
-            v-if="scope.row.isAdmin === 1"
+            v-if="scope.row.isAdmin === '1'"
             size="default"
             effect="dark"
           >
