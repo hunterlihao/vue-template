@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { nextTick, onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import useDialog from '@/hocks/useDialog.ts';
 import { ElMessage, type FormInstance } from 'element-plus';
 import SysDialog from '@/components/Dialog/SysDialog.vue';
 import SelectChecked from '@/components/SelectCheck/SelectChecked.vue';
 import useInstance from '@/hocks/useInstance.ts';
+import { useUserStore } from '@/store/modules/user.ts';
 import type { AddModel, SysUser } from '@/api/user/type.ts';
 import {
   addApi,
@@ -17,6 +19,8 @@ import {
 import { getSelectApi } from '@/api/role';
 //-----------------------------上面导入依赖---------------------------
 const selectRef = ref();
+const $router = useRouter();
+const userStore = useUserStore();
 //下拉数据
 let options = ref<any>([]);
 //获取全局global
@@ -193,6 +197,21 @@ const resetPassword = async (userId: string) => {
     if (res && res.code === 200) {
       await getList();
       ElMessage.success('重置成功,新密码为:123456');
+
+      // 判断是否重置的是当前登录用户
+      if (userId === userStore.getUserId) {
+        ElMessage.success(
+          '检测到重置的是当前登录用户，即将退出登录并跳转到登录页面',
+        );
+        // 延迟1秒后退出登录
+        setTimeout(async () => {
+          // 调用用户仓库中的退出登录方法
+          await userStore.logout();
+
+          // 跳转到登录页面
+          await $router.push('/login');
+        }, 1000);
+      }
     }
   }
 };
