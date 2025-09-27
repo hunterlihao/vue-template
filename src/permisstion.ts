@@ -1,4 +1,3 @@
-/*
 //路由鉴权:鉴权,项目当中路由能不能被的权限的设置(某一个路由什么条件下可以访问、什么条件下不可以访问)
 import router from '@/router';
 import setting from './setting';
@@ -24,8 +23,9 @@ router.beforeEach(async (to, _from, next) => {
   nprogress.start();
   //获取token,去判断用户登录、还是未登录
   let token = userStore.token;
-  //获取用户名字
-  let username = userStore.username;
+  // 判断是否已加载权限码
+  let hasPermissions =
+    Array.isArray(userStore.codeList) && userStore.codeList.length > 0;
   //用户登录判断
   if (token) {
     //登录成功,访问login,不能访问,指向首页
@@ -33,8 +33,8 @@ router.beforeEach(async (to, _from, next) => {
       next({ path: '/' });
     } else {
       //登录成功访问其余六个路由(登录排除)
-      //有用户信息
-      if (username) {
+      //已具备权限数据
+      if (hasPermissions) {
         // 如果有meta.title且不是登录/404页面，将路由添加到标签页
         if (to.meta.title && to.path !== '/login' && to.path !== '/404') {
           tabsStore.addTab(to);
@@ -45,15 +45,16 @@ router.beforeEach(async (to, _from, next) => {
         //如果没有用户信息,在守卫这里发请求获取到了用户信息再放行
         try {
           //获取用户信息
-          await userStore.userInfo();
+          await userStore.getUserInfo();
           //放行
           //万一:刷新的时候是异步路由,有可能获取到用户信息、异步路由还没有加载完毕,出现空白的效果
           next({ ...to });
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
           //token过期:获取不到用户信息了
           //用户手动修改本地存储token
           //退出登录->用户相关的数据清空
-          userStore.userLogout();
+          await userStore.logout();
           next({ path: '/login', query: { redirect: to.path } });
         }
       }
@@ -68,6 +69,7 @@ router.beforeEach(async (to, _from, next) => {
   }
 });
 //全局后置守卫
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 router.afterEach((_to, _from) => {
   nprogress.done();
 });
@@ -78,4 +80,3 @@ router.afterEach((_to, _from) => {
 
 //用户未登录:可以访问login,其余六个路由不能访问(指向login)
 //用户登录成功:不可以访问login[指向首页],其余的路由可以访问
-*/

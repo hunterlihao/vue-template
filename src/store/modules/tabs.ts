@@ -64,10 +64,8 @@ export const useTabsStore = defineStore('tabs', {
       return '/home';
     },
   },
-  persist: [
-    {
-      key: 'tabsList',
-      storage: localStorage,
-    },
-  ],
+  persist: {
+    key: 'tabsList',
+    storage: localStorage,
+  },
 });

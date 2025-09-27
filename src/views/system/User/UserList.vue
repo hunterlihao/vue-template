@@ -57,7 +57,7 @@ const currentChange = (current: number) => {
 };
 //表格高度
 const tableHeight = ref(0);
-//判断新增还是编辑 0新增 1编辑
+//判断新增还是编辑
 const tags = ref('');
 
 // 根据用户Id查询角色
@@ -82,13 +82,11 @@ const resetBtn = () => {
 };
 // 新增按钮
 const addBtn = async () => {
-  //清空下拉数据
-  options.value = [];
-  //获取角色下拉数据
-  await getSelect();
   tags.value = 'add';
   dialog.title = '新增用户';
   dialog.height = 230;
+  //清空下拉数据
+  options.value = [];
   // 清除之前的表单校验结果
   addRef.value?.clearValidate();
   Object.assign(addModel, {
@@ -101,12 +99,14 @@ const addBtn = async () => {
     nickName: '',
     roleId: '',
   });
+  //获取角色下拉数据
+  await getSelect();
+  //显示弹窗
+  onShow();
   await nextTick(() => {
     //清空之前选中的数据
     selectRef.value.clear();
   });
-  //显示弹窗
-  onShow();
 };
 //提交按钮
 const commit = () => {
@@ -141,12 +141,12 @@ const getRoleList = async (userId: string) => {
 };
 // 编辑按钮
 const editBtn = async (row: SysUser) => {
+  tags.value = 'edit';
   //清空下拉数据
   options.value = [];
   //获取角色下拉数据
   await getSelect();
   await getRoleList(row.userId);
-  tags.value = '';
   dialog.title = '编辑用户';
   dialog.height = 230;
   // 清除之前的表单校验结果
