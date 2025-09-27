@@ -212,7 +212,14 @@ onMounted(() => {
 
 <template>
   <el-card>
-    <el-button type="primary" icon="Plus" @click="addBtn">新增菜单</el-button>
+    <el-button
+      type="primary"
+      icon="Plus"
+      @click="addBtn"
+      v-if="global.$hasPerm(['sys:menu:add'])"
+    >
+      新增菜单
+    </el-button>
     <!-- 表格 -->
     <el-table
       :data="tableList"
@@ -275,13 +282,19 @@ onMounted(() => {
         width="60"
         align="center"
       ></el-table-column>
-      <el-table-column label="操作" width="220" align="center">
+      <el-table-column
+        label="操作"
+        width="220"
+        align="center"
+        v-if="global.$hasPerm(['sys:menu:update', 'sys:menu:delete'])"
+      >
         <template #default="scope">
           <el-button
             type="primary"
             icon="Edit"
             size="default"
             @click="editBtn(scope.row)"
+            v-if="global.$hasPerm(['sys:menu:update'])"
           >
             编辑
           </el-button>
@@ -290,6 +303,7 @@ onMounted(() => {
             icon="Delete"
             size="default"
             @click="deleteBtn(scope.row.menuId)"
+            v-if="global.$hasPerm(['sys:menu:delete'])"
           >
             删除
           </el-button>

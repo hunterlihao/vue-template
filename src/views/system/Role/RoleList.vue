@@ -171,7 +171,14 @@ onMounted(() => {
         <el-button type="danger" icon="Refresh" plain @click="resetBtn">
           重置
         </el-button>
-        <el-button type="primary" icon="Plus" @click="addBtn">新增</el-button>
+        <el-button
+          type="primary"
+          icon="Plus"
+          @click="addBtn"
+          v-if="global.$hasPerm(['sys:role:add'])"
+        >
+          新增
+        </el-button>
       </el-form-item>
     </el-form>
     <!-- 表格数据 -->
@@ -185,15 +192,32 @@ onMounted(() => {
       <el-table-column prop="roleName" label="角色名称" align="center" />
       <el-table-column prop="remark" label="角色备注" align="center" />
       <el-table-column prop="createTime" label="创建时间" align="center" />
-      <el-table-column label="操作" style="width: 220px" align="center">
+      <el-table-column
+        label="操作"
+        style="width: 220px"
+        align="center"
+        v-if="
+          global.$hasPerm([
+            'sys:role:update',
+            'sys:role:allotMenu',
+            'sys:role:delete',
+          ])
+        "
+      >
         <template #default="scope">
-          <el-button type="primary" icon="Edit" @click="editBtn(scope.row)">
+          <el-button
+            type="primary"
+            icon="Edit"
+            @click="editBtn(scope.row)"
+            v-if="global.$hasPerm(['sys:role:update'])"
+          >
             编辑
           </el-button>
           <el-button
             type="success"
             icon="Setting"
             @click="assignTreeEdit(scope.row)"
+            v-if="global.$hasPerm(['sys:role:allotMenu'])"
           >
             分配菜单
           </el-button>
@@ -201,6 +225,7 @@ onMounted(() => {
             type="danger"
             icon="Delete"
             @click="deleteBtn(scope.row.roleId)"
+            v-if="global.$hasPerm(['sys:role:delete'])"
           >
             删除
           </el-button>

@@ -63,7 +63,7 @@ const tags = ref('');
 // 根据用户Id查询角色
 const bindValue = ref([]);
 
-const roleIds = ref<string[]>([]);
+const roleIds = ref<string>('');
 
 const selected = (value: Array<string | number>) => {
   addModel.roleId = value.join(',');
@@ -167,7 +167,7 @@ const editBtn = async (row: SysUser) => {
     Object.assign(addModel, row);
     addModel.password = '';
     //设置角色id
-    addModel.roleId = roleIds.value;
+    addModel.roleId = roleIds.value as string;
   });
   //显示弹窗
   onShow();
@@ -290,7 +290,14 @@ onMounted(() => {
         <el-button icon="Refresh" type="danger" plain @click="resetBtn">
           重置
         </el-button>
-        <el-button icon="Plus" type="primary" @click="addBtn">新增</el-button>
+        <el-button
+          icon="Plus"
+          type="primary"
+          @click="addBtn"
+          v-if="global.$hasPerm(['sys:user:add'])"
+        >
+          新增
+        </el-button>
       </el-form-item>
     </el-form>
     <!-- 表格数据 -->
@@ -339,16 +346,33 @@ onMounted(() => {
         </template>
       </el-table-column>
       <el-table-column prop="createTime" label="创建时间"></el-table-column>
-      <el-table-column label="操作" align="center" width="315">
+      <el-table-column
+        label="操作"
+        align="center"
+        width="315"
+        v-if="
+          global.$hasPerm([
+            'sys:user:update',
+            'sys:user:updatePassword',
+            'sys:user:delete',
+          ])
+        "
+      >
         <template #default="scope">
           <div class="action-buttons">
-            <el-button type="primary" icon="Edit" @click="editBtn(scope.row)">
+            <el-button
+              type="primary"
+              icon="Edit"
+              @click="editBtn(scope.row)"
+              v-if="global.$hasPerm(['sys:user:update'])"
+            >
               编辑
             </el-button>
             <el-button
               type="warning"
               icon="Setting"
               @click="resetPassword(scope.row.userId)"
+              v-if="global.$hasPerm(['sys:user:updatePassword'])"
             >
               重置密码
             </el-button>
@@ -356,6 +380,7 @@ onMounted(() => {
               type="danger"
               icon="Delete"
               @click="deleteBtn(scope.row.userId)"
+              v-if="global.$hasPerm(['sys:user:delete'])"
             >
               删除
             </el-button>
