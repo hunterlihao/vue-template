@@ -2,8 +2,8 @@
 import { nextTick, onMounted, reactive, ref } from 'vue';
 import useDialog from '@/hocks/useDialog.ts';
 import { ElMessage, type FormInstance } from 'element-plus';
-import SysDialog from '@/components/SysDialog.vue';
-import SelectChecked from '@/components/SelectChecked.vue';
+import SysDialog from '@/components/Dialog/SysDialog.vue';
+import SelectChecked from '@/components/SelectCheck/SelectChecked.vue';
 import useInstance from '@/hocks/useInstance.ts';
 import type { AddModel, SysUser } from '@/api/user/type.ts';
 import {

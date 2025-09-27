@@ -21,6 +21,8 @@ const API = {
   UPDATE_PASSWORD_URI: '/admin/user/updatePassword',
   GET_INFO_URI: '/admin/user/info',
   LOGOUT_URI: '/admin/user/logout',
+  GET_CURRENT_USER_INFO_URI: '/admin/user/getCurrentUser',
+  UPDATE_CURRENT_USER_INFO_URI: '/admin/user/updateUserInfo',
 } as const;
 
 //新增用户
@@ -81,4 +83,14 @@ export const getUserInfoApi = (userId: string) => {
 //退出登录
 export const logoutApi = () => {
   return http.get(API.LOGOUT_URI);
+};
+
+// 获取当前用户信息
+export const getCurrentUserInfoApi = (userId: string) => {
+  return http.get(API.GET_CURRENT_USER_INFO_URI, { userId: userId });
+};
+
+//修改当前用户信息
+export const updateCurrentUserInfoApi = (parm: SysUser) => {
+  return http.put(API.UPDATE_CURRENT_USER_INFO_URI, parm);
 };

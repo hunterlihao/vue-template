@@ -8,6 +8,7 @@ export type SysUser = {
   sex: string;
   nickName: string;
   roleId: string;
+  avatarUrl?: string;
 };
 
 export interface AddModel {
@@ -19,6 +20,7 @@ export interface AddModel {
   sex: string;
   nickName: string;
   roleId: string;
+  avatarUrl?: string;
 }
 
 // 列表查询的参数
@@ -28,17 +30,6 @@ export type UserListParm = {
   size: number;
   total: number;
 };
-
-export interface AddModel {
-  userId: string;
-  username: string;
-  password: string;
-  phone: string;
-  email: string;
-  sex: string;
-  nickName: string;
-  roleId: string;
-}
 
 export interface Login {
   username: string;

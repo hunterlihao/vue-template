@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onMounted, reactive, ref } from 'vue';
-import SysDialog from '@/components/SysDialog.vue';
+import SysDialog from '@/components/Dialog/SysDialog.vue';
 import useDialog from '@/hocks/useDialog.ts';
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 import type { SysRole } from '@/api/role/type.ts';

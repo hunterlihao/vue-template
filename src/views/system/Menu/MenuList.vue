@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import SysDialog from '@/components/SysDialog.vue';
+import SysDialog from '@/components/Dialog/SysDialog.vue';
 import useDialog from '@/hocks/useDialog.ts';
 import { nextTick, onMounted, reactive, ref } from 'vue';
 import { ElMessage, type FormInstance } from 'element-plus';

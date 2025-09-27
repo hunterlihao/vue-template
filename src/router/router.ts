@@ -36,6 +36,29 @@ export const constantRoute = [
     ],
   },
   {
+    //登录成功以后展示数据的路由
+    path: '/user',
+    component: Layout,
+    name: 'User',
+    meta: {
+      title: '',
+      hidden: false,
+      icon: '',
+    },
+    redirect: '/user/userInfo',
+    children: [
+      {
+        path: '/user/userInfo',
+        component: () => import('@/views/userInfo/index.vue'),
+        meta: {
+          title: '个人信息',
+          hidden: false,
+          icon: 'User',
+        },
+      },
+    ],
+  },
+  {
     //404
     path: '/404',
     component: () => import('@/views/404/index.vue'),
