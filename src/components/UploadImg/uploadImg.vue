@@ -32,11 +32,11 @@
 </template>
 
 <script setup lang="ts">
-import { UPLOAD_IMG_URL } from '@/api/upload';
+import { UPLOAD_IMG_URL } from '@/api/file';
 import { ref } from 'vue';
 import {
-  UploadFile,
-  UploadFiles,
+  type UploadFile,
+  type UploadFiles,
 } from 'element-plus/es/components/upload/src/upload';
 import { useUserStore } from '@/store/modules/user';
 import { ElMessage } from 'element-plus';
