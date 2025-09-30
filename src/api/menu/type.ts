@@ -7,7 +7,7 @@ export type MenuType = {
   name: string;
   path: string;
   url: string;
-  type: string;
+  type: number;
   icon: string;
   parentName: string;
   orderNum: string;
