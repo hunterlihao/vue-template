@@ -9,6 +9,8 @@ export type SysUser = {
   nickName: string;
   roleId: string;
   avatarUrl?: string;
+  isEnabled?: number; // 1: 启用, 2: 禁用
+  isAdmin?: number; // 1: 管理员, 2: 普通用户
 };
 
 export interface AddModel {
@@ -21,6 +23,8 @@ export interface AddModel {
   nickName: string;
   roleId: string;
   avatarUrl?: string;
+  isEnabled?: number; // 1: 启用, 2: 禁用
+  isAdmin?: number; // 1: 管理员, 2: 普通用户
 }
 
 // 列表查询的参数

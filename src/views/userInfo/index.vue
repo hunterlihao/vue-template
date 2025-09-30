@@ -300,8 +300,8 @@ onMounted(() => {
                   <el-col :span="12">
                     <el-form-item label="性别:" prop="sex">
                       <el-radio-group v-model="userInfoModel.sex">
-                        <el-radio :value="'0'">男</el-radio>
-                        <el-radio :value="'1'">女</el-radio>
+                        <el-radio :value="0">男</el-radio>
+                        <el-radio :value="1">女</el-radio>
                       </el-radio-group>
                     </el-form-item>
                   </el-col>

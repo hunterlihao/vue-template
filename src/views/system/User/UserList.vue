@@ -46,6 +46,8 @@ const addModel = reactive<AddModel>({
   sex: '',
   nickName: '',
   roleId: '',
+  isEnabled: -1, // 默认启用
+  isAdmin: -1, // 默认普通用户
 });
 //表格数据
 const tableList = ref([]);
@@ -74,6 +76,12 @@ const selected = (value: Array<string | number>) => {
   console.log(addModel);
 };
 // --------------------- 上面定义参数 下面定义方法--------------------
+// 手机号脱敏处理
+const maskPhone = (phone: string) => {
+  if (!phone) return '';
+  return phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+};
+
 //查询按钮
 const searchBtn = () => {
   getList();
@@ -88,7 +96,7 @@ const resetBtn = () => {
 const addBtn = async () => {
   tags.value = 'add';
   dialog.title = '新增用户';
-  dialog.height = 230;
+  dialog.height = 300; // 增加弹窗高度以容纳新增字段
   //清空下拉数据
   options.value = [];
   // 清除之前的表单校验结果
@@ -102,6 +110,8 @@ const addBtn = async () => {
     sex: '',
     nickName: '',
     roleId: '',
+    isEnabled: -1, // 默认启用
+    isAdmin: -1, // 默认普通用户
   });
   //获取角色下拉数据
   await getSelect();
@@ -152,7 +162,7 @@ const editBtn = async (row: SysUser) => {
   await getSelect();
   await getRoleList(row.userId);
   dialog.title = '编辑用户';
-  dialog.height = 230;
+  dialog.height = 300; // 增加弹窗高度以容纳新增字段
   // 清除之前的表单校验结果
   addRef.value?.clearValidate();
   Object.assign(addModel, {
@@ -164,6 +174,8 @@ const editBtn = async (row: SysUser) => {
     sex: '',
     nickName: '',
     roleId: '',
+    isEnabled: -1,
+    isAdmin: -1,
   });
 
   await nextTick(() => {
@@ -237,6 +249,11 @@ const rules = reactive({
       message: '请输入手机号',
       trigger: ['blur'],
     },
+    {
+      pattern: /^1[3-9]\d{9}$/,
+      message: '请输入正确的手机号格式',
+      trigger: ['blur'],
+    },
   ],
   username: [
     {
@@ -256,6 +273,11 @@ const rules = reactive({
     {
       required: true,
       message: '请输入邮箱',
+      trigger: ['blur'],
+    },
+    {
+      pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      message: '请输入正确的邮箱格式',
       trigger: ['blur'],
     },
   ],
@@ -332,7 +354,7 @@ onMounted(() => {
         <template #default="scope">
           <el-tag
             type="primary"
-            v-if="scope.row.sex === '0'"
+            v-if="scope.row.sex === 0"
             size="default"
             effect="dark"
           >
@@ -340,7 +362,7 @@ onMounted(() => {
           </el-tag>
           <el-tag
             type="danger"
-            v-if="scope.row.sex === '1'"
+            v-if="scope.row.sex === 1"
             size="default"
             effect="dark"
           >
@@ -348,14 +370,33 @@ onMounted(() => {
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="phone" label="手机号"></el-table-column>
+      <el-table-column prop="phone" label="手机号">
+        <template #default="scope">
+          {{ maskPhone(scope.row.phone) }}
+        </template>
+      </el-table-column>
       <el-table-column prop="email" label="邮箱"></el-table-column>
       <el-table-column prop="username" label="账户"></el-table-column>
+      <el-table-column prop="isEnabled" label="状态" align="center">
+        <template #default="scope">
+          <el-tag
+            type="success"
+            v-if="scope.row.isEnabled === 1"
+            size="default"
+            effect="dark"
+          >
+            启用
+          </el-tag>
+          <el-tag type="danger" v-else size="default" effect="dark">
+            禁用
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="isAdmin" label="是否超级管理员" align="center">
         <template #default="scope">
           <el-tag
             type="primary"
-            v-if="scope.row.isAdmin === '1'"
+            v-if="scope.row.isAdmin === 1"
             size="default"
             effect="dark"
           >
@@ -446,8 +487,8 @@ onMounted(() => {
             <el-col :span="12" :offset="0">
               <el-form-item label="性别: " prop="sex">
                 <el-radio-group v-model="addModel.sex">
-                  <el-radio :value="'0'">男</el-radio>
-                  <el-radio :value="'1'">女</el-radio>
+                  <el-radio :value="0">男</el-radio>
+                  <el-radio :value="1">女</el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-col>
@@ -473,6 +514,24 @@ onMounted(() => {
                   :bindValue="bindValue"
                   @selected="selected"
                 />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12" :offset="0">
+              <el-form-item label="状态: " prop="isEnabled">
+                <el-radio-group v-model="addModel.isEnabled">
+                  <el-radio :value="1">启用</el-radio>
+                  <el-radio :value="0">禁用</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" :offset="0">
+              <el-form-item label="管理员: " prop="isAdmin">
+                <el-radio-group v-model="addModel.isAdmin">
+                  <el-radio :value="1">是</el-radio>
+                  <el-radio :value="0">否</el-radio>
+                </el-radio-group>
               </el-form-item>
             </el-col>
           </el-row>

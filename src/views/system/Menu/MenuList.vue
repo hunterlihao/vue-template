@@ -25,7 +25,7 @@ const addModel = reactive({
   name: '',
   path: '',
   url: '',
-  type: '',
+  type: -1,
   icon: '',
   parentName: '',
   orderNum: '',
@@ -56,7 +56,7 @@ const addBtn = () => {
     name: '',
     path: '',
     url: '',
-    type: '',
+    type: -1,
     icon: '',
     parentName: '',
     orderNum: '',
@@ -240,13 +240,13 @@ onMounted(() => {
       </el-table-column>
       <el-table-column prop="type" label="菜单类型" width="100" align="center">
         <template #default="scope">
-          <el-tag v-if="scope.row.type === '0'" type="danger" size="default">
+          <el-tag v-if="scope.row.type === 0" type="danger" size="default">
             目录
           </el-tag>
-          <el-tag v-if="scope.row.type === '1'" type="success" size="default">
+          <el-tag v-if="scope.row.type === 1" type="success" size="default">
             菜单
           </el-tag>
-          <el-tag v-if="scope.row.type === '2'" type="primary" size="default">
+          <el-tag v-if="scope.row.type === 2" type="primary" size="default">
             按钮
           </el-tag>
         </template>
@@ -331,9 +331,9 @@ onMounted(() => {
         >
           <el-form-item label="菜单类型" prop="type">
             <el-radio-group v-model="addModel.type">
-              <el-radio :value="'0'">目录</el-radio>
-              <el-radio :value="'1'">菜单</el-radio>
-              <el-radio :value="'2'">按钮</el-radio>
+              <el-radio :value="0">目录</el-radio>
+              <el-radio :value="1">菜单</el-radio>
+              <el-radio :value="2">按钮</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-row :gutter="20">
@@ -347,7 +347,7 @@ onMounted(() => {
                   default-expand-all
                   check-strictly
                   @check-change="treeCheckChange"
-                  :disabled="!addModel.type"
+                  :disabled="addModel.type === -1"
                 />
               </el-form-item>
             </el-col>
@@ -355,17 +355,17 @@ onMounted(() => {
               <el-form-item label="菜单名称" prop="title">
                 <el-input
                   v-model="addModel.title"
-                  :disabled="!addModel.type"
+                  :disabled="addModel.type === -1"
                 ></el-input>
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row :gutter="20" v-if="addModel.type !== '2'">
+          <el-row :gutter="20" v-if="addModel.type !== 2">
             <el-col :span="12" :offset="0">
               <el-form-item label="菜单图标" prop="icon">
                 <el-input
                   v-model="addModel.icon"
-                  :disabled="!addModel.type"
+                  :disabled="addModel.type === -1"
                 ></el-input>
               </el-form-item>
             </el-col>
@@ -373,7 +373,7 @@ onMounted(() => {
               <el-form-item label="路由名称" prop="name">
                 <el-input
                   v-model="addModel.name"
-                  :disabled="!addModel.type"
+                  :disabled="addModel.type === -1"
                 ></el-input>
               </el-form-item>
             </el-col>
@@ -383,7 +383,7 @@ onMounted(() => {
               <el-form-item label="菜单序号" prop="orderNum">
                 <el-input
                   v-model="addModel.orderNum"
-                  :disabled="!addModel.type"
+                  :disabled="addModel.type === -1"
                 ></el-input>
               </el-form-item>
             </el-col>
@@ -391,25 +391,25 @@ onMounted(() => {
               <el-form-item label="权限字段" prop="code">
                 <el-input
                   v-model="addModel.code"
-                  :disabled="!addModel.type"
+                  :disabled="addModel.type === -1"
                 ></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="12" :offset="0" v-if="addModel.type !== '2'">
+            <el-col :span="12" :offset="0" v-if="addModel.type !== 2">
               <el-form-item label="路由地址" prop="path">
                 <el-input
                   v-model="addModel.path"
-                  :disabled="!addModel.type"
+                  :disabled="addModel.type === -1"
                 ></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="12" :offset="0" v-if="addModel.type === '1'">
+            <el-col :span="12" :offset="0" v-if="addModel.type === 1">
               <el-form-item label="组件路径" prop="url">
                 <el-input
                   v-model="addModel.url"
-                  :disabled="!addModel.type"
+                  :disabled="addModel.type === -1"
                 ></el-input>
               </el-form-item>
             </el-col>
