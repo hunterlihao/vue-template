@@ -9,9 +9,11 @@ import {
   editApi,
   getListApi,
   getParentApi,
+  importApi,
 } from '@/api/menu';
 import type { MenuType } from '@/api/menu/type.ts';
 import useInstance from '@/hocks/useInstance.ts';
+import type { Result } from '@/types';
 //-----------------------------上面导入依赖---------------------------
 const { global } = useInstance();
 //弹框属性
@@ -25,7 +27,7 @@ const addModel = reactive({
   name: '',
   path: '',
   url: '',
-  type: -1,
+  type: -1 as number, // 明确指定类型
   icon: '',
   parentName: '',
   orderNum: '',
@@ -205,6 +207,58 @@ const deleteBtn = async (menuId: string) => {
     }
   }
 };
+
+//导出按钮
+const exportBtn = async () => {
+  // 直接通过创建a标签的方式下载文件
+  const baseUrl =
+    import.meta.env.VITE_APP_BASE_API || 'http://localhost:8100/api';
+  const exportUrl = '/admin/excel/downloadMenu';
+  const link = document.createElement('a');
+  link.href = `${baseUrl}${exportUrl}`;
+  link.download = '菜单.xlsx'; // 指定下载文件名
+  link.style.display = 'none'; // 隐藏链接
+  document.body.appendChild(link);
+  link.click();
+  // 添加延迟确保下载触发后再移除链接
+  setTimeout(() => {
+    document.body.removeChild(link);
+  }, 100);
+};
+//导入按钮
+const uploadBtn = () => {
+  // 创建文件输入元素
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.xlsx,.xls';
+  input.onchange = (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (file) {
+      handleFileUpload(file);
+    }
+  };
+  input.click();
+};
+
+// 处理文件上传
+const handleFileUpload = async (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const res: Result<any> = await importApi(formData);
+    if (res && res.code === 200) {
+      ElMessage.success('导入成功');
+      await getList(); // 重新获取列表数据
+    } else {
+      ElMessage.error(res?.message || '导入失败');
+    }
+  } catch (error) {
+    ElMessage.error('导入失败');
+    console.error(error);
+  }
+};
+
 onMounted(() => {
   getList();
 });
@@ -219,6 +273,10 @@ onMounted(() => {
       v-if="global.$hasPerm(['sys:menu:add'])"
     >
       新增菜单
+    </el-button>
+    <el-button type="primary" icon="Upload" @click="uploadBtn">导入</el-button>
+    <el-button type="primary" icon="Download" @click="exportBtn">
+      导出
     </el-button>
     <!-- 表格 -->
     <el-table

@@ -8,6 +8,7 @@ const API = {
   GET_LIST_URI: '/admin/menu/list',
   UPDATE_URI: '/admin/menu',
   GET_MENU_URI: '/admin/menu/getMenuList',
+  IMPORT_URI: '/admin/excel/uploadMenu',
 } as const;
 
 //获取上级菜单
@@ -35,4 +36,9 @@ export const deleteApi = (menuId: string) => {
 //获取菜单数据
 export const getMenuListApi = (userId: string) => {
   return http.get(API.GET_MENU_URI, { userId: userId });
+};
+
+//导入菜单数据
+export const importApi = (formData: FormData) => {
+  return http.post(API.IMPORT_URI, formData);
 };
