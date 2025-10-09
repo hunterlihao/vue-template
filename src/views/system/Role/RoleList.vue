@@ -191,7 +191,6 @@ onMounted(() => {
     >
       <el-table-column prop="roleName" label="角色名称" align="center" />
       <el-table-column prop="remark" label="角色备注" align="center" />
-      <el-table-column prop="createTime" label="创建时间" align="center" />
       <el-table-column
         label="操作"
         style="width: 220px"

@@ -405,7 +405,6 @@ onMounted(() => {
           <el-tag type="danger" v-else size="default" effect="dark">否</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间"></el-table-column>
       <el-table-column
         label="操作"
         align="center"
