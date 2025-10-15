@@ -59,6 +59,29 @@ export const constantRoute = [
     ],
   },
   {
+    //登录成功以后展示数据的路由
+    path: '/ws',
+    component: Layout,
+    name: 'Ws',
+    meta: {
+      title: '',
+      hidden: false,
+      icon: '',
+    },
+    redirect: '/ws/wsTest',
+    children: [
+      {
+        path: '/ws/wsTest',
+        component: () => import('@/views/ws/test/WsTest.vue'),
+        meta: {
+          title: 'ws测试',
+          hidden: false,
+          icon: 'ChatSquare',
+        },
+      },
+    ],
+  },
+  {
     //404
     path: '/404',
     component: () => import('@/views/404/index.vue'),

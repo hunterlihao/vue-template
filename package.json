@@ -21,6 +21,7 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "@types/nprogress": "^0.2.3",
+    "@vueuse/core": "^13.9.0",
     "axios": "^1.9.0",
     "commitlint": "^19.8.1",
     "echarts": "^6.0.0",
