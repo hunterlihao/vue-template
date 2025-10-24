@@ -121,17 +121,25 @@ defineExpose({
   >
     <!-- :default-expanded-keys="assignTreeData.assignTreeChecked" -->
     <template v-slot:content>
-      <el-tree
-        ref="treeRef"
-        node-key="menuId"
-        :data="assignTreeData.list"
-        :props="defaultProps"
-        :default-checked-keys="assignTreeData.assignTreeChecked"
-        show-checkbox
-        default-expand-all
-      />
+      <div class="tree-container">
+        <el-tree
+          ref="treeRef"
+          node-key="menuId"
+          :data="assignTreeData.list"
+          :props="defaultProps"
+          :default-checked-keys="assignTreeData.assignTreeChecked"
+          show-checkbox
+          default-expand-all
+        />
+      </div>
     </template>
   </SysDialog>
 </template>
 
-<style scoped></style>
+<style scoped>
+.tree-container {
+  max-height: 445px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+</style>
