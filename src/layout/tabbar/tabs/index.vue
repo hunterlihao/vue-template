@@ -10,6 +10,7 @@ import {
   Menu,
   RefreshRight,
 } from '@element-plus/icons-vue';
+import TabLabel from './TabLabel.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -110,12 +111,7 @@ const tabsMenuHandle = (command: string) => {
         <!-- 固定的首页标签，不可关闭 -->
         <el-tab-pane :key="'/home'" name="/home" :closable="false">
           <template #label>
-            <div class="custom-tab-label">
-              <el-icon class="custom-tab-icon">
-                <component :is="homeTab.meta.icon" />
-              </el-icon>
-              <span>{{ homeTab.meta.title }}</span>
-            </div>
+            <TabLabel :icon="homeTab.meta.icon" :title="homeTab.meta.title" />
           </template>
         </el-tab-pane>
         <!-- 动态标签页列表，可关闭 -->
@@ -126,12 +122,10 @@ const tabsMenuHandle = (command: string) => {
           :closable="true"
         >
           <template #label>
-            <div class="custom-tab-label">
-              <el-icon class="custom-tab-icon">
-                <component :is="item.meta?.icon || 'Setting'" />
-              </el-icon>
-              <span>{{ item.meta.title }}</span>
-            </div>
+            <TabLabel
+              :icon="item.meta?.icon || 'Setting'"
+              :title="item.meta.title"
+            />
           </template>
         </el-tab-pane>
       </el-tabs>

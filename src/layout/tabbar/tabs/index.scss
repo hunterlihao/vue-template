@@ -59,16 +59,6 @@
       &:hover {
         color: #409eff;
       }
-
-      .custom-tab-label {
-        display: flex;
-        align-items: center;
-
-        .custom-tab-icon {
-          margin-right: 4px;
-          font-size: 16px;
-        }
-      }
     }
 
     :deep(.el-tabs__nav-wrap::after) {
