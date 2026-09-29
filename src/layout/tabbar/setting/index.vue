@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-//import { ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 //获取用户相关的小仓库
 import { useUserStore } from '@/store/modules/user';
 //获取骨架的小仓库
@@ -11,7 +10,6 @@ import useInstance from '@/hooks/useInstance.ts';
 import { useTabsStore } from '@/store/modules/tabs.ts';
 //获取菜单仓库
 import { useMenuStore } from '@/store/modules/menu/index.ts';
-import router from '@/router/index.ts';
 
 //获取全局global
 const { global } = useInstance();
@@ -21,10 +19,6 @@ const tabsStore = useTabsStore();
 const menuStore = useMenuStore();
 //获取路由器对象
 const $router = useRouter();
-//获取路由对向
-const $route = useRoute();
-//收集开关的数据
-// const dark = ref<boolean>(false);
 //刷新按钮点击回调
 const updateRefsh = () => {
   layoutSettingStore.refsh = !layoutSettingStore.refsh;
@@ -45,10 +39,8 @@ const fullScreen = () => {
 //退出登录点击回调
 const logout = async () => {
   const confirm = await global.$myConfirm('确定要退出登录吗？');
-  //第一件事情:需要向服务器发请求[退出登录接口]******
-  //第二件事情:仓库当中关于用于相关的数据清空[token|username|avatar]
-  //第三件事情:跳转到登录页面
   if (confirm) {
+    // 清空用户数据
     await userStore.logout();
     // 清除标签页状态
     tabsStore.closeAllTabs();
@@ -84,35 +76,6 @@ export default {
       </el-dropdown-menu>
     </template>
   </el-dropdown>
-  <!--
-  <el-popover :width="300" placement="bottom" title="主题设置" trigger="hover">
-    &lt;!&ndash; 表单元素 &ndash;&gt;
-    <el-form>
-      <el-form-item label="主题颜色">
-        <el-color-picker
-          v-model="color"
-          :predefine="predefineColors"
-          show-alpha
-          size="small"
-          @change="setColor"
-        />
-      </el-form-item>
-      <el-form-item label="暗黑模式">
-        <el-switch
-          v-model="dark"
-          active-icon="MoonNight"
-          class="mt-2"
-          inactive-icon="Sunny"
-          inline-prompt
-          style="margin-left: 24px"
-          @change="changeDark"
-        />
-      </el-form-item>
-    </el-form>
-    <template #reference>
-      <el-button circle icon="Setting"></el-button>
-    </template>
-  </el-popover>
---></template>
+</template>
 
 <style lang="scss" scoped></style>
