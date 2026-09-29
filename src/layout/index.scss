@@ -1,3 +1,15 @@
+// 菜单/侧边栏/内容区:全部不做过渡动画,切换瞬时完成。
+//
+// 关掉的三处动画:
+//  1. 子菜单展开/收起 —— Element Plus 用 ElCollapseTransition 动画 max-height,
+//     统一读 --el-transition-duration(默认 0.3s),置 0 后子菜单直接出现;
+//  2. 侧边栏折叠 —— 宽度不再过渡,瞬时切换;
+//  3. 顶部栏/内容区让位 —— 宽度和 left 不再过渡。
+//
+// 想恢复动画:把下面的 transition: none 换成具体属性,并给 --el-transition-duration 一个时长,例如
+//   transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+//   --el-transition-duration: 0.2s;
+
 .layout_container {
   width: 100%;
   height: 100vh;
@@ -6,13 +18,17 @@
     width: $base-menu-width;
     height: 100vh;
     background-color: $base-menu-background;
-    transition: all 0.3s;
+    transition: none;
+    // 侧边栏内的 Element Plus 过渡(子菜单展开、箭头旋转)一并置 0
+    --el-transition-duration: 0s;
 
     .scrollbar {
-      width: $base-menu-width;
+      // 跟随侧边栏宽度,避免折叠时容器仍按 180px 计算导致菜单错位
+      width: 100%;
       height: calc(100vh - $base-menu-logo-height);
+      transition: none;
 
-      .em-menu {
+      :deep(.el-menu) {
         border-right: none;
       }
     }
@@ -29,7 +45,7 @@
     background-color: white;
     top: 0px;
     left: $base-menu-width;
-    transition: all 0.3s;
+    transition: none;
     display: flex;
     flex-direction: column;
 
@@ -62,7 +78,7 @@
     left: $base-menu-width;
     padding: 20px;
     overflow: auto;
-    transition: all 0.3s;
+    transition: none;
 
     &.fold {
       width: calc(100vw - $base-menu-min-width);
