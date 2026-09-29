@@ -5,6 +5,7 @@ import { ElMessage } from 'element-plus';
 import SysDialog from '@/components/Dialog/SysDialog.vue';
 import SelectChecked from '@/components/SelectCheck/SelectChecked.vue';
 import useInstance from '@/hooks/useInstance.ts';
+import usePerm from '@/hooks/usePerm.ts';
 import useTablePage from '@/hooks/useTablePage.ts';
 import useTableHeight from '@/hooks/useTableHeight.ts';
 import useCrudDialog from '@/hooks/useCrudDialog.ts';
@@ -28,8 +29,9 @@ import {
   sexRules,
 } from '@/const/rules';
 
-// 全局属性($hasPerm / $myConfirm)
+// 全局属性($myConfirm)与权限判断
 const { global } = useInstance();
+const { hasPerm } = usePerm();
 const $router = useRouter();
 const userStore = useUserStore();
 
@@ -195,7 +197,7 @@ const resetPassword = async (userId: string) => {
           icon="Plus"
           type="primary"
           @click="addBtn"
-          v-if="global.$hasPerm(['sys:user:add'])"
+          v-if="hasPerm(['sys:user:add'])"
         >
           新增
         </el-button>
@@ -270,7 +272,7 @@ const resetPassword = async (userId: string) => {
         align="center"
         width="315"
         v-if="
-          global.$hasPerm([
+          hasPerm([
             'sys:user:update',
             'sys:user:updatePassword',
             'sys:user:delete',
@@ -283,7 +285,7 @@ const resetPassword = async (userId: string) => {
               type="primary"
               icon="Edit"
               @click="editBtn(scope.row)"
-              v-if="global.$hasPerm(['sys:user:update'])"
+              v-if="hasPerm(['sys:user:update'])"
             >
               编辑
             </el-button>
@@ -291,7 +293,7 @@ const resetPassword = async (userId: string) => {
               type="warning"
               icon="Setting"
               @click="resetPassword(scope.row.userId)"
-              v-if="global.$hasPerm(['sys:user:updatePassword'])"
+              v-if="hasPerm(['sys:user:updatePassword'])"
             >
               重置密码
             </el-button>
@@ -299,7 +301,7 @@ const resetPassword = async (userId: string) => {
               type="danger"
               icon="Delete"
               @click="deleteBtn(scope.row.userId)"
-              v-if="global.$hasPerm(['sys:user:delete'])"
+              v-if="hasPerm(['sys:user:delete'])"
             >
               删除
             </el-button>

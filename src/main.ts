@@ -28,12 +28,6 @@ import 'element-plus/theme-chalk/dark/css-vars.css';
 
 import myConfirm from '@/utils/myConfirm.ts';
 
-// 按钮权限
-// 方式一：自定义指令
-// import { permission } from '@/directive/permission'
-// 方式二：全局挂载
-import hasPerm from '@/directive/hasPerm';
-
 const app = createApp(App);
 // 安装element-plus 并国际化
 app.use(ElementPlus, {
@@ -53,4 +47,3 @@ app.use(pinia);
 app.mount('#app');
 //全局挂载
 app.config.globalProperties.$myConfirm = myConfirm;
-app.config.globalProperties.$hasPerm = hasPerm;

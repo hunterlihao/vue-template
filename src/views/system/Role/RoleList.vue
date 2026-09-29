@@ -5,13 +5,15 @@ import { ElMessage, type FormRules } from 'element-plus';
 import type { SysRole } from '@/api/role/type.ts';
 import { addApi, deleteApi, editApi, getListApi } from '@/api/role';
 import useInstance from '@/hooks/useInstance.ts';
+import usePerm from '@/hooks/usePerm.ts';
 import useTablePage from '@/hooks/useTablePage.ts';
 import useTableHeight from '@/hooks/useTableHeight.ts';
 import useCrudDialog from '@/hooks/useCrudDialog.ts';
 import AssignTree from '@/views/system/Role/AssignTree.vue';
 
-// 全局属性($hasPerm / $myConfirm)
+// 全局属性($myConfirm)与权限判断
 const { global } = useInstance();
+const { hasPerm } = usePerm();
 
 // 列表数据 + 分页
 const {
@@ -89,7 +91,7 @@ const deleteBtn = async (roleId: string) => {
           type="primary"
           icon="Plus"
           @click="openAdd()"
-          v-if="global.$hasPerm(['sys:role:add'])"
+          v-if="hasPerm(['sys:role:add'])"
         >
           新增
         </el-button>
@@ -110,11 +112,7 @@ const deleteBtn = async (roleId: string) => {
         style="width: 220px"
         align="center"
         v-if="
-          global.$hasPerm([
-            'sys:role:update',
-            'sys:role:allotMenu',
-            'sys:role:delete',
-          ])
+          hasPerm(['sys:role:update', 'sys:role:allotMenu', 'sys:role:delete'])
         "
       >
         <template #default="scope">
@@ -122,7 +120,7 @@ const deleteBtn = async (roleId: string) => {
             type="primary"
             icon="Edit"
             @click="openEdit(scope.row)"
-            v-if="global.$hasPerm(['sys:role:update'])"
+            v-if="hasPerm(['sys:role:update'])"
           >
             编辑
           </el-button>
@@ -130,7 +128,7 @@ const deleteBtn = async (roleId: string) => {
             type="success"
             icon="Setting"
             @click="assignTreeEdit(scope.row)"
-            v-if="global.$hasPerm(['sys:role:allotMenu'])"
+            v-if="hasPerm(['sys:role:allotMenu'])"
           >
             分配菜单
           </el-button>
@@ -138,7 +136,7 @@ const deleteBtn = async (roleId: string) => {
             type="danger"
             icon="Delete"
             @click="deleteBtn(scope.row.roleId)"
-            v-if="global.$hasPerm(['sys:role:delete'])"
+            v-if="hasPerm(['sys:role:delete'])"
           >
             删除
           </el-button>

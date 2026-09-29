@@ -12,12 +12,14 @@ import {
 } from '@/api/menu';
 import type { MenuType } from '@/api/menu/type.ts';
 import useInstance from '@/hooks/useInstance.ts';
+import usePerm from '@/hooks/usePerm.ts';
 import useTablePage from '@/hooks/useTablePage.ts';
 import useCrudDialog from '@/hooks/useCrudDialog.ts';
 import type { Result } from '@/types';
 
-// 全局属性($hasPerm / $myConfirm)
+// 全局属性($myConfirm)与权限判断
 const { global } = useInstance();
+const { hasPerm } = usePerm();
 
 // 表格数据(菜单是整棵树,不分页)
 const { tableList, getList } = useTablePage({
@@ -160,7 +162,7 @@ const handleFileUpload = async (file: File) => {
       type="primary"
       icon="Plus"
       @click="addBtn"
-      v-if="global.$hasPerm(['sys:menu:add'])"
+      v-if="hasPerm(['sys:menu:add'])"
     >
       新增菜单
     </el-button>
@@ -234,7 +236,7 @@ const handleFileUpload = async (file: File) => {
         label="操作"
         width="220"
         align="center"
-        v-if="global.$hasPerm(['sys:menu:update', 'sys:menu:delete'])"
+        v-if="hasPerm(['sys:menu:update', 'sys:menu:delete'])"
       >
         <template #default="scope">
           <el-button
@@ -242,7 +244,7 @@ const handleFileUpload = async (file: File) => {
             icon="Edit"
             size="default"
             @click="editBtn(scope.row)"
-            v-if="global.$hasPerm(['sys:menu:update'])"
+            v-if="hasPerm(['sys:menu:update'])"
           >
             编辑
           </el-button>
@@ -251,7 +253,7 @@ const handleFileUpload = async (file: File) => {
             icon="Delete"
             size="default"
             @click="deleteBtn(scope.row.menuId)"
-            v-if="global.$hasPerm(['sys:menu:delete'])"
+            v-if="hasPerm(['sys:menu:delete'])"
           >
             删除
           </el-button>

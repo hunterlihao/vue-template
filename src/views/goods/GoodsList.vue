@@ -3,6 +3,7 @@ import { reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import SysDialog from '@/components/Dialog/SysDialog.vue';
 import useInstance from '@/hooks/useInstance.ts';
+import usePerm from '@/hooks/usePerm.ts';
 import useTablePage from '@/hooks/useTablePage.ts';
 import useTableHeight from '@/hooks/useTableHeight.ts';
 import useCrudDialog from '@/hooks/useCrudDialog.ts';
@@ -12,8 +13,9 @@ import type { SysGoods } from '@/api/goods/type.ts';
 import { addApi, deleteApi, editApi, getListApi } from '@/api/goods';
 import { required } from '@/const/rules';
 
-// 全局属性($hasPerm / $myConfirm)
+// 全局属性($myConfirm)与权限判断
 const { global } = useInstance();
+const { hasPerm } = usePerm();
 
 // 列表数据 + 分页
 const {
@@ -110,7 +112,7 @@ const deleteBtn = async (row: SysGoods) => {
           icon="Plus"
           type="primary"
           @click="addBtn"
-          v-if="global.$hasPerm(['goods:list:add'])"
+          v-if="hasPerm(['goods:list:add'])"
         >
           新增
         </el-button>
@@ -150,14 +152,14 @@ const deleteBtn = async (row: SysGoods) => {
         label="操作"
         align="center"
         width="200"
-        v-if="global.$hasPerm(['goods:list:update', 'goods:list:delete'])"
+        v-if="hasPerm(['goods:list:update', 'goods:list:delete'])"
       >
         <template #default="scope">
           <el-button
             type="primary"
             icon="Edit"
             @click="editBtn(scope.row)"
-            v-if="global.$hasPerm(['goods:list:update'])"
+            v-if="hasPerm(['goods:list:update'])"
           >
             编辑
           </el-button>
@@ -165,7 +167,7 @@ const deleteBtn = async (row: SysGoods) => {
             type="danger"
             icon="Delete"
             @click="deleteBtn(scope.row)"
-            v-if="global.$hasPerm(['goods:list:delete'])"
+            v-if="hasPerm(['goods:list:delete'])"
           >
             删除
           </el-button>
