@@ -22,7 +22,7 @@ export const getListApi = (parm: RoleListParm) => {
 };
 
 // 修改角色
-export const updateApi = (parm: SysRole) => {
+export const editApi = (parm: SysRole) => {
   return http.put(API.UPDATE_URI, parm);
 };
 
