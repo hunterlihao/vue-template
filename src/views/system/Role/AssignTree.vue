@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getAssignTreeApi } from '@/api/user';
 import SysDialog from '@/components/Dialog/SysDialog.vue';
-import useDialog from '@/hocks/useDialog.ts';
+import useDialog from '@/hooks/useDialog.ts';
 import { saveRoleMenuApi } from '@/api/role';
 import { ElMessage, ElTree } from 'element-plus';
 import { reactive, ref } from 'vue';

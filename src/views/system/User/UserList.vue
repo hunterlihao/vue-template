@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { nextTick, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import useDialog from '@/hocks/useDialog.ts';
+import useDialog from '@/hooks/useDialog.ts';
 import { ElMessage, type FormInstance } from 'element-plus';
 import SysDialog from '@/components/Dialog/SysDialog.vue';
 import SelectChecked from '@/components/SelectCheck/SelectChecked.vue';
-import useInstance from '@/hocks/useInstance.ts';
+import useInstance from '@/hooks/useInstance.ts';
 import { useUserStore } from '@/store/modules/user.ts';
 import type { AddModel, SysUser } from '@/api/user/type.ts';
 import {

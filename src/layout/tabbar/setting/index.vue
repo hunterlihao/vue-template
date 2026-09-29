@@ -6,7 +6,7 @@ import { useUserStore } from '@/store/modules/user';
 //获取骨架的小仓库
 import { useLayOutSettingStore } from '@/store/modules/setting';
 import { ElMessage } from 'element-plus';
-import useInstance from '@/hocks/useInstance.ts';
+import useInstance from '@/hooks/useInstance.ts';
 //获取标签页仓库
 import { useTabsStore } from '@/store/modules/tabs.ts';
 //获取菜单仓库

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { getTime } from '@/utils/time';
 import { useUserStore } from '@/store/modules/user.ts';
-import useInstance from '@/hocks/useInstance.ts';
+import useInstance from '@/hooks/useInstance.ts';
 import { nextTick, onMounted, reactive, ref } from 'vue';
 
 const { global } = useInstance();

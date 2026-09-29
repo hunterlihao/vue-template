@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SysDialog from '@/components/Dialog/SysDialog.vue';
-import useDialog from '@/hocks/useDialog.ts';
+import useDialog from '@/hooks/useDialog.ts';
 import { nextTick, onMounted, reactive, ref } from 'vue';
 import { ElMessage, type FormInstance } from 'element-plus';
 import {
@@ -12,7 +12,7 @@ import {
   importApi,
 } from '@/api/menu';
 import type { MenuType } from '@/api/menu/type.ts';
-import useInstance from '@/hocks/useInstance.ts';
+import useInstance from '@/hooks/useInstance.ts';
 import type { Result } from '@/types';
 //-----------------------------上面导入依赖---------------------------
 const { global } = useInstance();

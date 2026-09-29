@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { nextTick, onMounted, reactive, ref } from 'vue';
 import SysDialog from '@/components/Dialog/SysDialog.vue';
-import useDialog from '@/hocks/useDialog.ts';
+import useDialog from '@/hooks/useDialog.ts';
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 import type { SysRole } from '@/api/role/type.ts';
 import { addApi, deleteApi, getListApi, updateApi } from '@/api/role';
-import useInstance from '@/hocks/useInstance.ts';
+import useInstance from '@/hooks/useInstance.ts';
 import AssignTree from '@/views/system/Role/AssignTree.vue';
 //-----------------------------上面导入依赖---------------------------
 //获取全局global
