@@ -18,9 +18,13 @@ export default defineConfig({
       symbolId: 'icon-[dir]-[name]',
     }),
     viteMockServe({
-      // default
+      // mock 文件目录
       mockPath: 'mock',
-      enable: false,
+      // 以 _ 开头的文件是共享数据/工具,不注册成 mock 路由
+      ignore: /^_/,
+      // 开启本地 mock(只在 dev server 生效,不会影响 build)
+      enable: true,
+      logger: true,
     }),
   ],
   resolve: {
