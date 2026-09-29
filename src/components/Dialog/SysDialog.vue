@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { type DialogProps } from '@/types';
+import type { DialogProps } from '@/types';
 
 /**
  * 接收父组件传递的数据
