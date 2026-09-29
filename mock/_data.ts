@@ -53,6 +53,140 @@ export const roles: MockRole[] = [
   { roleId: '3', roleName: '商品管理员', remark: '负责商品与分类维护' },
 ];
 
+// ---------------------------------------------------------------- 物资类型(分类)
+export interface MockCategory {
+  categoryId: string;
+  categoryName: string;
+  categoryCode: string;
+  orderNum: string;
+  remark: string;
+}
+
+export const categories: MockCategory[] = [
+  {
+    categoryId: '1',
+    categoryName: '办公用品',
+    categoryCode: 'OFFICE',
+    orderNum: '1',
+    remark: '纸张、笔、文件夹等日常办公耗材',
+  },
+  {
+    categoryId: '2',
+    categoryName: '电子设备',
+    categoryCode: 'DEVICE',
+    orderNum: '2',
+    remark: '电脑、显示器及外设',
+  },
+  {
+    categoryId: '3',
+    categoryName: '劳保用品',
+    categoryCode: 'LABOR',
+    orderNum: '3',
+    remark: '安全帽、手套等防护用品',
+  },
+  {
+    categoryId: '4',
+    categoryName: '清洁用品',
+    categoryCode: 'CLEAN',
+    orderNum: '4',
+    remark: '拖把、清洁剂等',
+  },
+];
+
+// ---------------------------------------------------------------- 商品
+export interface MockGoods {
+  goodsId: string;
+  goodsName: string;
+  categoryId: string;
+  price: number;
+  stock: number;
+  unit: string;
+  remark: string;
+}
+
+export const goodsList: MockGoods[] = [
+  {
+    goodsId: '1',
+    goodsName: 'A4 复印纸',
+    categoryId: '1',
+    price: 25.5,
+    stock: 320,
+    unit: '包',
+    remark: '70g 500 张/包',
+  },
+  {
+    goodsId: '2',
+    goodsName: '中性笔',
+    categoryId: '1',
+    price: 3.5,
+    stock: 1200,
+    unit: '支',
+    remark: '黑色 0.5mm',
+  },
+  {
+    goodsId: '3',
+    goodsName: '24 寸显示器',
+    categoryId: '2',
+    price: 899,
+    stock: 26,
+    unit: '台',
+    remark: '1920x1080 IPS',
+  },
+  {
+    goodsId: '4',
+    goodsName: '无线键鼠套装',
+    categoryId: '2',
+    price: 129,
+    stock: 58,
+    unit: '套',
+    remark: '2.4G 无线',
+  },
+  {
+    goodsId: '5',
+    goodsName: '安全帽',
+    categoryId: '3',
+    price: 45,
+    stock: 180,
+    unit: '顶',
+    remark: 'ABS 材质 红色',
+  },
+  {
+    goodsId: '6',
+    goodsName: '防割手套',
+    categoryId: '3',
+    price: 18.5,
+    stock: 240,
+    unit: '副',
+    remark: '5 级防割',
+  },
+  {
+    goodsId: '7',
+    goodsName: '拖把',
+    categoryId: '4',
+    price: 32,
+    stock: 64,
+    unit: '把',
+    remark: '旋转脱水',
+  },
+  {
+    goodsId: '8',
+    goodsName: '多用途清洁剂',
+    categoryId: '4',
+    price: 15.8,
+    stock: 96,
+    unit: '瓶',
+    remark: '500ml',
+  },
+];
+
+/** 按 id 取类型名称 */
+export function categoryName(categoryId: string): string {
+  return (
+    categories.find((item) => item.categoryId === categoryId)?.categoryName ??
+    ''
+  );
+}
+
 // ---------------------------------------------------------------- 用户
 export const users: MockUser[] = [
   {
@@ -234,6 +368,29 @@ const menuSeed: MenuSeed[] = [
         icon: 'Files',
         type: 1,
         order: '1',
+        children: [
+          button(
+            '211',
+            '新增类型',
+            'goods:category:add',
+            'GoodsCategoryAdd',
+            '1',
+          ),
+          button(
+            '212',
+            '修改类型',
+            'goods:category:update',
+            'GoodsCategoryUpdate',
+            '2',
+          ),
+          button(
+            '213',
+            '删除类型',
+            'goods:category:delete',
+            'GoodsCategoryDelete',
+            '3',
+          ),
+        ],
       },
       {
         id: '22',
@@ -245,6 +402,11 @@ const menuSeed: MenuSeed[] = [
         icon: 'ShoppingCart',
         type: 1,
         order: '2',
+        children: [
+          button('221', '新增商品', 'goods:list:add', 'GoodsAdd', '1'),
+          button('222', '修改商品', 'goods:list:update', 'GoodsUpdate', '2'),
+          button('223', '删除商品', 'goods:list:delete', 'GoodsDelete', '3'),
+        ],
       },
     ],
   },
