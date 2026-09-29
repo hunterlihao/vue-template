@@ -1,14 +1,14 @@
-// 菜单/侧边栏/内容区:全部不做过渡动画,切换瞬时完成。
-//
-// 关掉的三处动画:
-//  1. 子菜单展开/收起 —— Element Plus 用 ElCollapseTransition 动画 max-height,
-//     统一读 --el-transition-duration(默认 0.3s),置 0 后子菜单直接出现;
-//  2. 侧边栏折叠 —— 宽度不再过渡,瞬时切换;
-//  3. 顶部栏/内容区让位 —— 宽度和 left 不再过渡。
-//
-// 想恢复动画:把下面的 transition: none 换成具体属性,并给 --el-transition-duration 一个时长,例如
-//   transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-//   --el-transition-duration: 0.2s;
+// 侧边栏展开/收缩动画参数(想调快/调慢只改这两个值)
+//   0.15s 更干脆,0.3s 更从容
+$layout-duration: 0.2s;
+$layout-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+// 说明:
+//  1. 侧边栏折叠 —— .layout_slider 宽度过渡,顶部栏/内容区跟着让位;
+//     Element Plus 的 .el-menu--collapse 自身只改 width、没有过渡,
+//     菜单文字也是直接 width/height 归零,所以动效来自下面这几处容器。
+//  2. 子菜单展开/收起 —— 仍保持瞬时(读 --el-transition-duration,这里置 0),
+//     如需一并恢复,把 0s 改成 $layout-duration 即可。
 
 .layout_container {
   width: 100%;
@@ -18,15 +18,16 @@
     width: $base-menu-width;
     height: 100vh;
     background-color: $base-menu-background;
-    transition: none;
-    // 侧边栏内的 Element Plus 过渡(子菜单展开、箭头旋转)一并置 0
+    // 展开/收缩动画
+    transition: width $layout-duration $layout-easing;
+    // 侧边栏内的 Element Plus 过渡(子菜单展开、箭头旋转)保持瞬时
     --el-transition-duration: 0s;
 
     .scrollbar {
       // 跟随侧边栏宽度,避免折叠时容器仍按 180px 计算导致菜单错位
       width: 100%;
       height: calc(100vh - $base-menu-logo-height);
-      transition: none;
+      transition: width $layout-duration $layout-easing;
 
       :deep(.el-menu) {
         border-right: none;
@@ -45,7 +46,9 @@
     background-color: white;
     top: 0px;
     left: $base-menu-width;
-    transition: none;
+    transition:
+      width $layout-duration $layout-easing,
+      left $layout-duration $layout-easing;
     display: flex;
     flex-direction: column;
 
@@ -78,7 +81,9 @@
     left: $base-menu-width;
     padding: 20px;
     overflow: auto;
-    transition: none;
+    transition:
+      width $layout-duration $layout-easing,
+      left $layout-duration $layout-easing;
 
     &.fold {
       width: calc(100vw - $base-menu-min-width);
