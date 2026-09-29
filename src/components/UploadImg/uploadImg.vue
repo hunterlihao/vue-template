@@ -1,131 +1,144 @@
-<template>
-  <el-upload
-    v-bind="$attrs"
-    :action="UPLOAD_IMG_URL"
-    :on-preview="handlePictureCardPreview"
-    :headers="{ 'access-token': useUserStore().token }"
-    :before-upload="beforeUpload"
-    :on-error="handleUploadError"
-    :on-success="handleUploadSuccess"
-    :accept="acceptTypes"
-    :limit="maxFiles"
-    :on-exceed="handleExceed"
-    :multiple="false"
-  >
-    <el-icon>
-      <Plus />
-    </el-icon>
-    <template #tip>
-      <div class="el-upload__tip">
-        支持 jpg/png/gif 格式，单个文件不超过 {{ maxSize }}MB
-      </div>
-    </template>
-  </el-upload>
-
-  <el-dialog v-model="dialogVisible" width="50%" destroy-on-close>
-    <el-image
-      :src="dialogImageUrl"
-      fit="contain"
-      :preview-src-list="[dialogImageUrl]"
-    />
-  </el-dialog>
-</template>
-
 <script setup lang="ts">
-import { UPLOAD_IMG_URL } from '@/api/file';
-import { ref } from 'vue';
-import {
-  type UploadFile,
-  type UploadFiles,
-} from 'element-plus/es/components/upload/src/upload';
-import { useUserStore } from '@/store/modules/user';
-import { ElMessage } from 'element-plus';
+import { computed } from 'vue';
+import { ElMessage, type UploadProps } from 'element-plus';
 import { Plus } from '@element-plus/icons-vue';
+import { UPLOAD_IMG_URL } from '@/api/file';
+import { useUserStore } from '@/store/modules/user.ts';
 
-// 配置项
-const maxSize = 5; // 最大文件大小（MB）
-const maxFiles = 1; // 最大文件数量
-const acceptTypes = '.jpg,.jpeg,.png,.gif'; // 允许的文件类型
+/**
+ * 通用图片上传组件。
+ *
+ * 统一处理:携带 token、类型/大小校验、成功/失败提示、超出数量限制,
+ * 并通过 v-model:url 把上传后的图片地址抛给父组件。
+ * 触发区域用默认插槽自定义(不写则显示一个 + 号)。
+ */
+const props = withDefaults(
+  defineProps<{
+    /** 已上传的图片地址(v-model:url) */
+    url?: string;
+    /** 单文件大小上限,单位 MB */
+    maxSize?: number;
+    /** 允许的扩展名,同时决定运行时类型校验 */
+    accept?: string;
+    /** 最多上传数量 */
+    maxFiles?: number;
+    /** 是否显示底部提示文案 */
+    showTip?: boolean;
+    /** 自定义提示文案,为空时按 maxSize 自动生成 */
+    tip?: string;
+  }>(),
+  {
+    url: '',
+    maxSize: 5,
+    accept: '.jpg,.jpeg,.png,.gif',
+    maxFiles: 1,
+    showTip: true,
+    tip: '',
+  },
+);
 
-// 预览相关
-const dialogImageUrl = ref('');
-const dialogVisible = ref(false);
+const emit = defineEmits<{
+  (e: 'update:url', value: string): void;
+  (e: 'success', value: string): void;
+  (e: 'error', error: Error): void;
+}>();
 
-// 文件类型检查
-const isValidFileType = (file: File): boolean => {
-  const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-  return validTypes.includes(file.type);
+const userStore = useUserStore();
+
+// 扩展名 -> MIME,保证 accept 与运行时校验始终一致
+const MIME_BY_EXT: Record<string, string> = {
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png': 'image/png',
+  '.gif': 'image/gif',
+  '.webp': 'image/webp',
+  '.bmp': 'image/bmp',
 };
 
-// 文件大小检查（转换为MB）
-const isValidFileSize = (file: File): boolean => {
-  const sizeInMB = file.size / (1024 * 1024);
-  return sizeInMB <= maxSize;
-};
+const extList = computed(() =>
+  props.accept
+    .split(',')
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean),
+);
 
-// 上传前验证
-const beforeUpload = (file: File): boolean | Promise<File> => {
-  // 检查文件类型
-  if (!isValidFileType(file)) {
-    ElMessage.error('只能上传JPG/PNG/GIF格式的图片！');
+const allowedTypes = computed(() =>
+  extList.value.map((ext) => MIME_BY_EXT[ext]).filter(Boolean),
+);
+
+const typeText = computed(() =>
+  extList.value.map((ext) => ext.replace('.', '').toUpperCase()).join('/'),
+);
+
+const tipText = computed(
+  () =>
+    props.tip ||
+    `支持 ${typeText.value} 格式，单个文件不超过 ${props.maxSize}MB`,
+);
+
+const uploadHeaders = computed(() => ({ token: userStore.getToken || '' }));
+
+// 上传前校验
+const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
+  if (!allowedTypes.value.includes(rawFile.type)) {
+    ElMessage.error(`只能上传 ${typeText.value} 格式的图片！`);
     return false;
   }
-
-  // 检查文件大小
-  if (!isValidFileSize(file)) {
-    ElMessage.error(`文件大小不能超过 ${maxSize}MB！`);
+  if (rawFile.size / 1024 / 1024 > props.maxSize) {
+    ElMessage.error(`文件大小不能超过 ${props.maxSize}MB！`);
     return false;
   }
-
   return true;
 };
 
-// 处理上传错误
-const handleUploadError = (error: Error, file: UploadFile): void => {
-  ElMessage.error('上传失败，请重试');
-  console.error('Upload error:', error);
-};
-
-// 处理上传成功
-const handleUploadSuccess = (response: any, file: UploadFile): void => {
-  // 验证响应数据
+// 上传成功
+const handleSuccess: UploadProps['onSuccess'] = (response) => {
   if (!response || typeof response !== 'object') {
     ElMessage.error('上传失败：服务器响应异常');
     return;
   }
-
-  // 检查响应状态
   if (response.code !== 200) {
     ElMessage.error(response.message || '上传失败');
     return;
   }
-
   ElMessage.success('上传成功');
+  emit('update:url', response.data);
+  emit('success', response.data);
 };
 
-// 处理超出文件数量限制
-const handleExceed = (files: File[], uploadFiles: UploadFiles): void => {
-  ElMessage.warning(`最多只能上传 ${maxFiles} 个文件`);
+// 上传失败
+const handleError: UploadProps['onError'] = (error) => {
+  ElMessage.error('上传失败，请重试');
+  emit('error', error as Error);
 };
 
-// 处理图片预览
-const handlePictureCardPreview = (uploadFile: UploadFile) => {
-  if (!uploadFile.url) {
-    ElMessage.error('预览图片地址无效');
-    return;
-  }
-
-  // 验证URL格式（只允许HTTP(S)和相对路径）
-  const urlPattern = /^(https?:\/\/|\/)/i;
-  if (!urlPattern.test(uploadFile.url)) {
-    ElMessage.error('预览图片地址无效');
-    return;
-  }
-
-  dialogImageUrl.value = uploadFile.url;
-  dialogVisible.value = true;
+// 超出数量限制
+const handleExceed: UploadProps['onExceed'] = () => {
+  ElMessage.warning(`最多只能上传 ${props.maxFiles} 个文件`);
 };
 </script>
+
+<template>
+  <el-upload
+    :action="UPLOAD_IMG_URL"
+    :headers="uploadHeaders"
+    :show-file-list="false"
+    :before-upload="beforeUpload"
+    :on-success="handleSuccess"
+    :on-error="handleError"
+    :on-exceed="handleExceed"
+    :accept="props.accept"
+    :limit="props.maxFiles"
+    :multiple="false"
+  >
+    <slot>
+      <el-icon><Plus /></el-icon>
+    </slot>
+    <template #tip v-if="props.showTip">
+      <div class="el-upload__tip">{{ tipText }}</div>
+    </template>
+  </el-upload>
+</template>
 
 <style scoped lang="scss">
 .el-upload__tip {
