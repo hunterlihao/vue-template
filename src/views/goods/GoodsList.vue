@@ -10,6 +10,7 @@ import type { CategoryOption } from '@/api/category/type.ts';
 import { getSelectApi } from '@/api/category';
 import type { SysGoods } from '@/api/goods/type.ts';
 import { addApi, deleteApi, editApi, getListApi } from '@/api/goods';
+import { required } from '@/const/rules';
 
 // 全局属性($hasPerm / $myConfirm)
 const { global } = useInstance();
@@ -68,15 +69,13 @@ const editBtn = async (row: SysGoods) => {
   openEdit(row);
 };
 
-// 表单校验规则
+// 表单校验规则(公共规则见 @/const/rules)
 const rules = reactive({
-  goodsName: [{ required: true, message: '请输入商品名称', trigger: ['blur'] }],
-  categoryId: [
-    { required: true, message: '请选择所属类型', trigger: ['change'] },
-  ],
-  price: [{ required: true, message: '请输入单价', trigger: ['blur'] }],
-  stock: [{ required: true, message: '请输入库存', trigger: ['blur'] }],
-  unit: [{ required: true, message: '请输入单位', trigger: ['blur'] }],
+  goodsName: required('请输入商品名称'),
+  categoryId: required('请选择所属类型', 'change'),
+  price: required('请输入单价'),
+  stock: required('请输入库存'),
+  unit: required('请输入单位'),
 });
 
 // 删除

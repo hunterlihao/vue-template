@@ -19,6 +19,14 @@ import {
   resetPasswordApi,
 } from '@/api/user';
 import { getSelectApi } from '@/api/role';
+import {
+  emailRules,
+  nickNameRules,
+  passwordRules,
+  phoneRules,
+  required,
+  sexRules,
+} from '@/const/rules';
 
 // 全局属性($hasPerm / $myConfirm)
 const { global } = useInstance();
@@ -70,29 +78,15 @@ const { dialog, tags, addRef, addModel, openAdd, openEdit, close, submit } =
     height: 300,
   });
 
-// 表单校验规则
+// 表单校验规则(公共规则见 @/const/rules)
 const rules = reactive({
-  nickName: [{ required: true, message: '请输入姓名', trigger: ['blur'] }],
-  sex: [{ required: true, message: '请选择性别', trigger: ['blur'] }],
-  phone: [
-    { required: true, message: '请输入手机号', trigger: ['blur'] },
-    {
-      pattern: /^1[3-9]\d{9}$/,
-      message: '请输入正确的手机号格式',
-      trigger: ['blur'],
-    },
-  ],
-  username: [{ required: true, message: '请输入账号', trigger: ['blur'] }],
-  password: [{ required: true, message: '请输入密码', trigger: ['blur'] }],
-  email: [
-    { required: true, message: '请输入邮箱', trigger: ['blur'] },
-    {
-      pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      message: '请输入正确的邮箱格式',
-      trigger: ['blur'],
-    },
-  ],
-  roleId: [{ required: true, message: '请选择角色', trigger: ['blur'] }],
+  nickName: nickNameRules,
+  sex: sexRules,
+  phone: phoneRules,
+  username: required('请输入账号'),
+  password: passwordRules,
+  email: emailRules,
+  roleId: required('请选择角色'),
 });
 
 // 手机号脱敏处理

@@ -10,6 +10,14 @@ import {
   updatePasswordApi,
 } from '@/api/user';
 import { UPLOAD_IMG_URL } from '@/api/file';
+import {
+  confirmPasswordRules,
+  emailRules,
+  nickNameRules,
+  phoneRules,
+  required,
+  sexRules,
+} from '@/const/rules';
 import { useRouter } from 'vue-router';
 
 //-----------------------------上面导入依赖---------------------------
@@ -159,73 +167,19 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
   return true;
 };
 
-// 用户信息表单规则
+// 用户信息表单规则(公共规则见 @/const/rules)
 const userInfoRules = reactive({
-  nickName: [
-    {
-      required: true,
-      message: '请输入姓名',
-      trigger: ['blur'],
-    },
-  ],
-  sex: [
-    {
-      required: true,
-      message: '请选择性别',
-      trigger: ['blur'],
-    },
-  ],
-  phone: [
-    {
-      required: true,
-      message: '请输入手机号',
-      trigger: ['blur'],
-    },
-  ],
-  email: [
-    {
-      required: true,
-      message: '请输入邮箱',
-      trigger: ['blur'],
-    },
-  ],
+  nickName: nickNameRules,
+  sex: sexRules,
+  phone: phoneRules,
+  email: emailRules,
 });
 
 // 修改密码表单规则
-const passwordRules = reactive({
-  oldPassword: [
-    {
-      required: true,
-      message: '请输入原密码',
-      trigger: ['blur'],
-    },
-  ],
-  password: [
-    {
-      required: true,
-      message: '请输入新密码',
-      trigger: ['blur'],
-    },
-  ],
-  checkPassword: [
-    {
-      required: true,
-      message: '请再次输入新密码',
-      trigger: ['blur'],
-    },
-    {
-      validator: (rule: any, value: string, callback: any) => {
-        if (value === '') {
-          callback(new Error('请再次输入新密码'));
-        } else if (value !== passwordModel.password) {
-          callback(new Error('两次输入的密码不一致'));
-        } else {
-          callback();
-        }
-      },
-      trigger: 'blur',
-    },
-  ],
+const passwordFormRules = reactive({
+  oldPassword: required('请输入原密码'),
+  password: required('请输入新密码'),
+  checkPassword: confirmPasswordRules(() => passwordModel.password),
 });
 
 //挂载时操作
@@ -356,7 +310,7 @@ onMounted(() => {
               <el-form
                 :model="passwordModel"
                 ref="passwordRef"
-                :rules="passwordRules"
+                :rules="passwordFormRules"
                 label-width="120px"
                 size="default"
                 label-position="right"

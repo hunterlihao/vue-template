@@ -8,6 +8,7 @@ import useTableHeight from '@/hooks/useTableHeight.ts';
 import useCrudDialog from '@/hooks/useCrudDialog.ts';
 import type { SysCategory } from '@/api/category/type.ts';
 import { addApi, deleteApi, editApi, getListApi } from '@/api/category';
+import { required } from '@/const/rules';
 
 // 全局属性($hasPerm / $myConfirm)
 const { global } = useInstance();
@@ -44,15 +45,11 @@ const { dialog, addRef, addModel, openAdd, openEdit, close, submit } =
     height: 320,
   });
 
-// 表单校验规则
+// 表单校验规则(公共规则见 @/const/rules)
 const rules = reactive({
-  categoryName: [
-    { required: true, message: '请输入类型名称', trigger: ['blur'] },
-  ],
-  categoryCode: [
-    { required: true, message: '请输入类型编码', trigger: ['blur'] },
-  ],
-  orderNum: [{ required: true, message: '请输入排序', trigger: ['blur'] }],
+  categoryName: required('请输入类型名称'),
+  categoryCode: required('请输入类型编码'),
+  orderNum: required('请输入排序'),
 });
 
 // 删除
