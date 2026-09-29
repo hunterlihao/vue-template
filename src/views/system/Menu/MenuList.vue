@@ -1,8 +1,7 @@
 <script setup lang="ts">
+import { reactive, ref } from 'vue';
 import SysDialog from '@/components/Dialog/SysDialog.vue';
-import useDialog from '@/hooks/useDialog.ts';
-import { nextTick, onMounted, reactive, ref } from 'vue';
-import { ElMessage, type FormInstance } from 'element-plus';
+import { ElMessage } from 'element-plus';
 import {
   addApi,
   deleteApi,
@@ -13,202 +12,96 @@ import {
 } from '@/api/menu';
 import type { MenuType } from '@/api/menu/type.ts';
 import useInstance from '@/hooks/useInstance.ts';
+import useTablePage from '@/hooks/useTablePage.ts';
+import useCrudDialog from '@/hooks/useCrudDialog.ts';
 import type { Result } from '@/types';
-//-----------------------------上面导入依赖---------------------------
+
+// 全局属性($hasPerm / $myConfirm)
 const { global } = useInstance();
-//弹框属性
-const { dialog, onShow, onClose } = useDialog();
-//表单绑定对象
-const addModel = reactive({
-  menuId: '',
-  parentId: '',
-  title: '',
-  code: '',
-  name: '',
-  path: '',
-  url: '',
-  type: -1 as number, // 明确指定类型
-  icon: '',
-  parentName: '',
-  orderNum: '',
-});
-// 获取上级菜单数据
-const treeList = ref([]);
-//表格数据
-const tableList = ref([]);
-const addRef = ref<FormInstance>();
-//定义标识
-const tags = ref('');
-// --------------------- 上面定义参数 下面定义方法--------------------
-//新增按钮
-const addBtn = () => {
-  tags.value = 'add';
-  dialog.title = '新增菜单';
-  dialog.visible = true;
-  dialog.width = 600;
-  dialog.height = 250;
-  //清楚数据和校验
-  addRef.value?.clearValidate();
-  addRef.value?.resetFields();
-  Object.assign(addModel, {
-    menuId: '',
-    parentId: '',
-    title: '',
-    code: '',
-    name: '',
-    path: '',
-    url: '',
-    type: -1,
-    icon: '',
-    parentName: '',
-    orderNum: '',
-  });
-  //获取上级菜单
-  getParent();
-  onShow();
-};
 
-//提交按钮
-const commit = () => {
-  addRef.value?.validate(async (valid) => {
-    if (valid) {
-      console.log('校验成功');
-      console.log(addModel);
-      let res = null;
-      if (tags.value === 'add') {
-        res = await addApi(addModel);
-      } else {
-        res = await editApi(addModel);
-      }
-      if (res && res.code === 200) {
-        ElMessage.success('操作成功');
-        await getList();
-        onClose();
-      }
-    }
+// 表格数据(菜单是整棵树,不分页)
+const { tableList, getList } = useTablePage({
+  api: getListApi,
+  paged: false,
+});
+
+// 上级菜单下拉数据
+const treeList = ref<MenuType[]>([]);
+
+// 新增/编辑弹窗
+const { dialog, addRef, addModel, openAdd, openEdit, close, submit } =
+  useCrudDialog<MenuType>({
+    createModel: () => ({
+      menuId: '',
+      parentId: '',
+      title: '',
+      code: '',
+      name: '',
+      path: '',
+      url: '',
+      type: -1,
+      icon: '',
+      parentName: '',
+      orderNum: '',
+    }),
+    addApi,
+    editApi,
+    addTitle: '新增菜单',
+    editTitle: '编辑菜单',
+    width: 600,
+    height: 250,
   });
-};
-//表单验证规则
-// 表单验证规则
+
+// 表单校验规则
 const rules = reactive({
-  parentId: [
-    {
-      required: true,
-      message: '请选择上级菜单',
-      trigger: ['blur'],
-    },
-  ],
-  title: [
-    {
-      required: true,
-      message: '请输入菜单名称',
-      trigger: ['blur'],
-    },
-  ],
-  code: [
-    {
-      required: true,
-      message: '请输入权限字段',
-      trigger: ['blur'],
-    },
-  ],
-  name: [
-    {
-      required: true,
-      message: '请输入路由名称',
-      trigger: ['blur'],
-    },
-  ],
-  path: [
-    {
-      required: true,
-      message: '请输入路由地址',
-      trigger: ['blur'],
-    },
-  ],
-  url: [
-    {
-      required: true,
-      message: '请输入路由地址',
-      trigger: ['blur'],
-    },
-  ],
-  type: [
-    {
-      required: true,
-      message: '请输入菜单类型',
-      trigger: ['blur'],
-    },
-  ],
-  icon: [
-    {
-      required: true,
-      message: '请输入菜单图标',
-      trigger: ['blur'],
-    },
-  ],
-  orderNum: [
-    {
-      required: true,
-      message: '请输入菜单序号',
-      trigger: ['blur'],
-    },
-  ],
+  parentId: [{ required: true, message: '请选择上级菜单', trigger: ['blur'] }],
+  title: [{ required: true, message: '请输入菜单名称', trigger: ['blur'] }],
+  code: [{ required: true, message: '请输入权限字段', trigger: ['blur'] }],
+  name: [{ required: true, message: '请输入路由名称', trigger: ['blur'] }],
+  path: [{ required: true, message: '请输入路由地址', trigger: ['blur'] }],
+  url: [{ required: true, message: '请输入路由地址', trigger: ['blur'] }],
+  type: [{ required: true, message: '请输入菜单类型', trigger: ['blur'] }],
+  icon: [{ required: true, message: '请输入菜单图标', trigger: ['blur'] }],
+  orderNum: [{ required: true, message: '请输入菜单序号', trigger: ['blur'] }],
 });
 
-// 上级选中事件
-const treeCheckChange = (item: any) => {
-  console.log(item);
-  addModel.parentName = item.title ? item.title : '';
-};
-
-//获取上级菜单数据
+// 获取上级菜单数据
 const getParent = async () => {
-  let res = await getParentApi();
+  const res = await getParentApi();
   if (res && res.code === 200) {
-    console.log(res.data);
     treeList.value = res.data;
   }
 };
-//获取表格数据
-const getList = async () => {
-  let res = await getListApi();
-  if (res && res.code === 200) {
-    tableList.value = res.data;
-    console.log(res.data);
-  }
+
+// 上级选中事件
+const treeCheckChange = (item: MenuType) => {
+  addModel.parentName = item.title ? item.title : '';
 };
-//修改按钮
-const editBtn = async (row: MenuType) => {
-  tags.value = 'edit';
-  console.log(row);
-  dialog.title = '编辑菜单';
-  dialog.visible = true;
-  dialog.width = 600;
-  dialog.height = 250;
-  addRef.value?.clearValidate();
-  addRef.value?.resetFields();
-  //获取上级菜单
+
+// 新增按钮
+const addBtn = async () => {
   await getParent();
-  onShow();
-  await nextTick(() => {
-    Object.assign(addModel, row);
-  });
+  openAdd();
 };
-//删除按钮
+
+// 编辑按钮
+const editBtn = async (row: MenuType) => {
+  await getParent();
+  openEdit(row);
+};
+
+// 删除按钮
 const deleteBtn = async (menuId: string) => {
-  console.log(menuId);
   const confirm = await global.$myConfirm('确定要删除该数据吗？');
-  if (confirm) {
-    let res = await deleteApi(menuId);
-    if (res && res.code === 200) {
-      ElMessage.success('删除成功');
-      await getList();
-    }
+  if (!confirm) return;
+  const res = await deleteApi(menuId);
+  if (res && res.code === 200) {
+    ElMessage.success('删除成功');
+    await getList();
   }
 };
 
-//导出按钮
+// 导出按钮
 const exportBtn = async () => {
   // 直接通过创建a标签的方式下载文件
   const baseUrl =
@@ -220,12 +113,13 @@ const exportBtn = async () => {
   link.style.display = 'none'; // 隐藏链接
   document.body.appendChild(link);
   link.click();
-  // 添加延迟确保下载触发后再移除链接
+  // 添加延迟确保下载触发后再移除
   setTimeout(() => {
     document.body.removeChild(link);
   }, 100);
 };
-//导入按钮
+
+// 导入按钮
 const uploadBtn = () => {
   // 创建文件输入元素
   const input = document.createElement('input');
@@ -258,10 +152,6 @@ const handleFileUpload = async (file: File) => {
     console.error(error);
   }
 };
-
-onMounted(() => {
-  getList();
-});
 </script>
 
 <template>
@@ -375,8 +265,8 @@ onMounted(() => {
       :visible="dialog.visible"
       :width="dialog.width"
       :height="dialog.height"
-      @onClose="onClose"
-      @onConfirm="commit"
+      @onClose="close"
+      @onConfirm="submit(getList)"
     >
       <template v-slot:content>
         <el-form
