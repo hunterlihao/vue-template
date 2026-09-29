@@ -6,6 +6,26 @@ import { getMenuListApi } from '@/api/menu';
 import Layout from '@/layout/index.vue';
 import router from '@/router/index.ts';
 
+// 预扫描 views 下所有页面组件,用于把菜单里的组件路径映射成懒加载函数
+// (原来的 import(`../../../views/${componentPath}`) 无法被 Vite 静态分析,
+//  打包后这些页面不会生成 chunk,按菜单跳转会 404)
+const viewModules = import.meta.glob('@/views/**/*.vue');
+
+/** 把菜单里的组件路径解析成页面组件(找不到时回落到 404 页面) */
+function resolveViewComponent(componentPath: string) {
+  const fallback = viewModules['/src/views/404/index.vue'];
+  let viewPath = String(componentPath || '').replace(/^\/+/, '');
+  if (!viewPath) return fallback;
+  if (!viewPath.endsWith('.vue')) viewPath += '.vue';
+  const key = `/src/views/${viewPath}`;
+  const loader = viewModules[key];
+  if (!loader) {
+    console.warn(`[menu] 未找到菜单对应的页面组件: ${key}`);
+    return fallback;
+  }
+  return loader;
+}
+
 // 定义菜单仓库状态类型
 interface MenuState {
   menuRoutes: RouteRecordRaw[];
@@ -74,18 +94,8 @@ export const useMenuStore = defineStore('Menu', {
         if (menu.component === 'Layout') {
           route.component = Layout;
         } else {
-          // 动态导入组件 - 修正路径处理
-          // 处理后端返回的不同格式的组件路径 (现在以 '/' 开头)
-          let componentPath = menu.component;
-
-          // 标准化路径 - 移除开头的 '/'
-          if (componentPath.startsWith('/')) {
-            componentPath = componentPath.substring(1);
-          }
-
-          // 直接使用动态导入，Vite 会处理模块解析
-          // 从 src/store/modules/menu/index.ts 到 src/views 需要 ../../../views/
-          route.component = () => import(`../../../views/${componentPath}`);
+          // 后端返回的组件路径(如 /system/User/UserList.vue)-> 页面组件
+          route.component = resolveViewComponent(menu.component);
         }
 
         // 处理子路由
