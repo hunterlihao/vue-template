@@ -1,45 +1,35 @@
-// 登录和注册表单校验规则
+// 登录表单校验规则
+import type { FormItemRule, FormRules } from 'element-plus';
+
+/** 与 Element Plus 的校验函数签名保持一致(避免手写 any) */
+type ValidatorFn = NonNullable<FormItemRule['validator']>;
 
 /**
  * 用户名校验规则
- * @param _rule
+ * @param _rule 校验规则对象
  * @param value 表单元素文本内容
- * @param callback 回调函数
+ * @param callback 回调函数:通过则直接调用,不通过则传入 Error
  */
-export const validatorUserName = (_rule: any, value: any, callback: any) => {
-  //rule:即为校验规则对象
-  //value:即为表单元素文本内容
-  //函数:如果符合条件callBack放行通过即为
-  //如果不符合条件callBack方法,注入错误提示信息
-  if (value.length >= 5) {
+export const validatorUserName: ValidatorFn = (_rule, value, callback) => {
+  if (String(value ?? '').length >= 5) {
     callback();
   } else {
     callback(new Error('账号长度至少五位'));
   }
 };
 
-/**
- * 密码校验规则
- * @param _rule
- * @param value 表单元素文本内容
- * @param callback 回调函数
- */
-export const validatorPassword = (_rule: any, value: any, callback: any) => {
-  if (value.length >= 6) {
+/** 密码校验规则 */
+export const validatorPassword: ValidatorFn = (_rule, value, callback) => {
+  if (String(value ?? '').length >= 6) {
     callback();
   } else {
     callback(new Error('密码长度至少六位'));
   }
 };
 
-/**
- * 验证码校验规则
- * @param _rule
- * @param value 表单元素文本内容
- * @param callback 回调函数
- */
-export const validatorCaptcha = (_rule: any, value: any, callback: any) => {
-  if (value.length === 4) {
+/** 验证码校验规则 */
+export const validatorCaptcha: ValidatorFn = (_rule, value, callback) => {
+  if (String(value ?? '').length === 4) {
     callback();
   } else {
     callback(new Error('验证码长度必须为4位'));
@@ -47,23 +37,12 @@ export const validatorCaptcha = (_rule: any, value: any, callback: any) => {
 };
 
 /**
- * 登录表单校验规则配置对象
- * 规则对象属性:
- * required: 代表这个字段务必要校验的
- * min: 文本长度至少多少位
- * max: 文本长度最多多少位
- * message: 错误的提示信息
- * trigger: 触发校验表单的时机 change->文本发生变化触发校验,blur:失去焦点的时候触发校验规则
+ * 登录表单校验规则。
+ * required: 字段必填;min: 文本长度下限;trigger: change 输入即校验 / blur 失焦校验
  */
-export const loginRules = {
-  username: [
-    // { required: true, min: 6, max: 10, message: '账号长度至少六位', trigger: 'change' }
-    { trigger: 'change', validator: validatorUserName },
-  ],
-  password: [
-    // { required: true, min: 6, max: 15, message: '密码长度至少6位', trigger: 'change' }
-    { trigger: 'change', validator: validatorPassword },
-  ],
+export const loginRules: FormRules = {
+  username: [{ trigger: 'change', validator: validatorUserName }],
+  password: [{ trigger: 'change', validator: validatorPassword }],
   captchaCode: [
     { required: true, message: '请输入验证码', trigger: 'blur' },
     { trigger: 'change', validator: validatorCaptcha },

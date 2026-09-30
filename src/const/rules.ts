@@ -55,7 +55,8 @@ export function confirmPasswordRules(
   return [
     { required: true, message: '请再次输入新密码', trigger: 'blur' },
     {
-      validator: (_rule: any, value: string, callback: any) => {
+      // 参数类型由 FormItemRule 推导,不需要手写 any
+      validator: (_rule, value: string, callback) => {
         if (value === '') {
           callback(new Error('请再次输入新密码'));
         } else if (value !== getPassword()) {

@@ -19,15 +19,13 @@ import TableEmpty from '@/components/TableEmpty/TableEmpty.vue';
 import DictTag from '@/components/DictTag/DictTag.vue';
 import { menuTypeDict } from '@/const/dict.ts';
 import { iconOf } from '@/components/icons.ts';
-import type { Result } from '@/types';
 
 // 全局属性($myConfirm)与权限判断
 const { hasPerm } = usePerm();
 
 // 表格数据(菜单是整棵树,不分页)
-const { tableList, loading, getList } = useTablePage({
+const { tableList, loading, getList } = useTablePage<MenuType>({
   api: getListApi,
-  paged: false,
 });
 
 // 上级菜单下拉数据
@@ -144,7 +142,7 @@ const handleFileUpload = async (file: File) => {
   formData.append('file', file);
 
   try {
-    const res: Result<any> = await importApi(formData);
+    const res = await importApi(formData);
     if (res && res.code === 200) {
       ElMessage.success('导入成功');
       await getList(); // 重新获取列表数据

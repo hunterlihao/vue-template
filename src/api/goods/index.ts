@@ -1,6 +1,7 @@
 // 商品管理接口
 import http from '@/utils/http.ts';
-import type { GoodsListParm, SysGoods } from '@/api/goods/type.ts';
+import type { PageParm, PageResult, Result } from '@/types';
+import type { SysGoods } from '@/api/goods/type.ts';
 
 const API = {
   ADD_URI: '/admin/goods',
@@ -14,8 +15,8 @@ export const addApi = (parm: SysGoods) => {
 };
 
 // 商品列表
-export const getListApi = (parm: GoodsListParm) => {
-  return http.post(API.GET_LIST_URI, parm);
+export const getListApi = (parm: PageParm) => {
+  return http.post<Result<PageResult<SysGoods>>>(API.GET_LIST_URI, parm);
 };
 
 // 修改商品

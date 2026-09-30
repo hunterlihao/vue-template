@@ -9,10 +9,32 @@ export type TabState = {
 };
 
 // 定义返回值类型:后端统一响应结构
-export interface Result<T = any> {
+// 默认 T = unknown:调用方要用 data 就必须声明它是什么,避免"无脑 any"。
+export interface Result<T = unknown> {
   code: number;
   message: string;
   data: T;
+}
+
+/** 分页返回结构 */
+export interface PageResult<T> {
+  records: T[];
+  total: number;
+}
+
+/**
+ * 列表查询参数。
+ * 之前在 4 个 api 模块的 type.ts 里各复制了一份 { params, current, size, total };
+ * 现在统一到这里,并用泛型承载关键字之外的筛选条件。
+ */
+export interface PageParm<TFilter = Record<string, never>> {
+  current: number;
+  size: number;
+  total: number;
+  /** 关键字 */
+  params: string;
+  /** 额外筛选条件(默认空对象) */
+  filter: TFilter;
 }
 
 // 通用弹窗的 props

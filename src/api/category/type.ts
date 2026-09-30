@@ -7,13 +7,7 @@ export type SysCategory = {
   remark: string;
 };
 
-// 列表查询参数
-export type CategoryListParm = {
-  params: string;
-  current: number;
-  size: number;
-  total: number;
-};
+// 列表查询参数已统一到 @/types 的 PageParm
 
 // 下拉选项
 export type CategoryOption = {

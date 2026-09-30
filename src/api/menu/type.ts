@@ -11,6 +11,8 @@ export type MenuType = {
   icon: string;
   parentName: string;
   orderNum: string;
+  /** 子菜单(菜单管理页是树形表格) */
+  children?: MenuType[];
 };
 
 // 动态菜单数据类型

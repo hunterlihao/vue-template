@@ -1,7 +1,8 @@
 // 角色管理接口
 import http from '@/utils/http.ts';
+import type { PageParm, PageResult, Result } from '@/types';
 // 统一管理接口
-import type { RoleListParm, saveMenuParm, SysRole } from '@/api/role/type.ts';
+import type { RoleOption, saveMenuParm, SysRole } from '@/api/role/type.ts';
 
 const API = {
   ADD_URI: '/admin/role',
@@ -17,8 +18,8 @@ export const addApi = (parm: SysRole) => {
 };
 
 // 角色列表
-export const getListApi = (parm: RoleListParm) => {
-  return http.post(API.GET_LIST_URI, parm);
+export const getListApi = (parm: PageParm) => {
+  return http.post<Result<PageResult<SysRole>>>(API.GET_LIST_URI, parm);
 };
 
 // 修改角色
@@ -33,7 +34,7 @@ export const deleteApi = (roleId: string) => {
 
 //角色下拉列表
 export const getSelectApi = () => {
-  return http.get(API.Select_URI);
+  return http.get<Result<RoleOption[]>>(API.Select_URI);
 };
 
 // 分配角色菜单

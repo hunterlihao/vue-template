@@ -27,7 +27,7 @@ const {
   resetBtn,
   sizeChange,
   currentChange,
-} = useTablePage({ api: getListApi });
+} = useTablePage<SysRole>({ api: getListApi });
 
 // 表格高度
 const { tableHeight } = useTableHeight(300);

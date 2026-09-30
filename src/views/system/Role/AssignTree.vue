@@ -6,7 +6,7 @@ import { saveRoleMenuApi } from '@/api/role';
 import { ElMessage, ElTree } from 'element-plus';
 import { reactive, ref } from 'vue';
 import { useUserStore } from '@/store/modules/user.ts';
-import type { AssignParm } from '@/api/user/type.ts';
+import type { AssignParm, AssignTreeMenu } from '@/api/user/type.ts';
 
 const userStore = useUserStore();
 
@@ -17,10 +17,10 @@ const commitParm = reactive({
   list: [] as string[],
 });
 
-// 树数据
+// 树数据(menuId 是字符串,与接口返回保持一致)
 const assignTreeData = reactive({
-  list: [],
-  assignTreeChecked: [] as number[], // 原来分配的权限id集合
+  list: [] as AssignTreeMenu[],
+  assignTreeChecked: [] as string[], // 已分配的菜单 id
 });
 const treeRef = ref<InstanceType<typeof ElTree>>();
 // 树的属性配置
@@ -36,15 +36,15 @@ const parms = reactive<AssignParm>({
 // 查询菜单树
 const getAssignTree = async () => {
   parms.userId = userStore.getUserId;
-  let res = await getAssignTreeApi(parms);
+  const res = await getAssignTreeApi(parms);
   if (res && res.code === 200) {
     // 设置权限树数据
     assignTreeData.list = res.data.menuList;
     // 设置角色原来的权限Id
     assignTreeData.assignTreeChecked = res.data.checkList;
-    // 数据回显，判断角色原来是否已经分配过权限，如果有，回显
+    // 数据回显:只勾选叶子节点,父节点由 el-tree 自行推导
     if (assignTreeData.assignTreeChecked.length > 0) {
-      const newArr: number[] = [];
+      const newArr: string[] = [];
       assignTreeData.assignTreeChecked.forEach((item) => {
         checked(item, assignTreeData.list, newArr);
       });
@@ -52,12 +52,9 @@ const getAssignTree = async () => {
     }
   }
 };
-/** 树节点结构(仅用到判断叶子与递归) */
-interface MenuNode {
-  menuId: number;
-  children?: MenuNode[];
-}
-const checked = (id: number, data: MenuNode[], newArr: number[]) => {
+
+/** 递归收集叶子节点 id */
+const checked = (id: string, data: AssignTreeMenu[], newArr: string[]) => {
   data.forEach((item) => {
     if (item.menuId === id) {
       if (item.children && item.children.length === 0) {
@@ -86,7 +83,7 @@ const commit = async () => {
     ElMessage.error('请选择菜单');
     return;
   }
-  let res = await saveRoleMenuApi(commitParm);
+  const res = await saveRoleMenuApi(commitParm);
   if (res && res.code === 200) {
     ElMessage.success('分配成功');
     onClose();
@@ -120,8 +117,7 @@ defineExpose({
     @onClose="onClose"
     @onConfirm="commit"
   >
-    <!-- :default-expanded-keys="assignTreeData.assignTreeChecked" -->
-    <template v-slot:content>
+    <template #content>
       <div class="tree-container">
         <el-tree
           ref="treeRef"

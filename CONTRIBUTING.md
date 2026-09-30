@@ -35,11 +35,12 @@ pnpm test         # Vitest
 ## 代码约定
 
 - **TypeScript**:`strict` + `noUnusedLocals`。不要用非空断言(`!`),ESLint 会报错;用可选访问 + 提前 return 替代。
-- **禁止 `any` 滥用**:能用具体类型就用具体类型;接口返回统一走 `Result<T>`。
-- **本地存储**:不要直接 `localStorage.getItem/setItem`,走 `src/utils/storage.ts`(`safeParse` 会兜住损坏的数据,`clearAppStorage` 只清本应用的 key)。
+- **禁止 `any`**:`@typescript-eslint/no-explicit-any` 是 **error**。接口返回统一走 `Result<T>`,默认泛型是 `unknown` —— 要读 `data` 就必须在 api 层声明它是什么类型(`http.get<Result<UserInfoResult>>(...)`)。
+- **列表页**:用 `useTablePage<行类型>({ api: getListApi })` 拿到带类型的 `tableList` 与 `loading`;分页参数统一用 `@/types` 的 `PageParm<TFilter>`,不要再各模块复制一份 `XxxListParm`。
+- **本地存储**:不要直接 `localStorage.getItem/setItem`,走 `src/utils/storage.ts`(`safeParse` 会兜住损坏的数据,`clearAppStorage` 只清本应用的 key);持久化的 store 只存必要字段,结构变化时用 `afterHydrate` 做兼容。
 - **权限判断**:统一使用 `usePerm()` + `v-if`。不要新增权限指令 —— 部分调用点在 `<el-table-column>` 这类无根元素组件上,指令拿不到 DOM 会静默失效。
 - **样式**:颜色、尺寸等复用 `src/styles/variable.scss` 中的变量;组件内样式一律 `<style scoped lang="scss">`。
-- **注释**:只在解释"为什么"时写;不要保留指向已删除文件的过时注释。
+- **注释**:只在解释"为什么"时写;不要保留指向已删除文件的过时注释。块注释里不要出现 `*/` 形态的路径写法(会提前结束注释)。
 
 ## 新增一个页面
 

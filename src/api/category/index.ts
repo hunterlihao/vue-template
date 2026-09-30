@@ -1,6 +1,7 @@
 // 物资类型(分类)管理接口
 import http from '@/utils/http.ts';
-import type { CategoryListParm, SysCategory } from '@/api/category/type.ts';
+import type { PageParm, PageResult, Result } from '@/types';
+import type { CategoryOption, SysCategory } from '@/api/category/type.ts';
 
 const API = {
   ADD_URI: '/admin/category',
@@ -15,8 +16,8 @@ export const addApi = (parm: SysCategory) => {
 };
 
 // 类型列表
-export const getListApi = (parm: CategoryListParm) => {
-  return http.post(API.GET_LIST_URI, parm);
+export const getListApi = (parm: PageParm) => {
+  return http.post<Result<PageResult<SysCategory>>>(API.GET_LIST_URI, parm);
 };
 
 // 修改类型
@@ -31,5 +32,5 @@ export const deleteApi = (categoryId: string) => {
 
 // 类型下拉列表
 export const getSelectApi = () => {
-  return http.get(API.SELECT_URI);
+  return http.get<Result<CategoryOption[]>>(API.SELECT_URI);
 };

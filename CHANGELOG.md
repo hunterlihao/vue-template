@@ -16,6 +16,8 @@
 - `router/dynamic.ts`:动态路由的注册/注销独立成模块,解开 store 与 router 的循环依赖
 - 共享组件与钩子:`SearchBar`、`TablePager`、`TableEmpty`、`DictTag`、`useDelete`、`const/dict.ts`
 - `components/icons.ts`:图标白名单,替换原来"注册全部 Element Plus 图标"的做法
+- 列表页钩子支持行类型与筛选条件泛型:`useTablePage<SysUser>` / `PageParm<TFilter>`
+- 单元测试补齐到 35 个:新增标签页数据兼容、`useTablePage` 分页/非分页/重置等用例
 
 ### 修复
 

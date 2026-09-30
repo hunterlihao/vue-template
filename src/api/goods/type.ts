@@ -10,10 +10,4 @@ export type SysGoods = {
   remark: string;
 };
 
-// 列表查询参数
-export type GoodsListParm = {
-  params: string;
-  current: number;
-  size: number;
-  total: number;
-};
+// 列表查询参数已统一到 @/types 的 PageParm

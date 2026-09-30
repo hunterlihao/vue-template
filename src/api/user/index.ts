@@ -1,11 +1,16 @@
 // 用户管理接口
 import http from '@/utils/http.ts';
+import type { PageParm, PageResult, Result } from '@/types';
 import type {
   AssignParm,
+  AssignTreeResult,
+  CaptchaResult,
+  CurrentUser,
   Login,
+  LoginResult,
   SysUser,
   UpdatePwd,
-  UserListParm,
+  UserInfoResult,
 } from '@/api/user/type.ts';
 // 统一管理接口
 
@@ -31,13 +36,13 @@ export const addApi = (parm: SysUser) => {
 };
 
 //用户列表
-export const getListApi = (parm: UserListParm) => {
-  return http.post(API.GET_LIST_URI, parm);
+export const getListApi = (parm: PageParm) => {
+  return http.post<Result<PageResult<SysUser>>>(API.GET_LIST_URI, parm);
 };
 
 //根据用户id查询角色
 export const getRoleListApi = (userId: string) => {
-  return http.get(API.GET_ROLE_LIST_URI, { userId: userId });
+  return http.get<Result<string[]>>(API.GET_ROLE_LIST_URI, { userId });
 };
 
 //修改用户
@@ -57,17 +62,17 @@ export const resetPasswordApi = (parm: { userId: string }) => {
 
 // 验证码
 export const getCaptchaApi = () => {
-  return http.get(API.CAPTCHA_URI);
+  return http.get<Result<CaptchaResult>>(API.CAPTCHA_URI);
 };
 
 // 登录
 export const loginApi = (parm: Login) => {
-  return http.post(API.LOGIN_URI, parm);
+  return http.post<Result<LoginResult>>(API.LOGIN_URI, parm);
 };
 
 //查询菜单树
 export const getAssignTreeApi = (pram: AssignParm) => {
-  return http.get(API.GET_ASSIGN_TREE_URI, pram);
+  return http.get<Result<AssignTreeResult>>(API.GET_ASSIGN_TREE_URI, pram);
 };
 
 // 修改密码
@@ -75,9 +80,9 @@ export const updatePasswordApi = (parm: UpdatePwd) => {
   return http.post(API.UPDATE_PASSWORD_URI, parm);
 };
 
-// 获取用户信息
+// 获取用户信息(权限码 + 用户信息)
 export const getUserInfoApi = (userId: string) => {
-  return http.get(API.GET_INFO_URI, { userId });
+  return http.get<Result<UserInfoResult>>(API.GET_INFO_URI, { userId });
 };
 
 //退出登录
@@ -87,7 +92,9 @@ export const logoutApi = () => {
 
 // 获取当前用户信息
 export const getCurrentUserInfoApi = (userId: string) => {
-  return http.get(API.GET_CURRENT_USER_INFO_URI, { userId: userId });
+  return http.get<Result<CurrentUser>>(API.GET_CURRENT_USER_INFO_URI, {
+    userId,
+  });
 };
 
 //修改当前用户信息
