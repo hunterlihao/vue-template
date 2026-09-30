@@ -11,7 +11,6 @@ import { useTabsStore } from '@/store/modules/tabs.ts';
 //引入登录表单校验规则
 import { loginRules } from './utils/rule';
 import { getCaptchaApi, loginApi } from '@/api/user';
-import { SET_TOKEN } from '@/utils/token.ts';
 
 const { setUserId, setNickName, setToken, setAvatar } = useUserStore(); //获取el-form组件
 const tabsStore = useTabsStore();
@@ -40,7 +39,6 @@ onMounted(() => {
 const getCaptcha = async () => {
   let res = await getCaptchaApi();
   if (res && res.code === 200) {
-    console.log(res.data);
     captcha.value.image = res.data.image;
     captcha.value.key = res.data.key;
     loginForm.captchaKey = res.data.key;
@@ -65,24 +63,13 @@ const login = async () => {
     // 清除之前的标签页状态
     tabsStore.closeAllTabs();
 
-    // 设置用户信息并保存到本地存储
+    // 设置用户信息:setToken 内部会写入本地存储,持久化由 store 的 persist 负责
     setUserId(res.data.userId);
     setNickName(res.data.nickName);
     setToken(res.data.token);
     setAvatar(res.data.avatarUrl);
 
-    // 保存用户信息到本地存储
-    localStorage.setItem(
-      'user',
-      JSON.stringify({
-        userId: res.data.userId,
-        nickName: res.data.nickName,
-        avatarUrl: res.data.avatarUrl,
-      }),
-    );
-
-    SET_TOKEN(res.data.token);
-    const redirect: any = $route.query.redirect;
+    const redirect = $route.query.redirect as string | undefined;
     await $router.push({ path: redirect || '/' });
 
     //登录成功提示信息

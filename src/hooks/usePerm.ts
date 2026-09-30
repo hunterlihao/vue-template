@@ -15,27 +15,19 @@ import { useUserStore } from '@/store/modules/user.ts';
  * 之所以不用指令(如 v-perm)统一:部分调用点位于 <el-table-column> 上,
  * 它是无根元素组件,指令拿不到真实 DOM,删不掉元素会静默失效;
  * 而 v-if 对任何组件/元素都成立。
+ *
+ * 权限码只从 store 读取(不读本地存储):改一改 localStorage 不该能提升权限。
  */
 export default function usePerm() {
   const userStore = useUserStore();
 
-  /**
-   * 传入权限码数组,命中任意一个即返回 true
-   */
+  /** 传入权限码数组,命中任意一个即返回 true;入参非法时按"无权限"处理 */
   const hasPerm = (codes: string[]): boolean => {
-    if (!Array.isArray(codes) || codes.length === 0) {
-      throw new Error(
-        "hasPerm 需要传入非空的权限码数组,例如 hasPerm(['sys:user:add'])",
-      );
-    }
-    const stored: string[] = JSON.parse(
-      localStorage.getItem('codeList') || '[]',
-    );
-    // 仓库里没有时回退到本地存储
-    const codeList = userStore.getCodeList?.length
+    if (!Array.isArray(codes) || codes.length === 0) return false;
+    const codeList = Array.isArray(userStore.getCodeList)
       ? userStore.getCodeList
-      : stored;
-    return codeList.some((code: string) => codes.includes(code));
+      : [];
+    return codeList.some((code) => codes.includes(code));
   };
 
   return { hasPerm };

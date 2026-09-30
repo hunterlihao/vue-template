@@ -8,15 +8,12 @@ import { ElMessage } from 'element-plus';
 import useInstance from '@/hooks/useInstance.ts';
 //获取标签页仓库
 import { useTabsStore } from '@/store/modules/tabs.ts';
-//获取菜单仓库
-import { useMenuStore } from '@/store/modules/menu/index.ts';
 
 //获取全局global
 const { global } = useInstance();
 const layoutSettingStore = useLayOutSettingStore();
 const userStore = useUserStore();
 const tabsStore = useTabsStore();
-const menuStore = useMenuStore();
 //获取路由器对象
 const $router = useRouter();
 //刷新按钮点击回调
@@ -40,12 +37,10 @@ const fullScreen = () => {
 const logout = async () => {
   const confirm = await global.$myConfirm('确定要退出登录吗？');
   if (confirm) {
-    // 清空用户数据
+    // 清空用户数据(logout 内部会清状态、存储与动态路由,且不会抛异常)
     await userStore.logout();
     // 清除标签页状态
     tabsStore.closeAllTabs();
-    // 清除菜单路由状态
-    menuStore.clearMenuRoutes();
     ElMessage.success('退出登录成功');
     //跳转到登录页面，退出登录后不需要携带redirect参数
     await $router.push({ path: '/login' });

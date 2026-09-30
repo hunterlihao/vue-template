@@ -1,4 +1,4 @@
-//路由鉴权:鉴权,项目当中路由能不能被的权限的设置(某一个路由什么条件下可以访问、什么条件下不可以访问)
+// 路由鉴权:登录态判断、权限与动态路由加载、进度条
 import router from '@/router';
 import setting from './setting';
 import nprogress from 'nprogress';
@@ -8,121 +8,62 @@ import 'nprogress/nprogress.css';
 import { useUserStore } from './store/modules/user';
 import pinia from './store';
 import { useTabsStore } from '@/store/modules/tabs.ts';
-import { useMenuStore } from '@/store/modules/menu/index.ts';
-import { constantRoute } from '@/router/router.ts';
 
 nprogress.configure({ showSpinner: false });
 
-let userStore = useUserStore(pinia);
-let tabsStore = useTabsStore(pinia);
-let menuStore = useMenuStore(pinia);
+const userStore = useUserStore(pinia);
+const tabsStore = useTabsStore(pinia);
 
-// 应用初始化时恢复动态路由
-function restoreDynamicRoutesOnStartup() {
-  const token = userStore.token;
-  if (token) {
-    // 尝试从本地存储恢复动态路由
-    const dynamicRoutes = menuStore.restoreDynamicRoutes();
-    if (dynamicRoutes && dynamicRoutes.length > 0) {
-      // 合并常量路由和动态路由
-      userStore.menuRoutes = [...constantRoute, ...dynamicRoutes];
-
-      // 添加动态路由到路由器
-      dynamicRoutes.forEach((route) => {
-        if (!router.hasRoute(route.name as string)) {
-          router.addRoute(route);
-        }
-      });
-    }
-  }
-}
-
-// 在应用启动时调用
-restoreDynamicRoutesOnStartup();
-
-//全局守卫:项目当中任意路由切换都会触发的钩子
-//全局前置守卫
+/**
+ * 全局前置守卫。
+ *
+ * 与旧实现的关键差别:
+ *  1. 启动时不再从 localStorage 恢复动态路由 —— 路由只能来自本次会话里
+ *     服务端返回的菜单,本地存储里的内容一律不可信。
+ *  2. 用 permissionsLoaded 标记"已加载",而不是靠 codeList.length > 0。
+ *     后端返回空权限时旧写法永远进不了放行分支,会无限重定向。
+ *  3. 权限接口失败时清空会话再跳登录,不再依赖 logout 接口的成功与否。
+ */
 router.beforeEach(async (to, _from, next) => {
-  document.title = `${setting.title} - ${to.meta.title}`;
-  //to:你将要访问那个路由
-  //from:你从来个路由而来
-  //next:路由的放行函数
+  document.title = `${setting.title} - ${to.meta.title ?? ''}`;
   nprogress.start();
-  //获取token,去判断用户登录、还是未登录
-  let token = userStore.token;
-  // 判断是否已加载权限码
-  let hasPermissions =
-    Array.isArray(userStore.codeList) && userStore.codeList.length > 0;
 
-  // 检查是否已经添加了动态路由
-  let hasDynamicRoutes = menuStore.getDynamicRoutes.length > 0;
+  // 未登录:只放行登录页,其余带上 redirect
+  if (!userStore.token) {
+    if (to.path === '/login') return next();
+    return next({ path: '/login', query: { redirect: to.path } });
+  }
 
-  //用户登录判断
-  if (token) {
-    //登录成功,访问login,不能访问,指向首页
-    if (to.path == '/login') {
-      next({ path: '/' });
-    } else {
-      //登录成功访问其余六个路由(登录排除)
-      //已具备权限数据和动态路由
-      if (hasPermissions && hasDynamicRoutes) {
-        // 如果有meta.title且不是登录/404页面，将路由添加到标签页
-        if (to.meta.title && to.path !== '/login' && to.path !== '/404') {
-          tabsStore.addTab(to);
-        }
-        //放行
-        next();
-      } else {
-        //如果没有用户信息,在守卫这里发请求获取到了用户信息再放行
-        try {
-          //获取用户信息
-          await userStore.getUserInfo();
+  // 已登录不要再进登录页
+  if (to.path === '/login') return next({ path: '/' });
 
-          // 动态添加路由
-          const dynamicRoutes = userStore.menuRoutes.filter(
-            (route) => !['/login', '/404'].includes(route.path as string),
-          );
-
-          // 添加动态路由到路由器
-          dynamicRoutes.forEach((route) => {
-            if (!router.hasRoute(route.name as string)) {
-              router.addRoute(route);
-            }
-          });
-
-          //放行
-          //万一:刷新的时候是异步路由,有可能获取到用户信息、异步路由还没有加载完毕,出现空白的效果
-          next({ ...to });
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {
-          //token过期:获取不到用户信息了
-          //用户手动修改本地存储token
-          //退出登录->用户相关的数据清空
-          await userStore.logout();
-          // 清除菜单路由状态
-          menuStore.clearMenuRoutes();
-          next({ path: '/login', query: { redirect: to.path } });
-        }
-      }
-    }
-  } else {
-    //用户未登录判断
-    if (to.path == '/login') {
-      next();
-    } else {
-      next({ path: '/login', query: { redirect: to.path } });
+  // 每个会话只加载一次权限与动态路由
+  if (!userStore.permissionsLoaded) {
+    try {
+      await userStore.loadPermissions();
+      // 用 replace 重新进入当前地址,让刚注册的动态路由生效
+      return next({ ...to, replace: true });
+    } catch {
+      // 令牌失效或接口异常:清空本地会话后回登录页
+      userStore.resetSession();
+      tabsStore.closeAllTabs();
+      return next({ path: '/login', query: { redirect: to.path } });
     }
   }
+
+  // 已加载完成:登记标签页并放行
+  if (to.meta.title && to.path !== '/404') {
+    tabsStore.addTab(to);
+  }
+  return next();
 });
-//全局后置守卫
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-router.afterEach((_to, _from) => {
+
+// 全局后置守卫
+router.afterEach(() => {
   nprogress.done();
 });
 
-//第一个问题:任意路由切换实现进度条业务 ---nprogress
-//第二个问题:路由鉴权(路由组件访问权限的设置)
-//全部路由组件:登录|404|任意路由|首页|数据大屏|权限管理(三个子路由)|商品管理(四个子路由)
-
-//用户未登录:可以访问login,其余六个路由不能访问(指向login)
-//用户登录成功:不可以访问login[指向首页],其余的路由可以访问
+// 路由出错(例如懒加载 chunk 失败)时也要收掉进度条
+router.onError(() => {
+  nprogress.done();
+});

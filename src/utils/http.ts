@@ -9,20 +9,51 @@ import { ElMessage } from 'element-plus';
 import { useUserStore } from '@/store/modules/user.ts';
 import type { Result } from '@/types';
 
-const config = {
-  //   baseURL: 'http://localhost:8089', // 请求接口的地址
+const config: AxiosRequestConfig = {
   baseURL: import.meta.env.VITE_APP_BASE_API, // 请求接口的地址
   timeout: 5000, // 请求超时时间
-  //   headers: {
-  //     'Content-Type': 'application/json;charset=UTF-8'
-  //   }
 };
-/*// 利用create方法创建axios实例
-const http = axios.create({
-  // 设置请求的根路径 基础路径会携带/api
-  baseURL: import.meta.env.VITE_APP_BASE_API,
-  timeout: 5000,
-});*/
+
+/** HTTP 状态码对应的提示文案 */
+const STATUS_TEXT: Record<number, string> = {
+  400: '错误请求',
+  401: '未授权，请重新登录',
+  403: '拒绝访问',
+  404: '请求错误，未找到接口',
+  405: '请求方法未允许',
+  408: '请求超时',
+  500: '后台接口出错',
+  501: '网络未实现',
+  502: '网络错误',
+  503: '服务不可用',
+  504: '网络超时',
+  505: 'http版本不支持该请求',
+};
+
+/**
+ * 登录态失效处理。
+ *  - 只清理本应用自己的存储(见 utils/storage.ts),不用 localStorage.clear()
+ *  - 用 router 跳转而不是 location.href:本项目是 hash 路由,
+ *    直接改 href 会绕开前端路由,静态托管下还会 404
+ *  - router 用动态 import 引入,避免 http -> router -> store -> http 的循环依赖
+ *  - redirecting 标记避免并发请求时反复跳转
+ */
+let redirecting = false;
+async function handleUnauthorized(): Promise<void> {
+  if (redirecting) return;
+  redirecting = true;
+  try {
+    useUserStore().resetSession();
+    const { default: router } = await import('@/router');
+    const from = router.currentRoute.value;
+    await router.replace({
+      path: '/login',
+      query: from.path === '/login' ? {} : { redirect: from.fullPath },
+    });
+  } finally {
+    redirecting = false;
+  }
+}
 
 class Http {
   // 初始化axios
@@ -39,117 +70,46 @@ class Http {
     // 添加请求拦截器
     this.instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
-        let store = useUserStore();
-        let user = JSON.parse(localStorage.getItem('user') || '{}');
-
-        // 获取token
-        let token = store.getToken || user.token;
-        if (token) {
-          //   config.headers['Authorization'] = token
-          // 替换原第50行代码为以下内容：
-          if (config.headers) {
-            config.headers['token'] = token;
-          }
+        // token 只有一个来源:user store(内部读 utils/token.ts)
+        const token = useUserStore().getToken;
+        if (token && config.headers) {
+          config.headers['token'] = token;
         }
         return config;
       },
-      (error: any) => {
-        error.data = {};
-        error.data.msg = '服务器异常，请联系管理员!';
-        return error;
-      },
+      // 请求没发出去就失败,原样抛出,不要 resolve 成普通值
+      (error) => Promise.reject(error),
     );
+
     // 添加响应拦截器
     this.instance.interceptors.response.use(
       (response: AxiosResponse) => {
-        let userStore = useUserStore();
-        // let menuStore = useMenuStore();
-        if (response.data.code === 401) {
-          // token过期，调到登录页面
-          // 清空缓存
-          sessionStorage.clear();
-          localStorage.clear();
-          userStore.setUserId('');
-          userStore.setToken('');
-          userStore.setCodeList([]);
-          // menuStore.setMenu([]);
-          window.location.href = '/login';
-        } else if (response.data.code === 200) {
-          return response.data;
-        } else {
-          // 显示后端返回的错误信息
-          const errorMsg =
-            response.data.msg || response.data.message || '服务器出错！';
-          ElMessage.error(errorMsg);
-          return Promise.reject(errorMsg);
+        const data = response.data;
+        // 业务码 401:登录态失效
+        if (data?.code === 401) {
+          handleUnauthorized();
+          return Promise.reject(new Error('登录已过期，请重新登录'));
         }
+        if (data?.code === 200) {
+          return data;
+        }
+        // 显示后端返回的错误信息
+        const errorMsg = data?.msg || data?.message || '服务器出错！';
+        ElMessage.error(errorMsg);
+        return Promise.reject(new Error(errorMsg));
       },
-      (error: any) => {
-        error.data = {};
-        if (error && error.response) {
-          switch (error.response.status) {
-            case 400:
-              error.data.msg = '错误请求';
-              ElMessage.error(error.data.msg);
-              break;
-            case 401:
-              error.data.msg = '未授权，请重新登录';
-              ElMessage.error(error.data.msg);
-              break;
-            case 403:
-              error.data.msg = '拒绝访问';
-              ElMessage.error(error.data.msg);
-              break;
-            case 404:
-              error.data.msg = '请求错误，未找到接口';
-              ElMessage.error(error.data.msg);
-              break;
-            case 405:
-              error.data.msg = '请求方法未允许';
-              ElMessage.error(error.data.msg);
-              break;
-            case 408:
-              error.data.msg = '请求超时';
-              ElMessage.error(error.data.msg);
-              break;
-            case 500:
-              //   error.data.msg = '服务器端出错'
-              error.data.msg = '后台接口出错';
-              ElMessage.error(error.data.msg);
-              break;
-            case 501:
-              error.data.msg = '网络未实现';
-              ElMessage.error(error.data.msg);
-              break;
-            case 502:
-              error.data.msg = '网铬错误';
-              ElMessage.error(error.data.msg);
-              break;
-            case 503:
-              error.data.msg = '服务不可用';
-              ElMessage.error(error.data.msg);
-              break;
-            case 504:
-              error.data.msg = '网铬超时';
-              ElMessage.error(error.data.msg);
-              break;
-            case 505:
-              error.data.msg = 'http版本不支持该请求';
-              ElMessage.error(error.data.msg);
-              break;
-            default:
-              // 尝试显示后端返回的错误信息
-              const errorMsg =
-                error.response.data?.msg ||
-                error.response.data?.message ||
-                `连接错误${error.response.status}`;
-              error.data.msg = errorMsg;
-              ElMessage.error(error.data.msg);
-          }
-        } else {
-          error.data.msg = '连接到服务器失败';
-          ElMessage.error(error.data.msg);
+      (error) => {
+        const status: number | undefined = error?.response?.status;
+        // 真正的 HTTP 401 同样要走失效处理,旧实现只弹了个提示
+        if (status === 401) {
+          handleUnauthorized();
         }
+        const errorMsg =
+          error?.response?.data?.msg ||
+          error?.response?.data?.message ||
+          (status ? STATUS_TEXT[status] : '') ||
+          (status ? `连接错误${status}` : '连接到服务器失败');
+        ElMessage.error(errorMsg);
         return Promise.reject(error);
       },
     );

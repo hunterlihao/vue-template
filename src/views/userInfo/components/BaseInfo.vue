@@ -47,15 +47,9 @@ const submitUserInfo = () => {
     const res = await updateCurrentUserInfoApi(userInfoModel);
     if (res && res.code === 200) {
       ElMessage.success('用户信息更新成功');
-      // 更新用户仓库中的信息
+      // 更新仓库即可:持久化由 pinia 的 persist 插件负责,不再手工读写 localStorage
       userStore.setNickName(userInfoModel.nickName);
       userStore.setAvatar(userInfoModel.avatarUrl || '');
-
-      // 更新本地存储的用户信息
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      user.nickName = userInfoModel.nickName;
-      user.avatarUrl = userInfoModel.avatarUrl;
-      localStorage.setItem('user', JSON.stringify(user));
     }
   });
 };

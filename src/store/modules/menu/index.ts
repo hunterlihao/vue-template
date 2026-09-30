@@ -1,10 +1,9 @@
-// 菜单相关仓库
-import { defineStore } from 'pinia';
 import type { RouteRecordRaw } from 'vue-router';
+import { defineStore } from 'pinia';
 import type { DynamicMenuType } from '@/api/menu/type';
 import { getMenuListApi } from '@/api/menu';
+import { removeDynamicRoutes } from '@/router/dynamic.ts';
 import Layout from '@/layout/index.vue';
-import router from '@/router/index.ts';
 
 // 预扫描 views 下所有页面组件,用于把菜单里的组件路径映射成懒加载函数
 // (原来的 import(`../../../views/${componentPath}`) 无法被 Vite 静态分析,
@@ -28,59 +27,45 @@ function resolveViewComponent(componentPath: string) {
 
 // 定义菜单仓库状态类型
 interface MenuState {
-  menuRoutes: RouteRecordRaw[];
   dynamicRoutes: RouteRecordRaw[];
 }
 
 export const useMenuStore = defineStore('Menu', {
+  // 注意:菜单/路由不做持久化。路由必须每次都由服务端返回的菜单重新构建,
+  // 否则本地存储里被改写的内容会被当成可信配置注册进路由表。
   state: (): MenuState => ({
-    menuRoutes: [],
     dynamicRoutes: [],
   }),
 
   getters: {
-    getMenuRoutes(state) {
-      return state.menuRoutes;
-    },
     getDynamicRoutes(state) {
       return state.dynamicRoutes;
     },
   },
 
   actions: {
-    // 设置菜单路由
-    setMenuRoutes(routes: RouteRecordRaw[]) {
-      this.menuRoutes = routes;
-    },
-
     // 设置动态路由
     setDynamicRoutes(routes: RouteRecordRaw[]) {
       this.dynamicRoutes = routes;
     },
 
-    // 获取动态菜单数据
-    async getMenuList(userId: string) {
-      try {
-        const res = await getMenuListApi(userId);
-        if (res && res.code === 200) {
-          // 将后端返回的菜单数据转换为路由格式
-          const dynamicRoutes = this.transformMenuToRoutes(res.data);
-          this.setDynamicRoutes(dynamicRoutes);
-          // 保存到本地存储
-          localStorage.setItem('dynamicRoutes', JSON.stringify(res.data));
-          return dynamicRoutes;
-        }
-        return [];
-      } catch (error) {
-        console.error('获取菜单列表失败:', error);
-        return [];
-      }
+    /**
+     * 拉取菜单并转换为路由。
+     * 失败时抛出,由调用方决定是重试还是跳登录,不在这里吞掉。
+     */
+    async getMenuList(userId: string): Promise<RouteRecordRaw[]> {
+      const res = await getMenuListApi(userId);
+      if (!res || res.code !== 200) return [];
+      const dynamicRoutes = this.transformMenuToRoutes(res.data);
+      this.setDynamicRoutes(dynamicRoutes);
+      return dynamicRoutes;
     },
 
     // 将菜单数据转换为路由格式
     transformMenuToRoutes(menuData: DynamicMenuType[]): RouteRecordRaw[] {
+      if (!Array.isArray(menuData)) return [];
       return menuData.map((menu) => {
-        const route: any = {
+        const route: RouteRecordRaw = {
           path: menu.path,
           name: menu.name,
           meta: {
@@ -88,7 +73,7 @@ export const useMenuStore = defineStore('Menu', {
             icon: menu.meta.icon,
             roles: menu.meta.roles,
           },
-        };
+        } as RouteRecordRaw;
 
         // 处理组件
         if (menu.component === 'Layout') {
@@ -100,10 +85,11 @@ export const useMenuStore = defineStore('Menu', {
 
         // 处理子路由
         if (menu.children && menu.children.length > 0) {
-          route.children = this.transformMenuToRoutes(menu.children);
+          const children = this.transformMenuToRoutes(menu.children);
+          route.children = children;
           // 如果有子路由，设置重定向到第一个子路由
-          if (route.children && route.children.length > 0) {
-            route.redirect = route.children[0].path;
+          if (children.length > 0) {
+            route.redirect = children[0].path;
           }
         }
 
@@ -111,39 +97,10 @@ export const useMenuStore = defineStore('Menu', {
       });
     },
 
-    // 从本地存储恢复动态路由
-    restoreDynamicRoutes() {
-      try {
-        const dynamicRoutesStr = localStorage.getItem('dynamicRoutes');
-        if (dynamicRoutesStr) {
-          const menuData = JSON.parse(dynamicRoutesStr);
-          const dynamicRoutes = this.transformMenuToRoutes(menuData);
-          this.setDynamicRoutes(dynamicRoutes);
-          return dynamicRoutes;
-        }
-      } catch (error) {
-        console.error('恢复动态路由失败:', error);
-      }
-      return [];
-    },
-
-    // 清空菜单路由
+    // 清空菜单路由(同时把它注册到 router 的路由一并注销)
     clearMenuRoutes() {
-      // 移除之前添加的动态路由
-      this.dynamicRoutes.forEach((route) => {
-        if (route.name) {
-          router.removeRoute(route.name);
-        }
-      });
-
-      this.menuRoutes = [];
+      removeDynamicRoutes(this.dynamicRoutes);
       this.dynamicRoutes = [];
-      localStorage.removeItem('dynamicRoutes');
     },
-  },
-
-  persist: {
-    key: 'menu',
-    storage: localStorage,
   },
 });
