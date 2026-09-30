@@ -16,3 +16,21 @@ $base-menu-logo-height: 70px;
 
 // 左侧菜单logo右侧文字大小
 $base-logo-title-font-size: 20px;
+
+// ---------------------------------------------------------------- 颜色
+// 统一在这里定义,页面/组件里不要再写裸十六进制
+// 主色同时用于 Element Plus 的 --el-color-primary(见 styles/index.scss)
+$color-primary: #409eff;
+$color-success: #67c23a;
+$color-warning: #e6a23c;
+$color-danger: #f56c6c;
+$color-text-primary: #303133;
+$color-text-regular: #606266;
+$color-text-secondary: #909399;
+$color-border-light: #f0f0f0;
+$color-bg-white: #fff;
+$color-bg-page: #f9f9f9;
+
+// ---------------------------------------------------------------- 层级
+$z-index-dropdown: 1000;
+$z-index-sticky: 1010;

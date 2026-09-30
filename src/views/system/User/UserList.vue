@@ -9,7 +9,13 @@ import usePerm from '@/hooks/usePerm.ts';
 import useTablePage from '@/hooks/useTablePage.ts';
 import useTableHeight from '@/hooks/useTableHeight.ts';
 import useCrudDialog from '@/hooks/useCrudDialog.ts';
+import useDelete from '@/hooks/useDelete.ts';
+import SearchBar from '@/components/SearchBar/SearchBar.vue';
+import TablePager from '@/components/TablePager/TablePager.vue';
+import TableEmpty from '@/components/TableEmpty/TableEmpty.vue';
 import { useUserStore } from '@/store/modules/user.ts';
+import DictTag from '@/components/DictTag/DictTag.vue';
+import { enabledDict, sexDict, yesNoDict } from '@/const/dict.ts';
 import type { SysUser } from '@/api/user/type.ts';
 import type { RoleOption } from '@/api/role/type.ts';
 import {
@@ -40,6 +46,7 @@ const userStore = useUserStore();
 const {
   searchParm,
   tableList,
+  loading,
   getList,
   searchBtn,
   resetBtn,
@@ -152,16 +159,8 @@ const editBtn = async (row: SysUser) => {
   });
 };
 
-// 删除按钮
-const deleteBtn = async (userId: string) => {
-  const confirm = await global.$myConfirm('确定要删除该数据吗？');
-  if (!confirm) return;
-  const res = await deleteApi(userId);
-  if (res && res.code === 200) {
-    await getList();
-    ElMessage.success('删除成功');
-  }
-};
+// 删除(确认 + 调接口 + 刷新 + 提示,统一走 useDelete)
+const { remove: deleteBtn } = useDelete(deleteApi, getList);
 
 // 重置密码
 const resetPassword = async (userId: string) => {
@@ -188,20 +187,15 @@ const resetPassword = async (userId: string) => {
 
 <template>
   <el-card>
-    <el-form :model="searchParm" :inline="true" size="default">
+    <SearchBar :model="searchParm" @search="searchBtn" @reset="resetBtn">
       <el-form-item>
         <el-input
           v-model="searchParm.params"
+          aria-label="姓名"
           placeholder="请输入姓名"
         ></el-input>
       </el-form-item>
-      <el-form-item>
-        <el-button icon="Search" type="primary" plain @click="searchBtn">
-          搜索
-        </el-button>
-        <el-button icon="Refresh" type="danger" plain @click="resetBtn">
-          重置
-        </el-button>
+      <template #actions>
         <el-button
           icon="Plus"
           type="primary"
@@ -210,12 +204,14 @@ const resetPassword = async (userId: string) => {
         >
           新增
         </el-button>
-      </el-form-item>
-    </el-form>
+      </template>
+    </SearchBar>
     <!-- 表格数据 -->
     <el-table
+      v-loading="loading"
       :height="tableHeight"
       :data="tableList"
+      row-key="userId"
       border
       stripe
       :header-cell-style="{ 'text-align': 'center' }"
@@ -223,22 +219,7 @@ const resetPassword = async (userId: string) => {
       <el-table-column prop="nickName" label="姓名"></el-table-column>
       <el-table-column prop="sex" label="性别" align="center">
         <template #default="scope">
-          <el-tag
-            type="primary"
-            v-if="scope.row.sex === 0"
-            size="default"
-            effect="dark"
-          >
-            男
-          </el-tag>
-          <el-tag
-            type="danger"
-            v-if="scope.row.sex === 1"
-            size="default"
-            effect="dark"
-          >
-            女
-          </el-tag>
+          <DictTag :value="scope.row.sex" :dict="sexDict" />
         </template>
       </el-table-column>
       <el-table-column prop="phone" label="手机号">
@@ -250,30 +231,12 @@ const resetPassword = async (userId: string) => {
       <el-table-column prop="username" label="账户"></el-table-column>
       <el-table-column prop="isEnabled" label="状态" align="center">
         <template #default="scope">
-          <el-tag
-            type="success"
-            v-if="scope.row.isEnabled === 1"
-            size="default"
-            effect="dark"
-          >
-            启用
-          </el-tag>
-          <el-tag type="danger" v-else size="default" effect="dark">
-            禁用
-          </el-tag>
+          <DictTag :value="scope.row.isEnabled" :dict="enabledDict" />
         </template>
       </el-table-column>
       <el-table-column prop="isAdmin" label="是否超级管理员" align="center">
         <template #default="scope">
-          <el-tag
-            type="primary"
-            v-if="scope.row.isAdmin === 1"
-            size="default"
-            effect="dark"
-          >
-            是
-          </el-tag>
-          <el-tag type="danger" v-else size="default" effect="dark">否</el-tag>
+          <DictTag :value="scope.row.isAdmin" :dict="yesNoDict" />
         </template>
       </el-table-column>
       <el-table-column
@@ -317,19 +280,18 @@ const resetPassword = async (userId: string) => {
           </div>
         </template>
       </el-table-column>
+      <template #empty>
+        <TableEmpty />
+      </template>
     </el-table>
     <!-- 分页 -->
-    <el-pagination
-      @size-change="sizeChange"
-      @current-change="currentChange"
-      :current-page="searchParm.current"
-      :page-sizes="[5, 10, 15, 20, 25]"
-      :page-size="searchParm.size"
-      layout="total, sizes, prev, pager, next, jumper"
+    <TablePager
+      :current="searchParm.current"
+      :size="searchParm.size"
       :total="searchParm.total"
-      background
-      style="margin-top: 10px"
-    ></el-pagination>
+      @update:size="sizeChange"
+      @update:current="currentChange"
+    />
     <!-- 新增、编辑 -->
     <SysDialog
       :title="dialog.title"
@@ -425,5 +387,3 @@ const resetPassword = async (userId: string) => {
     </SysDialog>
   </el-card>
 </template>
-
-<style scoped lang="scss"></style>

@@ -5,7 +5,7 @@ export const useLayOutSettingStore = defineStore('SettingStore', {
   state: () => {
     return {
       fold: false, //用户控制菜单折叠还是收起控制
-      refsh: false, //仓库这个属性用于控制刷新效果
+      refresh: false, //用于控制内容区刷新(refsh 拼写已修正)
     };
   },
 });

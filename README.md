@@ -57,9 +57,10 @@ pnpm dev          # http://127.0.0.1:5050
 │   └── user.ts menu.ts ...   # 各模块接口
 ├── src/
 │   ├── api/                  # 接口定义,每个模块 index.ts + type.ts
-│   ├── components/           # 通用组件:Dialog / UploadImg / SelectCheck
-│   ├── const/                # 表单校验规则等常量
-│   ├── hooks/                # useTablePage / useCrudDialog / usePerm / useEcharts ...
+│   ├── components/           # 通用组件:Dialog / UploadImg / SelectCheck / SearchBar / TablePager / TableEmpty / DictTag
+│   │   └── icons.ts          # Element Plus 图标白名单(新增图标要在这里登记)
+│   ├── const/                # 表单校验规则、字典(dict.ts)等常量
+│   ├── hooks/                # useTablePage / useCrudDialog / useDelete / usePerm / useEcharts ...
 │   ├── layout/               # 布局:侧边栏、菜单、顶栏、标签页
 │   ├── router/               # 路由表 + 动态路由注册(dynamic.ts)
 │   ├── store/                # Pinia 仓库:user / menu / tabs / setting

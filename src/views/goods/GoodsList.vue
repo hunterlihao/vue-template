@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import { ElMessage } from 'element-plus';
 import SysDialog from '@/components/Dialog/SysDialog.vue';
-import useInstance from '@/hooks/useInstance.ts';
 import usePerm from '@/hooks/usePerm.ts';
 import useTablePage from '@/hooks/useTablePage.ts';
 import useTableHeight from '@/hooks/useTableHeight.ts';
 import useCrudDialog from '@/hooks/useCrudDialog.ts';
+import useDelete from '@/hooks/useDelete.ts';
+import SearchBar from '@/components/SearchBar/SearchBar.vue';
+import TablePager from '@/components/TablePager/TablePager.vue';
+import TableEmpty from '@/components/TableEmpty/TableEmpty.vue';
 import type { CategoryOption } from '@/api/category/type.ts';
 import { getSelectApi } from '@/api/category';
 import type { SysGoods } from '@/api/goods/type.ts';
@@ -14,13 +16,13 @@ import { addApi, deleteApi, editApi, getListApi } from '@/api/goods';
 import { required } from '@/const/rules';
 
 // 全局属性($myConfirm)与权限判断
-const { global } = useInstance();
 const { hasPerm } = usePerm();
 
 // 列表数据 + 分页
 const {
   searchParm,
   tableList,
+  loading,
   getList,
   searchBtn,
   resetBtn,
@@ -87,34 +89,22 @@ const rules = reactive({
   unit: required('请输入单位'),
 });
 
-// 删除
-const deleteBtn = async (row: SysGoods) => {
-  const confirm = await global.$myConfirm('确定要删除该数据吗？');
-  if (!confirm) return;
-  const res = await deleteApi(row.goodsId);
-  if (res && res.code === 200) {
-    await getList();
-    ElMessage.success('删除成功');
-  }
-};
+// 删除(确认 + 调接口 + 刷新 + 提示,统一走 useDelete)
+const { remove } = useDelete(deleteApi, getList);
+const deleteBtn = (row: SysGoods) => remove(row.goodsId);
 </script>
 
 <template>
   <el-card>
-    <el-form :model="searchParm" :inline="true" size="default">
+    <SearchBar :model="searchParm" @search="searchBtn" @reset="resetBtn">
       <el-form-item>
         <el-input
           v-model="searchParm.params"
+          aria-label="商品名称"
           placeholder="请输入商品名称"
         ></el-input>
       </el-form-item>
-      <el-form-item>
-        <el-button icon="Search" type="primary" plain @click="searchBtn">
-          搜索
-        </el-button>
-        <el-button icon="Refresh" type="danger" plain @click="resetBtn">
-          重置
-        </el-button>
+      <template #actions>
         <el-button
           icon="Plus"
           type="primary"
@@ -123,12 +113,14 @@ const deleteBtn = async (row: SysGoods) => {
         >
           新增
         </el-button>
-      </el-form-item>
-    </el-form>
+      </template>
+    </SearchBar>
 
     <el-table
+      v-loading="loading"
       :height="tableHeight"
       :data="tableList"
+      row-key="goodsId"
       border
       stripe
       :header-cell-style="{ 'text-align': 'center' }"
@@ -180,19 +172,18 @@ const deleteBtn = async (row: SysGoods) => {
           </el-button>
         </template>
       </el-table-column>
+      <template #empty>
+        <TableEmpty />
+      </template>
     </el-table>
 
-    <el-pagination
-      @size-change="sizeChange"
-      @current-change="currentChange"
-      :current-page="searchParm.current"
-      :page-sizes="[5, 10, 15, 20, 25]"
-      :page-size="searchParm.size"
-      layout="total, sizes, prev, pager, next, jumper"
+    <TablePager
+      :current="searchParm.current"
+      :size="searchParm.size"
       :total="searchParm.total"
-      background
-      style="margin-top: 10px"
-    ></el-pagination>
+      @update:size="sizeChange"
+      @update:current="currentChange"
+    />
 
     <SysDialog
       :title="dialog.title"
@@ -253,5 +244,3 @@ const deleteBtn = async (row: SysGoods) => {
     </SysDialog>
   </el-card>
 </template>
-
-<style scoped lang="scss"></style>

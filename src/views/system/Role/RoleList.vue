@@ -1,24 +1,27 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import SysDialog from '@/components/Dialog/SysDialog.vue';
-import { ElMessage, type FormRules } from 'element-plus';
+import type { FormRules } from 'element-plus';
 import type { SysRole } from '@/api/role/type.ts';
 import { addApi, deleteApi, editApi, getListApi } from '@/api/role';
-import useInstance from '@/hooks/useInstance.ts';
 import usePerm from '@/hooks/usePerm.ts';
 import useTablePage from '@/hooks/useTablePage.ts';
 import useTableHeight from '@/hooks/useTableHeight.ts';
 import useCrudDialog from '@/hooks/useCrudDialog.ts';
+import useDelete from '@/hooks/useDelete.ts';
+import SearchBar from '@/components/SearchBar/SearchBar.vue';
+import TablePager from '@/components/TablePager/TablePager.vue';
+import TableEmpty from '@/components/TableEmpty/TableEmpty.vue';
 import AssignTree from '@/views/system/Role/AssignTree.vue';
 
 // 全局属性($myConfirm)与权限判断
-const { global } = useInstance();
 const { hasPerm } = usePerm();
 
 // 列表数据 + 分页
 const {
   searchParm,
   tableList,
+  loading,
   getList,
   searchBtn,
   resetBtn,
@@ -65,35 +68,22 @@ const assignTreeEdit = (row: SysRole) => {
   assignTree.value?.show(row.roleId, row.roleName);
 };
 
-// 删除按钮
-const deleteBtn = async (roleId: string) => {
-  const confirm = await global.$myConfirm('确定要删除该数据吗？');
-  if (!confirm) return;
-  const res = await deleteApi(roleId);
-  if (res && res.code === 200) {
-    await getList();
-    ElMessage.success('删除成功');
-  }
-};
+// 删除(确认 + 调接口 + 刷新 + 提示,统一走 useDelete)
+const { remove: deleteBtn } = useDelete(deleteApi, getList);
 </script>
 
 <template>
   <el-card>
     <!--搜素框-->
-    <el-form :model="searchParm" :inline="true">
+    <SearchBar :model="searchParm" @search="searchBtn" @reset="resetBtn">
       <el-form-item>
         <el-input
-          placeholder="请输入关键字"
           v-model="searchParm.params"
+          aria-label="角色关键字"
+          placeholder="请输入关键字"
         ></el-input>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" plain @click="searchBtn">
-          查询
-        </el-button>
-        <el-button type="danger" icon="Refresh" plain @click="resetBtn">
-          重置
-        </el-button>
+      <template #actions>
         <el-button
           type="primary"
           icon="Plus"
@@ -102,12 +92,14 @@ const deleteBtn = async (roleId: string) => {
         >
           新增
         </el-button>
-      </el-form-item>
-    </el-form>
+      </template>
+    </SearchBar>
     <!-- 表格数据 -->
     <el-table
+      v-loading="loading"
       :height="tableHeight"
       :data="tableList"
+      row-key="roleId"
       border
       stripe
       :header-cell-style="{ 'text-align': 'center' }"
@@ -149,19 +141,18 @@ const deleteBtn = async (roleId: string) => {
           </el-button>
         </template>
       </el-table-column>
+      <template #empty>
+        <TableEmpty />
+      </template>
     </el-table>
     <!-- 分页 -->
-    <el-pagination
-      @size-change="sizeChange"
-      @current-change="currentChange"
-      :current-page="searchParm.current"
-      :page-sizes="[5, 10, 15, 20, 25]"
-      :page-size="searchParm.size"
-      layout="total, sizes, prev, pager, next, jumper"
+    <TablePager
+      :current="searchParm.current"
+      :size="searchParm.size"
       :total="searchParm.total"
-      background
-      style="margin-top: 10px"
-    ></el-pagination>
+      @update:size="sizeChange"
+      @update:current="currentChange"
+    />
     <!--新增,编辑弹窗-->
     <SysDialog
       :title="dialog.title"
@@ -195,5 +186,3 @@ const deleteBtn = async (roleId: string) => {
     <AssignTree ref="assignTree" />
   </el-card>
 </template>
-
-<style scoped lang="scss"></style>

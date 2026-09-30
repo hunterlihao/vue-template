@@ -35,7 +35,11 @@ $layout-easing: cubic-bezier(0.4, 0, 0.2, 1);
       height: calc(100vh - $base-menu-logo-height);
       transition: width $layout-duration $layout-easing;
 
+      // 菜单配色统一走变量(原来写在模板的 background-color / text-color 属性上)
       :deep(.el-menu) {
+        --el-menu-bg-color: #{$color-bg-white};
+        --el-menu-text-color: #{$color-text-primary};
+
         border-right: none;
       }
     }
@@ -53,7 +57,7 @@ $layout-easing: cubic-bezier(0.4, 0, 0.2, 1);
     flex-direction: column;
     width: calc(100% - $base-menu-width);
     height: $base-tabbar-height;
-    background-color: white;
+    background-color: $color-bg-white;
     transition:
       width $layout-duration $layout-easing,
       left $layout-duration $layout-easing;
@@ -62,7 +66,7 @@ $layout-easing: cubic-bezier(0.4, 0, 0.2, 1);
       box-sizing: border-box;
       height: 50px;
       margin-top: 20px;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid $color-border-light;
     }
 
     .tabs_component {
@@ -87,7 +91,7 @@ $layout-easing: cubic-bezier(0.4, 0, 0.2, 1);
     height: calc(100vh - $base-tabbar-height);
     padding: 20px;
     overflow: auto;
-    background-color: #fff;
+    background-color: $color-bg-white;
     transition:
       width $layout-duration $layout-easing,
       left $layout-duration $layout-easing;

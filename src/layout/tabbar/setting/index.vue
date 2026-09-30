@@ -9,6 +9,8 @@ import useInstance from '@/hooks/useInstance.ts';
 //获取标签页仓库
 import { useTabsStore } from '@/store/modules/tabs.ts';
 
+defineOptions({ name: 'Setting' });
+
 //获取全局global
 const { global } = useInstance();
 const layoutSettingStore = useLayOutSettingStore();
@@ -18,7 +20,7 @@ const tabsStore = useTabsStore();
 const $router = useRouter();
 //刷新按钮点击回调
 const updateRefsh = () => {
-  layoutSettingStore.refsh = !layoutSettingStore.refsh;
+  layoutSettingStore.refresh = !layoutSettingStore.refresh;
 };
 //全屏按钮点击的回调
 const fullScreen = () => {
@@ -48,16 +50,24 @@ const logout = async () => {
 };
 </script>
 
-<script lang="ts">
-export default {
-  name: 'Setting',
-};
-</script>
 <template>
-  <el-button circle icon="Refresh" @click="updateRefsh"></el-button>
-  <el-button circle icon="FullScreen" @click="fullScreen"></el-button>
+  <el-button
+    circle
+    icon="Refresh"
+    aria-label="刷新页面"
+    title="刷新页面"
+    @click="updateRefsh"
+  ></el-button>
+  <el-button
+    circle
+    icon="FullScreen"
+    aria-label="全屏切换"
+    title="全屏切换"
+    @click="fullScreen"
+  ></el-button>
   <img
     :src="userStore.avatarUrl"
+    alt="用户头像"
     style="width: 28px; height: 28px; margin: 0 10px; border-radius: 50%"
   />
   <!-- 下拉菜单 -->
@@ -72,5 +82,3 @@ export default {
     </template>
   </el-dropdown>
 </template>
-
-<style lang="scss" scoped></style>

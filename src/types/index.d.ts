@@ -31,3 +31,13 @@ export type DialogModel = {
   visible: boolean;
   width: number | string;
 };
+
+/** 挂到 app.config.globalProperties 上的方法(见 main.ts) */
+declare module 'vue' {
+  interface ComponentCustomProperties {
+    /** 二次确认,返回是否点了确定 */
+    $myConfirm: (text: string, title?: string) => Promise<boolean>;
+  }
+}
+
+export {};

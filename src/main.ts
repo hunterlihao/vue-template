@@ -17,7 +17,7 @@ import '@/styles/index.scss';
 //  引入路由
 import router from '@/router';
 // 引入自定义路由守卫
-import './permisstion';
+import './permission';
 // 引入pinia
 import pinia from '@/store';
 //暗黑模式需要的样式

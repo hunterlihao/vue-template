@@ -144,6 +144,6 @@ const handleExceed: UploadProps['onExceed'] = () => {
 .el-upload__tip {
   margin-top: 8px;
   font-size: 12px;
-  color: #606266;
+  color: $color-text-regular;
 }
 </style>

@@ -71,7 +71,7 @@ const removeTab = (targetPath: string) => {
 // 刷新当前页面
 const refreshCurrentPage = () => {
   // 切换刷新状态，触发main组件的监听器
-  layOutSettingStore.refsh = !layOutSettingStore.refsh;
+  layOutSettingStore.refresh = !layOutSettingStore.refresh;
 };
 
 // 标签页操作

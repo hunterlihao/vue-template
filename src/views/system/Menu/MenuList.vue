@@ -11,18 +11,21 @@ import {
   importApi,
 } from '@/api/menu';
 import type { MenuType } from '@/api/menu/type.ts';
-import useInstance from '@/hooks/useInstance.ts';
 import usePerm from '@/hooks/usePerm.ts';
 import useTablePage from '@/hooks/useTablePage.ts';
 import useCrudDialog from '@/hooks/useCrudDialog.ts';
+import useDelete from '@/hooks/useDelete.ts';
+import TableEmpty from '@/components/TableEmpty/TableEmpty.vue';
+import DictTag from '@/components/DictTag/DictTag.vue';
+import { menuTypeDict } from '@/const/dict.ts';
+import { iconOf } from '@/components/icons.ts';
 import type { Result } from '@/types';
 
 // 全局属性($myConfirm)与权限判断
-const { global } = useInstance();
 const { hasPerm } = usePerm();
 
 // 表格数据(菜单是整棵树,不分页)
-const { tableList, getList } = useTablePage({
+const { tableList, loading, getList } = useTablePage({
   api: getListApi,
   paged: false,
 });
@@ -99,16 +102,8 @@ const editBtn = async (row: MenuType) => {
   openEdit(row);
 };
 
-// 删除按钮
-const deleteBtn = async (menuId: string) => {
-  const confirm = await global.$myConfirm('确定要删除该数据吗？');
-  if (!confirm) return;
-  const res = await deleteApi(menuId);
-  if (res && res.code === 200) {
-    ElMessage.success('删除成功');
-    await getList();
-  }
-};
+// 删除(确认 + 调接口 + 刷新 + 提示,统一走 useDelete)
+const { remove: deleteBtn } = useDelete(deleteApi, getList);
 
 // 导出按钮
 const exportBtn = async () => {
@@ -179,6 +174,7 @@ const handleFileUpload = async (file: File) => {
     </el-button>
     <!-- 表格 -->
     <el-table
+      v-loading="loading"
       :data="tableList"
       row-key="menuId"
       border
@@ -191,21 +187,13 @@ const handleFileUpload = async (file: File) => {
       <el-table-column prop="icon" label="图标" align="center" width="80">
         <template #default="scope">
           <el-icon v-if="scope.row.icon">
-            <component :is="scope.row.icon" />
+            <component :is="iconOf(scope.row.icon)" />
           </el-icon>
         </template>
       </el-table-column>
       <el-table-column prop="type" label="菜单类型" width="100" align="center">
         <template #default="scope">
-          <el-tag v-if="scope.row.type === 0" type="danger" size="default">
-            目录
-          </el-tag>
-          <el-tag v-if="scope.row.type === 1" type="success" size="default">
-            菜单
-          </el-tag>
-          <el-tag v-if="scope.row.type === 2" type="primary" size="default">
-            按钮
-          </el-tag>
+          <DictTag :value="scope.row.type" :dict="menuTypeDict" />
         </template>
       </el-table-column>
       <el-table-column
@@ -266,6 +254,9 @@ const handleFileUpload = async (file: File) => {
           </el-button>
         </template>
       </el-table-column>
+      <template #empty>
+        <TableEmpty />
+      </template>
     </el-table>
 
     <!--  新增弹窗  -->
@@ -373,5 +364,3 @@ const handleFileUpload = async (file: File) => {
     </SysDialog>
   </el-card>
 </template>
-
-<style scoped lang="scss"></style>

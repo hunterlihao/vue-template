@@ -91,14 +91,14 @@ const onVisibleChange = (value: boolean) => {
   padding: 0 10px;
   margin-right: 0;
   line-height: 54px;
-  background-color: #fff;
+  background-color: $color-bg-white;
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
 
   .el-dialog__title {
     font-size: 16px;
     font-weight: 600;
-    color: #000;
+    color: $color-text-primary;
   }
 }
 
@@ -107,7 +107,7 @@ const onVisibleChange = (value: boolean) => {
 
   .el-dialog__close {
     // 原来是 #fff,在白色标题栏上完全看不见
-    color: #909399;
+    color: $color-text-secondary;
   }
 }
 
@@ -117,6 +117,6 @@ const onVisibleChange = (value: boolean) => {
 
 :deep(.el-dialog__footer) {
   padding: 10px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid $color-border-light;
 }
 </style>

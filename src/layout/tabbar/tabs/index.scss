@@ -1,10 +1,13 @@
+// 本文件被 tabs/index.vue 以 @use 加载,@use 是文件级作用域,需要自己引入变量
+@use "@/styles/variable.scss" as *;
+
 .tabs-box {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 40px;
   padding: 0 10px;
-  background-color: #fff;
+  background-color: $color-bg-white;
   border-bottom: none;
   box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
 
@@ -34,13 +37,13 @@
       height: 36px;
       font-weight: 400;
       line-height: 36px;
-      color: #666;
+      color: $color-text-regular;
       border: none;
       transition: all 0.2s;
 
       &.is-active {
         font-weight: 600;
-        color: #409eff;
+        color: $color-primary;
         background-color: rgb(64 158 255 / 8%);
         border-radius: 2px;
 
@@ -51,14 +54,14 @@
           width: 70%;
           height: 2px;
           content: '';
-          background-color: #409eff;
+          background-color: $color-primary;
           border-radius: 2px;
           transform: translateX(-50%);
         }
       }
 
       &:hover {
-        color: #409eff;
+        color: $color-primary;
       }
     }
 
@@ -70,7 +73,7 @@
     :deep(.el-tabs__nav-prev) {
       font-size: 16px;
       line-height: 36px;
-      color: #909399;
+      color: $color-text-secondary;
     }
   }
 
@@ -85,7 +88,7 @@
       transition: all 0.2s;
 
       &:hover {
-        color: #409eff;
+        color: $color-primary;
         background-color: rgb(64 158 255 / 10%);
       }
     }

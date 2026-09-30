@@ -43,11 +43,26 @@ pnpm test         # Vitest
 
 ## 新增一个页面
 
-1. 新建 `src/views/xxx/XxxList.vue`(列表页建议复用 `useTablePage` + `useCrudDialog`)
+1. 新建 `src/views/xxx/XxxList.vue`(列表页建议复用 `useTablePage` + `useCrudDialog` + `useDelete` + `SearchBar` / `TablePager` / `TableEmpty`)
 2. 在 `src/api/xxx/` 下补 `index.ts` 与 `type.ts`
 3. 在 `mock/xxx.ts` 里补对应 mock 接口(或直接对接后端)
 4. 在菜单管理里加一条菜单(菜单里的组件路径要与 `src/views/` 下的相对路径一致)
 5. 补一条 Vitest 用例(纯逻辑优先)
+
+## 新增枚举/状态展示
+
+不要在各页面里手写 `<el-tag v-if="x === 0">` 这类映射,统一加到 `src/const/dict.ts`,模板里用:
+
+```vue
+<DictTag :value="row.sex" :dict="sexDict" />
+```
+
+## 新增图标
+
+模板里可以直接写字符串图标(`icon="Search"`),但它依赖全局注册。本项目只注册白名单里的图标以控制体积:
+
+1. 在 `src/components/icons.ts` 里 `import` 并加入 `icons`
+2. 后端菜单返回了未登记的图标名时会自动回落到默认图标
 
 ## 新增一个接口模块
 

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ElNotification } from 'element-plus';
+import { ElNotification, type FormInstance } from 'element-plus';
 //引入获取当前时间的函数
 import { getTime } from '@/utils/time';
 //引入用户相关的小仓库
@@ -14,13 +14,16 @@ import { getCaptchaApi, loginApi } from '@/api/user';
 
 const { setUserId, setNickName, setToken, setAvatar } = useUserStore(); //获取el-form组件
 const tabsStore = useTabsStore();
-const loginForms = ref();
+// el-form 实例
+const loginForms = ref<FormInstance>();
+// 提交中标记:防止重复点击/回车重复提交
+const submitting = ref(false);
 //获取路由器
 const $router = useRouter();
 //路由对象
 const $route = useRoute();
 
-//收集账号与密码的数据
+//收集账号与密码的数据(演示账号,方便直接体验;接真实后端时请清空)
 const loginForm = reactive({
   username: 'admin',
   password: '123456',
@@ -37,7 +40,7 @@ onMounted(() => {
 });
 // 获取验证码
 const getCaptcha = async () => {
-  let res = await getCaptchaApi();
+  const res = await getCaptchaApi();
   if (res && res.code === 200) {
     captcha.value.image = res.data.image;
     captcha.value.key = res.data.key;
@@ -47,37 +50,36 @@ const getCaptcha = async () => {
 
 //登录按钮回调
 const login = async () => {
-  //保证全部表单相校验通过再发请求
-  await loginForms.value.validate();
-  //加载效果:开始加载
-  //点击登录按钮以后干什么?
-  //通知仓库发登录请求
-  //请求成功->首页展示数据的地方
-  //请求失败->弹出登录失败信息
-  //保证登录成功
-  let res = await loginApi(loginForm);
-  if (res && res.code === 200) {
-    // 编程式导航跳转到展示数据首页
-    // 判断登录的时候,路由路径当中是否有query参数，如果有就往query参数挑战，没有跳转到首页
+  if (submitting.value) return;
+  //保证全部表单项校验通过再发请求(校验失败时 validate 会 reject)
+  const valid = await loginForms.value?.validate().catch(() => false);
+  if (!valid) return;
 
-    // 清除之前的标签页状态
-    tabsStore.closeAllTabs();
+  submitting.value = true;
+  try {
+    const res = await loginApi(loginForm);
+    if (res && res.code === 200) {
+      // 清除之前的标签页状态
+      tabsStore.closeAllTabs();
 
-    // 设置用户信息:setToken 内部会写入本地存储,持久化由 store 的 persist 负责
-    setUserId(res.data.userId);
-    setNickName(res.data.nickName);
-    setToken(res.data.token);
-    setAvatar(res.data.avatarUrl);
+      // 设置用户信息:setToken 内部会写入本地存储,持久化由 store 的 persist 负责
+      setUserId(res.data.userId);
+      setNickName(res.data.nickName);
+      setToken(res.data.token);
+      setAvatar(res.data.avatarUrl);
 
-    const redirect = $route.query.redirect as string | undefined;
-    await $router.push({ path: redirect || '/' });
+      const redirect = $route.query.redirect as string | undefined;
+      await $router.push({ path: redirect || '/' });
 
-    //登录成功提示信息
-    ElNotification({
-      type: 'success',
-      message: '欢迎回来',
-      title: `HI,${getTime()}好`,
-    });
+      //登录成功提示信息
+      ElNotification({
+        type: 'success',
+        message: '欢迎回来',
+        title: `HI,${getTime()}好`,
+      });
+    }
+  } finally {
+    submitting.value = false;
   }
 };
 
@@ -111,6 +113,7 @@ const rules = loginRules;
           <el-input
             v-model="loginForm.username"
             prefix-icon="User"
+            aria-label="用户名"
             placeholder="请输入用户名"
           ></el-input>
         </el-form-item>
@@ -118,6 +121,7 @@ const rules = loginRules;
           <el-input
             v-model="loginForm.password"
             prefix-icon="Lock"
+            aria-label="密码"
             placeholder="请输入密码"
             show-password
             type="password"
@@ -127,11 +131,19 @@ const rules = loginRules;
           <el-input
             v-model.trim="loginForm.captchaCode"
             prefix-icon="Key"
+            aria-label="验证码"
             autocomplete="off"
             placeholder="请输入验证码"
           >
             <template #append>
-              <div class="captcha-container" @click="getCaptcha">
+              <div
+                class="captcha-container"
+                role="button"
+                tabindex="0"
+                title="点击刷新验证码"
+                @click="getCaptcha"
+                @keydown.enter="getCaptcha"
+              >
                 <img :src="captcha.image" alt="验证码" class="captcha-img" />
               </div>
             </template>
@@ -142,6 +154,7 @@ const rules = loginRules;
             class="login_btn"
             size="default"
             type="primary"
+            :loading="submitting"
             @click="login"
           >
             登录
