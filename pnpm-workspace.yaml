@@ -1,4 +1,15 @@
+# 依赖构建脚本白名单。
+#
+# 这些包需要执行安装脚本(下载/编译二进制),否则装出来的包是残缺的
+# —— element-plus 曾经因为 build 被忽略而缺少 dist/es 目录,导致启动报
+# "Failed to resolve import element-plus/dist/index.css"。
+#
+# allowBuilds 是 pnpm 12+ 的写法;onlyBuiltDependencies 兼容 pnpm 10/11。
 allowBuilds:
   '@parcel/watcher': false
   esbuild: true
   vue-demi: true
+
+onlyBuiltDependencies:
+  - esbuild
+  - vue-demi
