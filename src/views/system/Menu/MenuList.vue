@@ -31,28 +31,35 @@ const { tableList, getList } = useTablePage({
 const treeList = ref<MenuType[]>([]);
 
 // 新增/编辑弹窗
-const { dialog, addRef, addModel, openAdd, openEdit, close, submit } =
-  useCrudDialog<MenuType>({
-    createModel: () => ({
-      menuId: '',
-      parentId: '',
-      title: '',
-      code: '',
-      name: '',
-      path: '',
-      url: '',
-      type: -1,
-      icon: '',
-      parentName: '',
-      orderNum: '',
-    }),
-    addApi,
-    editApi,
-    addTitle: '新增菜单',
-    editTitle: '编辑菜单',
-    width: 600,
-    height: 250,
-  });
+const {
+  dialog,
+  addRef,
+  addModel,
+  submitting,
+  openAdd,
+  openEdit,
+  close,
+  submit,
+} = useCrudDialog<MenuType>({
+  createModel: () => ({
+    menuId: '',
+    parentId: '',
+    title: '',
+    code: '',
+    name: '',
+    path: '',
+    url: '',
+    type: -1,
+    icon: '',
+    parentName: '',
+    orderNum: '',
+  }),
+  addApi,
+  editApi,
+  addTitle: '新增菜单',
+  editTitle: '编辑菜单',
+  width: 600,
+});
 
 // 表单校验规则
 const rules = reactive({
@@ -266,7 +273,7 @@ const handleFileUpload = async (file: File) => {
       :title="dialog.title"
       :visible="dialog.visible"
       :width="dialog.width"
-      :height="dialog.height"
+      :loading="submitting"
       @onClose="close"
       @onConfirm="submit(getList)"
     >

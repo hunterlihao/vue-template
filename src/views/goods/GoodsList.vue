@@ -41,25 +41,32 @@ const getCategoryOptions = async () => {
 };
 
 // 新增/编辑弹窗
-const { dialog, addRef, addModel, openAdd, openEdit, close, submit } =
-  useCrudDialog<SysGoods>({
-    createModel: () => ({
-      goodsId: '',
-      goodsName: '',
-      categoryId: '',
-      categoryName: '',
-      price: 0,
-      stock: 0,
-      unit: '',
-      remark: '',
-    }),
-    addApi,
-    editApi,
-    addTitle: '新增商品',
-    editTitle: '编辑商品',
-    width: 560,
-    height: 420,
-  });
+const {
+  dialog,
+  addRef,
+  addModel,
+  submitting,
+  openAdd,
+  openEdit,
+  close,
+  submit,
+} = useCrudDialog<SysGoods>({
+  createModel: () => ({
+    goodsId: '',
+    goodsName: '',
+    categoryId: '',
+    categoryName: '',
+    price: 0,
+    stock: 0,
+    unit: '',
+    remark: '',
+  }),
+  addApi,
+  editApi,
+  addTitle: '新增商品',
+  editTitle: '编辑商品',
+  width: 560,
+});
 
 // 打开弹窗前先取一次下拉数据
 const addBtn = async () => {
@@ -191,7 +198,7 @@ const deleteBtn = async (row: SysGoods) => {
       :title="dialog.title"
       :visible="dialog.visible"
       :width="dialog.width"
-      :height="dialog.height"
+      :loading="submitting"
       @onClose="close"
       @onConfirm="submit(getList)"
     >

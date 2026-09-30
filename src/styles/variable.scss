@@ -8,8 +8,8 @@ $base-menu-width: 180px;
 $base-menu-background: #fff;
 $base-menu-min-width: 50px;
 
-// 顶部导航的高度
-$base-tabbar-height: 120px;
+// 顶部导航的高度(导航条 20+50 + 标签栏 25+40 = 135,改这里要同步核对 layout/index.scss)
+$base-tabbar-height: 135px;
 
 // 左侧菜单logo高度设置
 $base-menu-logo-height: 70px;

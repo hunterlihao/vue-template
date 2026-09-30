@@ -11,6 +11,7 @@ import useTableHeight from '@/hooks/useTableHeight.ts';
 import useCrudDialog from '@/hooks/useCrudDialog.ts';
 import { useUserStore } from '@/store/modules/user.ts';
 import type { SysUser } from '@/api/user/type.ts';
+import type { RoleOption } from '@/api/role/type.ts';
 import {
   addApi,
   deleteApi,
@@ -50,35 +51,43 @@ const {
 const { tableHeight } = useTableHeight(300);
 
 // 角色下拉数据
-const options = ref<any[]>([]);
+const options = ref<RoleOption[]>([]);
 // 选中组件的 ref
-const selectRef = ref();
+const selectRef = ref<InstanceType<typeof SelectChecked>>();
 // 编辑时回显的角色 id(数组)
-const bindValue = ref<string[]>([]);
+const bindValue = ref<Array<string | number>>([]);
 // 编辑时回显的角色 id(逗号拼接)
 const roleIds = ref<string>('');
 
 // 新增/编辑弹窗
-const { dialog, tags, addRef, addModel, openAdd, openEdit, close, submit } =
-  useCrudDialog<SysUser>({
-    createModel: () => ({
-      userId: '',
-      username: '',
-      password: '',
-      phone: '',
-      email: '',
-      sex: '',
-      nickName: '',
-      roleId: '',
-      isEnabled: -1,
-      isAdmin: -1,
-    }),
-    addApi,
-    editApi,
-    addTitle: '新增用户',
-    editTitle: '编辑用户',
-    height: 300,
-  });
+const {
+  dialog,
+  tags,
+  addRef,
+  addModel,
+  submitting,
+  openAdd,
+  openEdit,
+  close,
+  submit,
+} = useCrudDialog<SysUser>({
+  createModel: () => ({
+    userId: '',
+    username: '',
+    password: '',
+    phone: '',
+    email: '',
+    sex: '',
+    nickName: '',
+    roleId: '',
+    isEnabled: -1,
+    isAdmin: -1,
+  }),
+  addApi,
+  editApi,
+  addTitle: '新增用户',
+  editTitle: '编辑用户',
+});
 
 // 表单校验规则(公共规则见 @/const/rules)
 const rules = reactive({
@@ -326,7 +335,7 @@ const resetPassword = async (userId: string) => {
       :title="dialog.title"
       :visible="dialog.visible"
       :width="dialog.width"
-      :height="dialog.height"
+      :loading="submitting"
       @onClose="close"
       @onConfirm="submit(getList)"
     >
@@ -371,9 +380,9 @@ const resetPassword = async (userId: string) => {
               <el-form-item label="角色: " prop="roleId">
                 <SelectChecked
                   ref="selectRef"
+                  v-model="bindValue"
                   :options="options"
-                  :bindValue="bindValue"
-                  @selected="selected"
+                  @update:model-value="selected"
                 />
               </el-form-item>
             </el-col>

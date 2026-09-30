@@ -4,12 +4,35 @@
 import type { IncomingMessage } from 'node:http';
 import type { MockMethod } from 'vite-plugin-mock';
 
-/** 读取请求体 */
+/** 允许的图片类型与大小上限 */
+const ALLOWED_MIME = [
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'image/bmp',
+];
+const MAX_SIZE = 5 * 1024 * 1024;
+
+/** 读取请求体(超过上限直接放弃,避免被超大请求撑爆内存) */
 function readBody(req: IncomingMessage): Promise<Buffer> {
   return new Promise((resolve) => {
     const chunks: Buffer[] = [];
-    req.on('data', (chunk: Buffer) => chunks.push(chunk));
-    req.on('end', () => resolve(Buffer.concat(chunks)));
+    let size = 0;
+    let aborted = false;
+    req.on('data', (chunk: Buffer) => {
+      if (aborted) return;
+      size += chunk.length;
+      if (size > MAX_SIZE + 64 * 1024) {
+        aborted = true;
+        resolve(Buffer.alloc(0));
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on('end', () =>
+      resolve(aborted ? Buffer.alloc(0) : Buffer.concat(chunks)),
+    );
     req.on('error', () => resolve(Buffer.alloc(0)));
   });
 }
@@ -47,14 +70,31 @@ function parseFirstPart(buffer: Buffer, contentType: string) {
 
 async function handleUpload(req: IncomingMessage, res: any) {
   const buffer = await readBody(req);
-  const part = parseFirstPart(
-    buffer,
-    String(req.headers['content-type'] || ''),
-  );
+  const contentType = String(req.headers['content-type'] || '');
   res.setHeader('Content-Type', 'application/json;charset=utf-8');
+  if (buffer.length === 0) {
+    res.statusCode = 413;
+    res.end(JSON.stringify({ code: 413, message: '文件过大', data: null }));
+    return;
+  }
+  const part = parseFirstPart(buffer, contentType);
   if (!part || part.data.length === 0) {
     res.end(
       JSON.stringify({ code: 500, message: '未接收到上传文件', data: null }),
+    );
+    return;
+  }
+  if (!ALLOWED_MIME.includes(part.mime)) {
+    res.statusCode = 415;
+    res.end(
+      JSON.stringify({ code: 415, message: '仅支持图片格式', data: null }),
+    );
+    return;
+  }
+  if (part.data.length > MAX_SIZE) {
+    res.statusCode = 413;
+    res.end(
+      JSON.stringify({ code: 413, message: '图片不能超过 5MB', data: null }),
     );
     return;
   }

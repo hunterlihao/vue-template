@@ -2,42 +2,64 @@
   <el-dialog
     :model-value="props.visible"
     :title="props.title"
-    :width="props.width + 'px'"
+    :width="dialogWidth"
     :before-close="onClose"
     append-to-body
     :close-on-click-modal="false"
+    class="sys-dialog"
+    @update:model-value="onVisibleChange"
   >
-    <!-- 展示内容 -->
-    <div :style="{ height: props.height + 'px' }">
+    <!-- 展示内容:高度自适应,超过 65vh 时内部滚动 -->
+    <div class="sys-dialog__body">
       <slot name="content" />
     </div>
     <template #footer>
       <div class="dialog-footer">
-        <!-- Cancel -->
         <el-button type="danger" plain @click="onClose">取消</el-button>
-        <!-- Confirm -->
-        <el-button type="primary" plain @click="onConfirm">确定</el-button>
+        <el-button
+          type="primary"
+          plain
+          :loading="props.loading"
+          @click="onConfirm"
+        >
+          确定
+        </el-button>
       </div>
     </template>
   </el-dialog>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { DialogProps } from '@/types';
 
 /**
- * 接收父组件传递的数据
- * withDefaults：设置默认值
- * defineProps：接收父组件传递的参数
+ * 通用弹窗。
+ *
+ * 与旧实现的区别:
+ *  - 不再要求调用方传 height:内容区自动撑高,超出 65vh 时内部滚动,
+ *    因此各页面不用再各自猜一个像素高度
+ *  - 支持 v-model:visible(通过 update:visible 事件),X / ESC 关闭也会同步
+ *  - 样式用 scoped + :deep(),不再全局污染所有 .el-dialog
  */
 const props = withDefaults(defineProps<DialogProps>(), {
   title: '提示',
   visible: false,
   width: 630,
-  height: 280,
+  loading: false,
 });
+
 // 注册事件
-const emit = defineEmits(['onClose', 'onConfirm', 'update:visible']);
+const emit = defineEmits<{
+  (e: 'onClose'): void;
+  (e: 'onConfirm'): void;
+  (e: 'update:visible', value: boolean): void;
+}>();
+
+/** 数字按 px 处理,字符串(如 '60%')原样使用 */
+const dialogWidth = computed(() =>
+  typeof props.width === 'number' ? `${props.width}px` : props.width,
+);
 
 // 关闭弹窗
 const onClose = () => {
@@ -47,50 +69,54 @@ const onClose = () => {
 const onConfirm = () => {
   emit('onConfirm');
 };
+// el-dialog 自身关闭(右上角 X / ESC)时同步 v-model:visible
+const onVisibleChange = (value: boolean) => {
+  emit('update:visible', value);
+};
 </script>
 
-<style lang="scss" scope>
-/* .container {
-  overflow-x: initial;
+<style lang="scss" scoped>
+.sys-dialog__body {
+  max-height: 65vh;
   overflow-y: auto;
-} */
-.el-dialog {
-  padding: 0;
-  border-top-left-radius: 7px !important;
-  border-top-right-radius: 7px !important;
+}
 
-  .el-dialog__header {
-    height: 54px;
-    padding-bottom: 0;
-    padding-left: 10px;
-    margin-right: 0;
-    line-height: 54px;
-    background-color: #fff !important;
-    border-top-left-radius: 7px !important;
-    border-top-right-radius: 7px !important;
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+}
 
-    .el-dialog__title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #000;
-    }
+:deep(.el-dialog__header) {
+  height: 54px;
+  padding: 0 10px;
+  margin-right: 0;
+  line-height: 54px;
+  background-color: #fff;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+
+  .el-dialog__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
   }
+}
 
-  .el-dialog__headerbtn {
-    height: 54px !important;
+:deep(.el-dialog__headerbtn) {
+  height: 54px;
 
-    .el-dialog__close {
-      color: #fff;
-    }
+  .el-dialog__close {
+    // 原来是 #fff,在白色标题栏上完全看不见
+    color: #909399;
   }
+}
 
-  .el-dialog__body {
-    padding: 10px;
-  }
+:deep(.el-dialog__body) {
+  padding: 10px;
+}
 
-  .el-dialog__footer {
-    padding: 10px;
-    border-top: 1px solid #fff !important;
-  }
+:deep(.el-dialog__footer) {
+  padding: 10px;
+  border-top: 1px solid #f0f0f0;
 }
 </style>

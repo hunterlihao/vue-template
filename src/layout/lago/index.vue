@@ -16,16 +16,9 @@ export default {
 </script>
 
 <template>
-  <div
-    v-if="setting.logoHidden"
-    class="logo"
-    @click="goToHome"
-    style="cursor: pointer"
-  >
-    <img :src="setting.logo" />
-    <p style="text-overflow: ellipsis; white-space: nowrap">
-      {{ setting.title }}
-    </p>
+  <div v-if="setting.showLogo" class="logo" @click="goToHome">
+    <img :src="setting.logo" alt="logo" />
+    <p class="logo-title">{{ setting.title }}</p>
   </div>
 </template>
 
@@ -33,18 +26,23 @@ export default {
 .logo {
   display: flex;
   align-items: center;
-  width: 50px;
   height: $base-menu-logo-height;
-  padding: 20px;
+  padding: 0 16px;
+  overflow: hidden; // 折叠时裁掉标题,而不是溢出到内容区
+  cursor: pointer;
 
   img {
+    flex-shrink: 0;
     width: 30px;
     height: 30px;
   }
 
-  p {
+  .logo-title {
     margin-left: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: $base-logo-title-font-size;
+    white-space: nowrap;
   }
 }
 </style>

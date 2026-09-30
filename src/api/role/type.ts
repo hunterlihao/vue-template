@@ -18,3 +18,9 @@ export type saveMenuParm = {
   roleId: string;
   list: Array<string>;
 };
+
+// 角色下拉选项(/admin/role/selectList)
+export type RoleOption = {
+  value: string | number;
+  label: string;
+};

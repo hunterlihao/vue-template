@@ -30,16 +30,23 @@ const {
 const { tableHeight } = useTableHeight(300);
 
 // 新增/编辑弹窗
-const { dialog, addRef, addModel, openAdd, openEdit, close, submit } =
-  useCrudDialog<SysRole>({
-    createModel: () => ({ roleId: '', roleName: '', remark: '' }),
-    addApi,
-    editApi,
-    addTitle: '新增角色',
-    editTitle: '编辑角色',
-    width: 400,
-    height: 120,
-  });
+const {
+  dialog,
+  addRef,
+  addModel,
+  submitting,
+  openAdd,
+  openEdit,
+  close,
+  submit,
+} = useCrudDialog<SysRole>({
+  createModel: () => ({ roleId: '', roleName: '', remark: '' }),
+  addApi,
+  editApi,
+  addTitle: '新增角色',
+  editTitle: '编辑角色',
+  width: 400,
+});
 
 // 表单校验规则
 const rules = reactive<FormRules<SysRole>>({
@@ -53,9 +60,9 @@ const rules = reactive<FormRules<SysRole>>({
 });
 
 // 分配菜单弹窗
-const assignTree = ref();
+const assignTree = ref<InstanceType<typeof AssignTree>>();
 const assignTreeEdit = (row: SysRole) => {
-  assignTree.value.show(row.roleId, row.roleName);
+  assignTree.value?.show(row.roleId, row.roleName);
 };
 
 // 删除按钮
@@ -109,7 +116,7 @@ const deleteBtn = async (roleId: string) => {
       <el-table-column prop="remark" label="角色备注" align="center" />
       <el-table-column
         label="操作"
-        style="width: 220px"
+        width="220"
         align="center"
         v-if="
           hasPerm(['sys:role:update', 'sys:role:allotMenu', 'sys:role:delete'])
@@ -159,7 +166,7 @@ const deleteBtn = async (roleId: string) => {
     <SysDialog
       :title="dialog.title"
       :width="dialog.width"
-      :height="dialog.height"
+      :loading="submitting"
       :visible="dialog.visible"
       @on-close="close"
       @on-confirm="submit(getList)"

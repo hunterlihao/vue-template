@@ -30,22 +30,29 @@ const {
 const { tableHeight } = useTableHeight(300);
 
 // 新增/编辑弹窗
-const { dialog, addRef, addModel, openAdd, openEdit, close, submit } =
-  useCrudDialog<SysCategory>({
-    createModel: () => ({
-      categoryId: '',
-      categoryName: '',
-      categoryCode: '',
-      orderNum: '',
-      remark: '',
-    }),
-    addApi,
-    editApi,
-    addTitle: '新增类型',
-    editTitle: '编辑类型',
-    width: 500,
-    height: 320,
-  });
+const {
+  dialog,
+  addRef,
+  addModel,
+  submitting,
+  openAdd,
+  openEdit,
+  close,
+  submit,
+} = useCrudDialog<SysCategory>({
+  createModel: () => ({
+    categoryId: '',
+    categoryName: '',
+    categoryCode: '',
+    orderNum: '',
+    remark: '',
+  }),
+  addApi,
+  editApi,
+  addTitle: '新增类型',
+  editTitle: '编辑类型',
+  width: 500,
+});
 
 // 表单校验规则(公共规则见 @/const/rules)
 const rules = reactive({
@@ -156,7 +163,7 @@ const deleteBtn = async (row: SysCategory) => {
       :title="dialog.title"
       :visible="dialog.visible"
       :width="dialog.width"
-      :height="dialog.height"
+      :loading="submitting"
       @onClose="close"
       @onConfirm="submit(getList)"
     >

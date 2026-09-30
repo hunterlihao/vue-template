@@ -501,3 +501,57 @@ export function removeMenu(items: MockMenuItem[], menuId: string): boolean {
     item.children ? removeMenu(item.children, menuId) : false,
   );
 }
+
+/** 按 userId 查用户(找不到时回落到第一个用户) */
+export function findUser(userId: string): MockUser {
+  return users.find((item) => item.userId === userId) || users[0];
+}
+
+/** 去掉密码等敏感字段后的用户信息 */
+export function publicUser(user: MockUser) {
+  return {
+    userId: user.userId,
+    username: user.username,
+    nickName: user.nickName,
+    phone: user.phone,
+    email: user.email,
+    sex: user.sex,
+    roleId: user.roleId,
+    isEnabled: user.isEnabled,
+    isAdmin: user.isAdmin,
+    avatarUrl: user.avatarUrl,
+  };
+}
+
+/**
+ * 按角色返回权限码。
+ *  - 1 超级管理员:全部
+ *  - 3 商品管理员:商品与分类相关
+ *  - 其它(2 普通用户):目录码 + 只读的 :list
+ * 这样不同账号登录后按钮级权限才有差异(旧实现对所有 userId 都返回全部权限)。
+ */
+export function codesForRole(roleId: string): string[] {
+  if (roleId === '1') return allCodes;
+  if (roleId === '3')
+    return allCodes.filter((code) => code.startsWith('goods'));
+  return allCodes.filter(
+    (code) => code === 'sys' || code === 'goods' || code.endsWith(':list'),
+  );
+}
+
+/** 按角色过滤菜单树:保留自身可见、或存在可见子节点的节点 */
+export function menuTreeForRole(roleId: string): MockMenuItem[] {
+  const codes = new Set(codesForRole(roleId));
+  const filter = (items: MockMenuItem[]): MockMenuItem[] =>
+    items
+      .map((item) => ({
+        ...item,
+        children: item.children ? filter(item.children) : undefined,
+      }))
+      .filter((item) => {
+        const selfVisible = !item.code || codes.has(item.code);
+        const hasVisibleChild = Boolean(item.children && item.children.length);
+        return selfVisible || hasVisibleChild;
+      });
+  return filter(menuTree);
+}

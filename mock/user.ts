@@ -2,17 +2,26 @@
 import type { MockMethod } from 'vite-plugin-mock';
 import {
   allCodes,
+  codesForRole,
   fail,
+  findUser,
   menuTree,
   ok,
+  publicUser,
   users,
   type MockMenuItem,
-  type MockUser,
 } from './_data';
 
 // ---------------------------------------------------------------- 验证码
-/** 当前有效的验证码 */
-let captcha = { key: '', code: '' };
+/** 当前有效的验证码(单次有效,带过期时间) */
+let captcha = { key: '', code: '', expireAt: 0 };
+/** 验证码有效期:2 分钟 */
+const CAPTCHA_TTL = 2 * 60 * 1000;
+
+/** 作废当前验证码 */
+function invalidateCaptcha() {
+  captcha = { key: '', code: '', expireAt: 0 };
+}
 
 function randomCode(len = 4): string {
   let code = '';
@@ -48,10 +57,6 @@ function captchaImage(code: string): string {
   return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
 }
 
-function findUser(userId: string): MockUser {
-  return users.find((item) => item.userId === userId) || users[0];
-}
-
 export default [
   // 验证码
   {
@@ -60,7 +65,7 @@ export default [
     response: () => {
       const code = randomCode();
       const key = `captcha-${Date.now()}`;
-      captcha = { key, code };
+      captcha = { key, code, expireAt: Date.now() + CAPTCHA_TTL };
       return ok({ key, image: captchaImage(code) });
     },
   },
@@ -69,10 +74,22 @@ export default [
     url: '/api/admin/user/login',
     method: 'post',
     response: ({ body }) => {
-      const { username, password, captchaCode } = body || {};
+      const { username, password, captchaCode, captchaKey } = body || {};
+      // 校验验证码:必须带 key、未过期、且一次性使用
+      if (!captchaKey || captchaKey !== captcha.key) {
+        return fail('验证码已失效,请刷新后重试');
+      }
+      if (Date.now() > captcha.expireAt) {
+        invalidateCaptcha();
+        return fail('验证码已过期,请刷新后重试');
+      }
       if (!captchaCode || String(captchaCode).trim() !== captcha.code) {
+        // 失败即作废,避免被反复试错
+        invalidateCaptcha();
         return fail('验证码错误');
       }
+      invalidateCaptcha();
+
       const user = users.find((item) => item.username === username);
       if (!user || user.password !== password) {
         return fail('用户名或密码错误');
@@ -101,7 +118,8 @@ export default [
     response: ({ query }) => {
       const user = findUser(String(query.userId || '1'));
       return ok({
-        permissions: allCodes,
+        // 按角色返回权限码,不再对所有用户都返回全量
+        permissions: codesForRole(user.roleId),
         user: {
           userId: user.userId,
           nickName: user.nickName,
@@ -110,11 +128,12 @@ export default [
       });
     },
   },
-  // 获取当前登录用户信息
+  // 获取当前登录用户信息(不含密码)
   {
     url: '/api/admin/user/getCurrentUser',
     method: 'get',
-    response: ({ query }) => ok(findUser(String(query.userId || '1'))),
+    response: ({ query }) =>
+      ok(publicUser(findUser(String(query.userId || '1')))),
   },
   // 修改当前用户信息
   {
@@ -163,7 +182,8 @@ export default [
         : users;
       const start = (current - 1) * size;
       return ok({
-        records: list.slice(start, start + size),
+        // 去掉密码字段再返回
+        records: list.slice(start, start + size).map(publicUser),
         total: list.length,
       });
     },
@@ -183,7 +203,7 @@ export default [
   },
   // 查询菜单树(分配菜单弹窗)
   {
-    url: '/api/admin/menu/getAssignTre',
+    url: '/api/admin/menu/getAssignTree',
     method: 'get',
     response: ({ query }) => {
       const roleId = String(query.roleId || '1');

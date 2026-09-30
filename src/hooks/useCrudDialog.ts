@@ -11,17 +11,22 @@ export interface UseCrudDialogOptions<T> {
   editApi: (model: T) => Promise<Result>;
   addTitle?: string;
   editTitle?: string;
-  width?: number;
-  height?: number;
+  /** 弹窗宽度:数字按 px,字符串(如 '60%')原样使用 */
+  width?: number | string;
   successMessage?: string;
 }
 
 export interface OpenOptions<T> {
   title?: string;
-  width?: number;
-  height?: number;
+  width?: number | string;
   /** 回显之后再做一些额外处理,例如清空密码、设置角色 id */
   fill?: (model: T, row: Partial<T>) => void;
+}
+
+/** 深拷贝一份表单数据,避免把表格行的嵌套字段(数组/对象)带进弹窗后互相影响 */
+function clone<T>(value: T): T {
+  if (typeof structuredClone === 'function') return structuredClone(value);
+  return JSON.parse(JSON.stringify(value)) as T;
 }
 
 /**
@@ -41,7 +46,6 @@ export default function useCrudDialog<T extends object>(
     addTitle = '新增',
     editTitle = '编辑',
     width = 630,
-    height = 280,
     successMessage = '操作成功',
   } = options;
 
@@ -49,7 +53,6 @@ export default function useCrudDialog<T extends object>(
     title: '',
     visible: false,
     width,
-    height,
   });
   /** add: 新增;edit: 编辑 */
   const tags = ref<'add' | 'edit'>('add');
@@ -65,7 +68,6 @@ export default function useCrudDialog<T extends object>(
   function applyOptions(opts: OpenOptions<T>, defaultTitle: string) {
     dialog.title = opts.title ?? defaultTitle;
     if (opts.width !== undefined) dialog.width = opts.width;
-    if (opts.height !== undefined) dialog.height = opts.height;
     dialog.visible = true;
   }
 
@@ -81,7 +83,8 @@ export default function useCrudDialog<T extends object>(
   function openEdit(row: Partial<T>, opts: OpenOptions<T> = {}) {
     tags.value = 'edit';
     resetModel();
-    Object.assign(addModel, row);
+    // 深拷贝:浅拷贝会让弹窗里的嵌套字段与表格行共享引用
+    Object.assign(addModel, clone(row));
     opts.fill?.(addModel, row);
     addRef.value?.clearValidate();
     applyOptions(opts, editTitle);

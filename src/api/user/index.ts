@@ -17,7 +17,7 @@ const API = {
   RESET_PASSWORD_URI: '/admin/user/resetPassword',
   CAPTCHA_URI: '/admin/user/login/captcha',
   LOGIN_URI: '/admin/user/login',
-  GET_ASSIGN_TREE_URI: '/admin/menu/getAssignTre',
+  GET_ASSIGN_TREE_URI: '/admin/menu/getAssignTree',
   UPDATE_PASSWORD_URI: '/admin/user/updatePassword',
   GET_INFO_URI: '/admin/user/info',
   LOGOUT_URI: '/admin/user/logout',

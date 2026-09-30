@@ -21,7 +21,6 @@ export default [
         roles.map((role) => ({
           value: role.roleId,
           label: role.roleName,
-          check: false,
         })),
       ),
   },

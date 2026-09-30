@@ -1,22 +1,36 @@
 <script lang="ts" setup>
-import { nextTick, onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { getTime } from '@/utils/time';
 import { useUserStore } from '@/store/modules/user.ts';
 import useEcharts from '@/hooks/useEcharts.ts';
+import useTableHeight from '@/hooks/useTableHeight.ts';
+import setting from '@/setting.ts';
 
 const userStore = useUserStore();
-const mainHeight = ref(300);
+// 内容区高度自适应(原来手写 window.innerHeight - 320,且不监听 resize)
+const { tableHeight: mainHeight } = useTableHeight(320);
 
 // 三个图表容器
 const barRef = ref<HTMLElement>();
 const pieRef = ref<HTMLElement>();
 const ringRef = ref<HTMLElement>();
 
+const weekDays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+
+/** 演示数据 */
+const visits = [
+  { value: 1048, name: '搜索引擎' },
+  { value: 735, name: '直接访问' },
+  { value: 580, name: '邮件营销' },
+  { value: 484, name: '联盟广告' },
+  { value: 300, name: '视频广告' },
+];
+
 // 柱状图:订单统计
 useEcharts(barRef, {
   xAxis: {
     type: 'category',
-    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    data: weekDays,
   },
   yAxis: {
     type: 'value',
@@ -32,7 +46,7 @@ useEcharts(barRef, {
 // 饼图:热门商品
 useEcharts(pieRef, {
   title: {
-    subtext: 'Fake Data',
+    subtext: '演示数据',
     left: 'center',
   },
   tooltip: {
@@ -44,16 +58,10 @@ useEcharts(pieRef, {
   },
   series: [
     {
-      name: 'Access From',
+      name: '访问来源',
       type: 'pie',
       radius: '50%',
-      data: [
-        { value: 1048, name: 'Search Engine' },
-        { value: 735, name: 'Direct' },
-        { value: 580, name: 'Email' },
-        { value: 484, name: 'Union Ads' },
-        { value: 300, name: 'Video Ads' },
-      ],
+      data: visits,
       emphasis: {
         itemStyle: {
           shadowBlur: 10,
@@ -76,7 +84,7 @@ useEcharts(ringRef, {
   },
   series: [
     {
-      name: 'Access From',
+      name: '访问来源',
       type: 'pie',
       radius: ['40%', '70%'],
       avoidLabelOverlap: false,
@@ -94,53 +102,41 @@ useEcharts(ringRef, {
       labelLine: {
         show: false,
       },
-      data: [
-        { value: 1048, name: 'Search Engine' },
-        { value: 735, name: 'Direct' },
-        { value: 580, name: 'Email' },
-        { value: 484, name: 'Union Ads' },
-        { value: 300, name: 'Video Ads' },
-      ],
+      data: visits,
     },
   ],
-});
-
-onMounted(() => {
-  nextTick(() => {
-    mainHeight.value = window.innerHeight - 320;
-  });
 });
 </script>
 
 <template>
   <el-card>
     <div class="box">
-      <img :src="userStore.avatarUrl" alt="" class="avatar" />
+      <img :src="userStore.avatarUrl" alt="用户头像" class="avatar" />
       <div class="bottom">
         <h3 class="title">{{ getTime() }}好呀! {{ userStore.nickName }}</h3>
-        <p class="subtitle">System</p>
+        <p class="subtitle">{{ setting.title }}</p>
       </div>
     </div>
   </el-card>
-  <el-main :style="{ height: mainHeight + 'px' }">
-    <div style="display: flex">
-      <el-card style="flex: 1">
+  <el-main :style="{ minHeight: mainHeight + 'px' }">
+    <div class="chart-row">
+      <el-card class="chart-card">
         <template #header>
           <div class="card-header">订单统计</div>
         </template>
-        <div ref="barRef" :style="{ width: '100%', height: '300px' }"></div>
+        <div ref="barRef" class="chart"></div>
       </el-card>
-      <el-card style="flex: 1; margin-left: 20px">
+      <el-card class="chart-card">
         <template #header>
           <div class="card-header">热门商品</div>
         </template>
-        <div ref="pieRef" :style="{ width: '100%', height: '300px' }"></div>
+        <div ref="pieRef" class="chart"></div>
       </el-card>
-      <el-card style="flex: 1; margin-left: 20px">
+      <el-card class="chart-card">
         <template #header>
           <div class="card-header">最受欢迎</div>
         </template>
-        <div ref="ringRef" :style="{ width: '100%', height: '300px' }"></div>
+        <div ref="ringRef" class="chart"></div>
       </el-card>
     </div>
   </el-main>
@@ -168,6 +164,20 @@ onMounted(() => {
     .subtitle {
       font-style: italic;
       color: skyblue;
+    }
+  }
+}
+
+.chart-row {
+  display: flex;
+  gap: 20px;
+
+  .chart-card {
+    flex: 1;
+
+    .chart {
+      width: 100%;
+      height: 300px;
     }
   }
 }

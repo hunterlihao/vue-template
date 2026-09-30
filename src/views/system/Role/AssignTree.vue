@@ -100,8 +100,7 @@ const show = async (roleId: string, name: string) => {
   assignTreeData.list = [];
   commitParm.list = [];
   parms.roleId = roleId;
-  dialog.height = 450;
-  dialog.width = 300;
+  dialog.width = 320;
   dialog.title = `为【${name}】分配菜单`;
   // 获取树数据
   await getAssignTree();
@@ -118,7 +117,6 @@ defineExpose({
     :title="dialog.title"
     :visible="dialog.visible"
     :width="dialog.width"
-    :height="dialog.height"
     @onClose="onClose"
     @onConfirm="commit"
   >
@@ -141,8 +139,6 @@ defineExpose({
 
 <style scoped>
 .tree-container {
-  max-height: 445px;
   padding-right: 5px;
-  overflow-y: auto;
 }
 </style>

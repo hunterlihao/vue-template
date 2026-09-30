@@ -3,7 +3,9 @@ import type { MockMethod } from 'vite-plugin-mock';
 import {
   fail,
   findMenu,
+  findUser,
   menuTree,
+  menuTreeForRole,
   ok,
   removeMenu,
   toDynamicMenus,
@@ -35,7 +37,11 @@ export default [
   {
     url: '/api/admin/menu/getMenuList',
     method: 'get',
-    response: () => ok(toDynamicMenus(menuTree)),
+    response: ({ query }) => {
+      // 按登录用户的角色过滤菜单,不同账号看到的路由才不一样
+      const user = findUser(String(query.userId || '1'));
+      return ok(toDynamicMenus(menuTreeForRole(user.roleId)));
+    },
   },
   // 导入菜单
   {
