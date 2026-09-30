@@ -4,6 +4,14 @@
   "private": true,
   "description": "Vue 3 + TypeScript + Vite + Element Plus 后台管理模板,内置动态路由权限、按钮级权限与本地 mock",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/li-yuanhao04/vue-templet.git"
+  },
+  "homepage": "https://gitee.com/li-yuanhao04/vue-templet",
+  "bugs": {
+    "url": "https://gitee.com/li-yuanhao04/vue-templet/issues"
+  },
   "type": "module",
   "keywords": [
     "vue3",

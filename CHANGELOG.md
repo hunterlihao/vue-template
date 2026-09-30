@@ -44,5 +44,5 @@
 - 颜色、层级统一收敛到 `styles/variable.scss`;SCSS `@import` 迁移到 `@use`
 - echarts 改为按需注册 + vendor 分包,`element-plus` 不再打包全部图标
 
-[Unreleased]: https://example.com/compare/v1.0.0...HEAD
-[1.0.0]: https://example.com/releases/tag/v1.0.0
+[Unreleased]: https://gitee.com/li-yuanhao04/vue-templet/commits/master
+[1.0.0]: https://gitee.com/li-yuanhao04/vue-templet/releases
