@@ -153,5 +153,5 @@ const rules = loginRules;
 </template>
 
 <style lang="scss" scoped>
-@import './utils/index';
+@use './utils/index' as *;
 </style>

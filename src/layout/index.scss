@@ -1,3 +1,7 @@
+// 本文件会被 layout/index.vue 以 @use 加载,Sass 的 @use 是文件级作用域,
+// 因此这里需要自己引入一次变量(不能依赖入口文件的注入)。
+@use "@/styles/variable.scss" as *;
+
 // 侧边栏展开/收缩动画参数(想调快/调慢只改这两个值)
 //   0.15s 更干脆,0.3s 更从容
 $layout-duration: 0.2s;

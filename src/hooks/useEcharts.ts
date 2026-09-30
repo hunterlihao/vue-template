@@ -1,13 +1,38 @@
 import { onBeforeUnmount, onMounted, shallowRef, type Ref } from 'vue';
-import * as echarts from 'echarts';
-import type { ECharts, EChartsOption } from 'echarts';
+import {
+  init,
+  use,
+  type EChartsCoreOption,
+  type EChartsType,
+} from 'echarts/core';
+import { BarChart, PieChart } from 'echarts/charts';
+import {
+  GridComponent,
+  LegendComponent,
+  TitleComponent,
+  TooltipComponent,
+} from 'echarts/components';
+import { CanvasRenderer } from 'echarts/renderers';
+
+/**
+ * 按需注册 echarts 模块。
+ *
+ * 之前是 `import * as echarts from 'echarts'`,会把整个 echarts(约 1MB)
+ * 打进产物;这里只注册实际用到的图表与组件,首屏体积可显著下降。
+ * 新增图表类型时记得在这里补注册,否则图表渲染不出来。
+ */
+use([
+  BarChart,
+  PieChart,
+  GridComponent,
+  LegendComponent,
+  TitleComponent,
+  TooltipComponent,
+  CanvasRenderer,
+]);
 
 /**
  * ECharts 封装:统一处理初始化、窗口自适应与销毁。
- *
- * 原来每个图表都手写一遍 `global.$echarts.init(el)` + `setOption`,
- * 既没有 resize 监听(侧边栏折叠、窗口缩放后图表不会自适应),
- * 也没有 dispose(切换路由后实例泄漏)。
  *
  * 用法:
  *   const el = ref<HTMLElement>();
@@ -15,9 +40,9 @@ import type { ECharts, EChartsOption } from 'echarts';
  */
 export default function useEcharts(
   elRef: Ref<HTMLElement | null | undefined>,
-  option: EChartsOption | (() => EChartsOption),
+  option: EChartsCoreOption | (() => EChartsCoreOption),
 ) {
-  const chart = shallowRef<ECharts>();
+  const chart = shallowRef<EChartsType>();
   let observer: ResizeObserver | undefined;
 
   /** 取当前配置 */
@@ -25,14 +50,14 @@ export default function useEcharts(
     typeof option === 'function' ? option() : option;
 
   /** 初始化实例 */
-  function init() {
+  function initChart() {
     if (!elRef.value || chart.value) return;
-    chart.value = echarts.init(elRef.value);
+    chart.value = init(elRef.value);
     chart.value.setOption(resolveOption());
   }
 
   /** 重设配置 */
-  function setOption(next: EChartsOption) {
+  function setOption(next: EChartsCoreOption) {
     chart.value?.setOption(next);
   }
 
@@ -48,21 +73,19 @@ export default function useEcharts(
   }
 
   onMounted(() => {
-    init();
+    initChart();
     // 容器尺寸变化(侧边栏折叠、布局变动)时自适应
     if (elRef.value && typeof ResizeObserver !== 'undefined') {
       observer = new ResizeObserver(() => resize());
       observer.observe(elRef.value);
     }
-    window.addEventListener('resize', resize);
   });
 
   onBeforeUnmount(() => {
     observer?.disconnect();
     observer = undefined;
-    window.removeEventListener('resize', resize);
     dispose();
   });
 
-  return { chart, init, setOption, resize, dispose };
+  return { chart, init: initChart, setOption, resize, dispose };
 }

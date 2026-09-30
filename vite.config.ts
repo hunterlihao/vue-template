@@ -38,12 +38,32 @@ export default defineConfig(({ mode }) => {
       },
     },
     // scss全局变量配置
+    // 用 @use ... as * 注入(Sass 已弃用 @import,@import 将在 Dart Sass 3.0 移除)
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: '@import "@/styles/variable.scss";',
+          additionalData: '@use "@/styles/variable.scss" as *;',
         },
       },
+    },
+    build: {
+      // 产物按 vendor 拆分:第三方库不随业务代码变动,便于浏览器长期缓存
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vue: ['vue', 'vue-router', 'pinia', 'pinia-plugin-persistedstate'],
+            'element-plus': ['element-plus', '@element-plus/icons-vue'],
+            echarts: [
+              'echarts/core',
+              'echarts/charts',
+              'echarts/components',
+              'echarts/renderers',
+            ],
+          },
+        },
+      },
+      // element-plus / echarts 单个 vendor chunk 本身就接近 1MB,避免无意义告警
+      chunkSizeWarningLimit: 1200,
     },
     server: {
       // 默认只监听本机;需要局域网/移动端调试时运行 `pnpm dev --host`

@@ -61,5 +61,5 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import 'index';
+@use 'index' as *;
 </style>
