@@ -10,6 +10,7 @@ import {
   Menu,
   RefreshRight,
 } from '@element-plus/icons-vue';
+import type { TabPaneName, TabsPaneContext } from 'element-plus';
 import TabLabel from './TabLabel.vue';
 
 const route = useRoute();
@@ -26,10 +27,8 @@ const homeTab = computed(() => {
   return (
     tabsList.value.find((tab) => tab.path === '/home') || {
       path: '/home',
-      meta: {
-        title: '首页',
-        icon: 'HomeFilled',
-      },
+      title: '首页',
+      icon: 'HomeFilled',
     }
   );
 });
@@ -53,15 +52,16 @@ watch(
 );
 
 // 点击标签页
-const tabClick = (tab: any) => {
-  const path = tab.props.name;
-  if (path !== route.path) {
+const tabClick = (tab: TabsPaneContext) => {
+  const path = String(tab.paneName ?? '');
+  if (path && path !== route.path) {
     router.push(path);
   }
 };
 
 // 关闭标签页
-const removeTab = (targetPath: string) => {
+const removeTab = (target: TabPaneName) => {
+  const targetPath = String(target);
   const path = tabsStore.closeTab(targetPath);
   if (targetPath === route.path) {
     router.push(path);
@@ -111,7 +111,7 @@ const tabsMenuHandle = (command: string) => {
         <!-- 固定的首页标签，不可关闭 -->
         <el-tab-pane :key="'/home'" name="/home" :closable="false">
           <template #label>
-            <TabLabel :icon="homeTab.meta.icon" :title="homeTab.meta.title" />
+            <TabLabel :icon="homeTab.icon" :title="homeTab.title" />
           </template>
         </el-tab-pane>
         <!-- 动态标签页列表，可关闭 -->
@@ -122,10 +122,7 @@ const tabsMenuHandle = (command: string) => {
           :closable="true"
         >
           <template #label>
-            <TabLabel
-              :icon="item.meta?.icon || 'Setting'"
-              :title="item.meta.title"
-            />
+            <TabLabel :icon="item.icon || 'Setting'" :title="item.title" />
           </template>
         </el-tab-pane>
       </el-tabs>
