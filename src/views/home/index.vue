@@ -160,9 +160,9 @@ onMounted(() => {
     margin-left: 20px;
 
     .title {
+      margin-bottom: 30px;
       font-size: 30px;
       font-weight: 900;
-      margin-bottom: 30px;
     }
 
     .subtitle {

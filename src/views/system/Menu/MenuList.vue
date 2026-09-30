@@ -357,10 +357,7 @@ const handleFileUpload = async (file: File) => {
             </el-col>
             <el-col :span="12" :offset="0" v-if="addModel.type === 1">
               <el-form-item label="组件路径" prop="url">
-                <el-input
-                  v-model="addModel.url"
-                  :disabled="addModel.type === -1"
-                ></el-input>
+                <el-input v-model="addModel.url"></el-input>
               </el-form-item>
             </el-col>
           </el-row>

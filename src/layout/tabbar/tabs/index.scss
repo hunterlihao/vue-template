@@ -1,12 +1,12 @@
 .tabs-box {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0 10px;
+  justify-content: space-between;
   height: 40px;
+  padding: 0 10px;
   background-color: #fff;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   border-bottom: none;
+  box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
 
   .tabs-menu {
     flex: 1;
@@ -17,6 +17,7 @@
     &::-webkit-scrollbar {
       display: none;
     }
+
     scrollbar-width: none; /* Firefox */
 
     :deep(.el-tabs__header) {
@@ -29,30 +30,30 @@
     }
 
     :deep(.el-tabs__item) {
+      position: relative;
       height: 36px;
+      font-weight: 400;
       line-height: 36px;
       color: #666;
-      font-weight: 400;
       border: none;
       transition: all 0.2s;
-      position: relative;
 
       &.is-active {
-        color: #409eff;
-        background-color: rgba(64, 158, 255, 0.08);
-        border-radius: 2px;
         font-weight: 600;
+        color: #409eff;
+        background-color: rgb(64 158 255 / 8%);
+        border-radius: 2px;
 
         &::after {
-          content: '';
           position: absolute;
           bottom: 0;
           left: 50%;
-          transform: translateX(-50%);
           width: 70%;
           height: 2px;
+          content: '';
           background-color: #409eff;
           border-radius: 2px;
+          transform: translateX(-50%);
         }
       }
 
@@ -67,9 +68,9 @@
 
     :deep(.el-tabs__nav-next),
     :deep(.el-tabs__nav-prev) {
-      color: #909399;
       font-size: 16px;
       line-height: 36px;
+      color: #909399;
     }
   }
 
@@ -78,14 +79,14 @@
     align-items: center;
 
     .dropdown-icon {
-      cursor: pointer;
-      transition: all 0.2s;
       padding: 6px;
+      cursor: pointer;
       border-radius: 4px;
+      transition: all 0.2s;
 
       &:hover {
         color: #409eff;
-        background-color: rgba(64, 158, 255, 0.1);
+        background-color: rgb(64 158 255 / 10%);
       }
     }
   }

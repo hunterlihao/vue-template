@@ -23,7 +23,7 @@ export default {
     style="cursor: pointer"
   >
     <img :src="setting.logo" />
-    <p style="white-space: nowrap; text-overflow: ellipsis">
+    <p style="text-overflow: ellipsis; white-space: nowrap">
       {{ setting.title }}
     </p>
   </div>
@@ -31,10 +31,10 @@ export default {
 
 <style lang="scss" scoped>
 .logo {
-  width: 50px;
-  height: $base-menu-logo-height;
   display: flex;
   align-items: center;
+  width: 50px;
+  height: $base-menu-logo-height;
   padding: 20px;
 
   img {
@@ -43,8 +43,8 @@ export default {
   }
 
   p {
-    font-size: $base-logo-title-fontSize;
     margin-left: 10px;
+    font-size: $base-logo-title-font-size;
   }
 }
 </style>

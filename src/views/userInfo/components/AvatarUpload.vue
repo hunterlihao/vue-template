@@ -53,10 +53,10 @@ const showPreview = () => {
 
 <style scoped lang="scss">
 .avatar-card {
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
 }
 
 .avatar-wrapper {

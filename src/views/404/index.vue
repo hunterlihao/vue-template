@@ -25,19 +25,19 @@ const goHome = () => {
 
 <style lang="scss" scoped>
 .error-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100vw;
   height: 100vh;
   background-color: #f9f9f9;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 
   .content-wrapper {
     display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
     align-items: center;
     justify-content: center;
-    gap: 40px;
-    flex-wrap: wrap;
     text-align: center;
 
     img {
@@ -47,9 +47,9 @@ const goHome = () => {
 
     .text-section {
       h2 {
+        margin-bottom: 20px;
         font-size: 24px;
         color: #333;
-        margin-bottom: 20px;
       }
     }
   }

@@ -60,19 +60,19 @@ const onConfirm = () => {
   border-top-right-radius: 7px !important;
 
   .el-dialog__header {
-    margin-right: 0px;
+    height: 54px;
+    padding-bottom: 0;
+    padding-left: 10px;
+    margin-right: 0;
+    line-height: 54px;
+    background-color: #fff !important;
     border-top-left-radius: 7px !important;
     border-top-right-radius: 7px !important;
-    background-color: #ffffff !important;
-    padding-bottom: 0px;
-    height: 54px;
-    line-height: 54px;
-    padding-left: 10px;
 
     .el-dialog__title {
-      color: #000000;
       font-size: 16px;
       font-weight: 600;
+      color: #000;
     }
   }
 
@@ -89,8 +89,8 @@ const onConfirm = () => {
   }
 
   .el-dialog__footer {
-    border-top: 1px solid #ffffff !important;
     padding: 10px;
+    border-top: 1px solid #fff !important;
   }
 }
 </style>

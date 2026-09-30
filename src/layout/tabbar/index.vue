@@ -24,10 +24,10 @@ export default {
 
 <style lang="scss" scoped>
 .tabbar {
-  width: 100%;
-  height: 100%;
   display: flex;
   justify-content: space-between;
+  width: 100%;
+  height: 100%;
 
   .tabbar_left {
     display: flex;

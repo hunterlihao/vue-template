@@ -18,8 +18,10 @@ $layout-easing: cubic-bezier(0.4, 0, 0.2, 1);
     width: $base-menu-width;
     height: 100vh;
     background-color: $base-menu-background;
+
     // 展开/收缩动画
     transition: width $layout-duration $layout-easing;
+
     // 侧边栏内的 Element Plus 过渡(子菜单展开、箭头旋转)保持瞬时
     --el-transition-duration: 0s;
 
@@ -41,53 +43,53 @@ $layout-easing: cubic-bezier(0.4, 0, 0.2, 1);
 
   .layout_tabbar {
     position: fixed;
+    top: 0;
+    left: $base-menu-width;
+    display: flex;
+    flex-direction: column;
     width: calc(100% - $base-menu-width);
     height: $base-tabbar-height;
     background-color: white;
-    top: 0px;
-    left: $base-menu-width;
     transition:
       width $layout-duration $layout-easing,
       left $layout-duration $layout-easing;
-    display: flex;
-    flex-direction: column;
 
     .tabbar_component {
-      margin-top: 20px;
       height: 50px;
+      margin-top: 20px;
       border-bottom: 1px solid #f0f0f0;
     }
 
     .tabs_component {
-      margin-top: 25px;
-      flex: 1;
       display: flex;
-      justify-content: space-between;
+      flex: 1;
       align-items: center;
+      justify-content: space-between;
+      margin-top: 25px;
     }
 
     &.fold {
-      width: calc(100vw - $base-menu-min-width);
       left: $base-menu-min-width;
+      width: calc(100vw - $base-menu-min-width);
     }
   }
 
   .layout_main {
     position: absolute;
-    width: calc(100% - $base-menu-width);
-    height: calc(100vh - $base-tabbar-height);
-    background-color: #ffffff;
     top: $base-tabbar-height;
     left: $base-menu-width;
+    width: calc(100% - $base-menu-width);
+    height: calc(100vh - $base-tabbar-height);
     padding: 20px;
     overflow: auto;
+    background-color: #fff;
     transition:
       width $layout-duration $layout-easing,
       left $layout-duration $layout-easing;
 
     &.fold {
-      width: calc(100vw - $base-menu-min-width);
       left: $base-menu-min-width;
+      width: calc(100vw - $base-menu-min-width);
     }
   }
 }

@@ -136,7 +136,7 @@ onMounted(getCurrentUserInfo);
 
 <style scoped lang="scss">
 .card-header {
-  font-weight: bold;
   font-size: 16px;
+  font-weight: bold;
 }
 </style>

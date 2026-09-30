@@ -1,71 +1,71 @@
 .login_container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100vh;
+  overflow: hidden;
   background: url('@/assets/images/back.jpeg') no-repeat;
   background-size: cover;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
 
   &::before {
-    content: '';
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 1;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.3);
+    content: '';
+    background: rgb(0 0 0 / 30%);
     backdrop-filter: blur(2px);
-    z-index: 1;
   }
 
   .login_form_wrapper {
     z-index: 2;
-    width: 100%;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    width: 100%;
   }
 
   .login_form, .register_form {
     position: relative;
+    z-index: 2;
     width: 450px;
     max-width: 90%;
+    padding: 40px 50px;
     background: url('@/assets/images/login_form.png') no-repeat;
     background-size: cover;
-    padding: 40px 50px;
     border-radius: 12px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-    z-index: 2;
-    animation: fadeIn 0.8s ease-out;
+    box-shadow: 0 15px 35px rgb(0 0 0 / 50%);
     transform: translateY(0);
     transition: all 0.3s ease;
+    animation: fade-in 0.8s ease-out;
 
     &:hover {
+      box-shadow: 0 20px 40px rgb(0 0 0 / 60%);
       transform: translateY(-5px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     }
 
     .form_header {
       margin-bottom: 30px;
 
       h1 {
-        color: white;
-        font-size: 42px;
-        text-align: center;
         margin-bottom: 10px;
+        font-size: 42px;
         font-weight: 600;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        color: white;
+        text-align: center;
+        text-shadow: 0 2px 4px rgb(0 0 0 / 30%);
       }
 
       h2 {
-        font-size: 18px;
-        color: rgba(255, 255, 255, 0.9);
         margin: 15px 0 0;
-        text-align: center;
+        font-size: 18px;
         font-weight: 400;
+        color: rgb(255 255 255 / 90%);
+        text-align: center;
         letter-spacing: 0.5px;
       }
     }
@@ -73,7 +73,7 @@
     .form_item {
       margin-bottom: 25px;
       opacity: 0;
-      animation: slideUp 0.5s ease forwards;
+      animation: slide-up 0.5s ease forwards;
 
       &:nth-child(2) {
         animation-delay: 0.1s;
@@ -89,17 +89,17 @@
     }
 
     .el-input {
-      --el-input-bg-color: rgba(255, 255, 255, 0.15);
-      --el-input-border-color: rgba(255, 255, 255, 0.2);
-      --el-input-hover-border-color: rgba(255, 255, 255, 0.4);
-      --el-input-focus-border-color: rgba(255, 255, 255, 0.6);
-      --el-input-text-color: rgba(255, 255, 255, 0.9);
-      --el-input-placeholder-color: rgba(255, 255, 255, 0.6);
+      --el-input-bg-color: rgb(255 255 255 / 15%);
+      --el-input-border-color: rgb(255 255 255 / 20%);
+      --el-input-hover-border-color: rgb(255 255 255 / 40%);
+      --el-input-focus-border-color: rgb(255 255 255 / 60%);
+      --el-input-text-color: rgb(255 255 255 / 90%);
+      --el-input-placeholder-color: rgb(255 255 255 / 60%);
 
       :deep(.el-input__wrapper) {
-        box-shadow: 0 0 0 1px var(--el-input-border-color);
-        border-radius: 8px;
         padding: 0 15px;
+        border-radius: 8px;
+        box-shadow: 0 0 0 1px var(--el-input-border-color);
         transition: all 0.3s ease;
 
         &:hover {
@@ -114,16 +114,16 @@
       // 验证码输入框特殊样式
       &.el-input-group {
         :deep(.el-input__wrapper) {
-          border-radius: 8px 0 0 8px;
           height: 45px;
+          border-radius: 8px 0 0 8px;
         }
         
         :deep(.el-input-group__append) {
-          padding: 0;
-          border: none;
-          background: transparent;
-          box-shadow: none;
           height: 45px;
+          padding: 0;
+          background: transparent;
+          border: none;
+          box-shadow: none;
         }  
       }
 
@@ -137,26 +137,26 @@
       }
 
       :deep(.el-input__icon) {
-        color: rgba(255, 255, 255, 0.7);
         font-size: 18px;
+        color: rgb(255 255 255 / 70%);
       }
     }
 
     .login_btn, .register_btn {
       width: 100%;
       height: 45px;
+      margin-top: 10px;
       font-size: 16px;
       font-weight: 500;
       letter-spacing: 1px;
-      border-radius: 8px;
-      margin-top: 10px;
       background: linear-gradient(135deg, #42b983, #33a06f);
       border: none;
+      border-radius: 8px;
       transition: all 0.3s ease;
 
       &:hover {
+        box-shadow: 0 5px 15px rgb(66 185 131 / 40%);
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(66, 185, 131, 0.4);
       }
 
       &:active {
@@ -166,100 +166,103 @@
     
     .form_footer {
       margin-top: 20px;
-      text-align: center;
-      color: rgba(255, 255, 255, 0.8);
       font-size: 14px;
+      color: rgb(255 255 255 / 80%);
+      text-align: center;
       opacity: 0;
-      animation: slideUp 0.5s ease 0.5s forwards;
+      animation: slide-up 0.5s ease 0.5s forwards;
       
       a {
-        color: #42b983;
         margin-left: 5px;
-        text-decoration: none;
         font-weight: 500;
+        color: #42b983;
+        text-decoration: none;
         transition: all 0.3s ease;
         
         &:hover {
-          text-decoration: underline;
           color: #5ccb9a;
+          text-decoration: underline;
         }
       }
     }
   }
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes slideUp {
+@keyframes slide-up {
   from {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
 .captcha-container {
-  height: 100%;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  padding: 0 10px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 0 8px 8px 0;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
   min-width: 110px;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+  height: 100%;
+  padding: 0 10px;
+  overflow: hidden;
+  cursor: pointer;
+  background: rgb(255 255 255 / 20%);
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 20%);
+  transition: all 0.3s ease;
   
   &::before {
-    content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.1);
+    content: '';
+    background: rgb(255 255 255 / 10%);
     transform: translateX(-100%);
     transition: transform 0.3s ease;
   }
   
   &:hover {
-    background: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4);
+    background: rgb(255 255 255 / 25%);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 40%);
     
     &::before {
       transform: translateX(0);
     }
     
     .captcha-img {
+      box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
       transform: scale(1.05);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
   }
   
   &:active {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgb(255 255 255 / 30%);
   }
 }
 
 .captcha-img {
   height: 34px;
+  margin: 0 auto;
   vertical-align: middle;
   border-radius: 4px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
   transition: all 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  margin: 0 auto;
 }
