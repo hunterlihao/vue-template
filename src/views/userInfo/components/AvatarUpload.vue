@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { ElImageViewer } from 'element-plus';
 import UploadImg from '@/components/UploadImg/uploadImg.vue';
+import UserAvatar from '@/components/UserAvatar/UserAvatar.vue';
 
 // 头像地址由父组件通过 v-model:url 双向绑定
 const props = defineProps<{ url?: string }>();
@@ -11,23 +12,22 @@ const emit = defineEmits<{ (e: 'update:url', value: string): void }>();
 const previewVisible = ref(false);
 const previewImage = ref('');
 
-// 显示头像预览
+// 显示头像预览(没上传过头像时只有默认图,不打开预览)
 const showPreview = () => {
-  if (props.url) {
-    previewImage.value = props.url;
-    previewVisible.value = true;
-  }
+  if (!props.url) return;
+  previewImage.value = props.url;
+  previewVisible.value = true;
 };
 </script>
 
 <template>
   <el-card class="avatar-card">
     <div class="avatar-wrapper">
-      <el-avatar
-        :size="120"
-        :src="props.url || undefined"
-        @click="showPreview"
+      <UserAvatar
         class="avatar-preview"
+        :url="props.url"
+        :size="120"
+        @click="showPreview"
       />
       <div class="avatar-upload">
         <!-- 上传逻辑统一交给 UploadImg,只限制 jpg/png 且不超过 2MB -->

@@ -8,6 +8,7 @@ import { ElMessage } from 'element-plus';
 import useInstance from '@/hooks/useInstance.ts';
 //获取标签页仓库
 import { useTabsStore } from '@/store/modules/tabs.ts';
+import UserAvatar from '@/components/UserAvatar/UserAvatar.vue';
 
 defineOptions({ name: 'Setting' });
 
@@ -65,11 +66,7 @@ const logout = async () => {
     title="全屏切换"
     @click="fullScreen"
   ></el-button>
-  <img
-    :src="userStore.avatarUrl"
-    alt="用户头像"
-    style="width: 28px; height: 28px; margin: 0 10px; border-radius: 50%"
-  />
+  <UserAvatar :url="userStore.avatarUrl" :size="28" style="margin: 0 10px" />
   <!-- 下拉菜单 -->
   <el-dropdown placement="top" style="margin-right: 10px">
     <el-button link>{{ userStore.nickName }}</el-button>

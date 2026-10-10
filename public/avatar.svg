@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="默认头像">
+  <title>默认头像</title>
+  <defs>
+    <!-- 底色:与 Element Plus 主色同色系 -->
+    <linearGradient id="avatarBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6cb4ff" />
+      <stop offset="52%" stop-color="#409eff" />
+      <stop offset="100%" stop-color="#2a72d4" />
+    </linearGradient>
+    <!-- 左上柔光 -->
+    <radialGradient id="avatarGlow" cx="0.3" cy="0.22" r="0.75">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </radialGradient>
+    <!-- 人像:白色带一点上下渐变,避免死白 -->
+    <linearGradient id="avatarFigure" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.98" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.8" />
+    </linearGradient>
+    <clipPath id="avatarClip">
+      <circle cx="64" cy="64" r="64" />
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#avatarClip)">
+    <rect width="128" height="128" fill="url(#avatarBg)" />
+    <rect width="128" height="128" fill="url(#avatarGlow)" />
+    <!-- 右下暗角,增加体积感 -->
+    <circle cx="116" cy="120" r="44" fill="#123a72" opacity="0.16" />
+
+    <!-- 肩部(底部被圆形裁掉) -->
+    <ellipse cx="64" cy="114" rx="40" ry="34" fill="url(#avatarFigure)" />
+    <!-- 头部 -->
+    <circle cx="64" cy="50" r="22" fill="url(#avatarFigure)" />
+  </g>
+</svg>

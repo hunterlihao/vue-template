@@ -10,6 +10,7 @@ import SearchBar from '@/components/SearchBar/SearchBar.vue';
 import TablePager from '@/components/TablePager/TablePager.vue';
 import TableEmpty from '@/components/TableEmpty/TableEmpty.vue';
 import DictTag from '@/components/DictTag/DictTag.vue';
+import UserAvatar from '@/components/UserAvatar/UserAvatar.vue';
 import { enabledDict, menuTypeDict, sexDict, yesNoDict } from '@/const/dict.ts';
 import { iconOf } from '@/components/icons.ts';
 
@@ -111,5 +112,25 @@ describe('iconOf', () => {
   it('未登记的图标回落到默认图标而不是 undefined', () => {
     expect(iconOf('NotAnIcon')).toBeTruthy();
     expect(iconOf(undefined)).toBeTruthy();
+  });
+});
+
+describe('UserAvatar', () => {
+  it('url 为空时回落到默认头像', async () => {
+    const html = await render(UserAvatar, { url: '' });
+    expect(html).toContain('/avatar.svg');
+  });
+
+  it('传入 url 时优先使用它', async () => {
+    const html = await render(UserAvatar, {
+      url: 'https://example.com/a.png',
+    });
+    expect(html).toContain('https://example.com/a.png');
+    expect(html).not.toContain('/avatar.svg');
+  });
+
+  it('支持自定义尺寸', async () => {
+    const html = await render(UserAvatar, { size: 120 });
+    expect(html).toContain('120');
   });
 });

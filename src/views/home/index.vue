@@ -5,6 +5,7 @@ import { useUserStore } from '@/store/modules/user.ts';
 import useEcharts from '@/hooks/useEcharts.ts';
 import useTableHeight from '@/hooks/useTableHeight.ts';
 import setting from '@/setting.ts';
+import UserAvatar from '@/components/UserAvatar/UserAvatar.vue';
 
 const userStore = useUserStore();
 // 内容区高度自适应(原来手写 window.innerHeight - 320,且不监听 resize)
@@ -111,7 +112,7 @@ useEcharts(ringRef, {
 <template>
   <el-card>
     <div class="box">
-      <img :src="userStore.avatarUrl" alt="用户头像" class="avatar" />
+      <UserAvatar :url="userStore.avatarUrl" :size="100" />
       <div class="bottom">
         <h3 class="title">{{ getTime() }}好呀! {{ userStore.nickName }}</h3>
         <p class="subtitle">{{ setting.title }}</p>
@@ -145,12 +146,6 @@ useEcharts(ringRef, {
 <style lang="scss" scoped>
 .box {
   display: flex;
-
-  .avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-  }
 
   .bottom {
     margin-left: 20px;
