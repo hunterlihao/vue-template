@@ -25,7 +25,8 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          # 与 .nvmrc 保持单一来源,避免 CI 版本和本地开发版本不一致
+          node-version-file: .nvmrc
           cache: pnpm
 
       - name: 安装依赖
