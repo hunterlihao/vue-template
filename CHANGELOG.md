@@ -4,28 +4,31 @@
 
 ## [Unreleased]
 
-### 新增
+## [1.0.1] - 2026-10-10
 
-- `UserAvatar` 组件与内置默认头像(`public/avatar.svg`):未设置头像时自动回落,不再出现裂图
+对 v1.0.0 做了一轮代码审查后的修复,无破坏性变更。
 
 ### 修复
 
-- 列表页钩子在接口失败时产生未捕获的 promise rejection:错误提示仍由 http 拦截器负责,钩子只兜住 promise 并记录日志
-- 头像地址加载失败时回落到默认头像,而不是被 `el-avatar` 渲染成一个空圆
+- 列表页钩子在接口失败时产生未捕获的 promise rejection:`getList` 原来只有 `try/finally`,而 `onMounted` 与分页事件都不 `await` 它。现在统一兜住并记录日志(用户提示仍由 http 拦截器负责)
+- 头像不再写入 localStorage:mock 上传返回 base64 data URL,2MB 的图约 2.7MB,会挤爆配额;而持久化插件超限时静默失败(未开 `debug`),表现为刷新后头像消失。头像每次会话都会重新拉取,本就不需要持久化
+- 头像地址加载失败时回落到默认头像,而不是被 `el-avatar` 渲染成一个空圆;url 变化时重置失败标记,默认头像自身失败不再重试
+- 筛选条件的初始值与调用方传入的对象共享引用,导致"重置"按钮重置不掉被改过的条件 —— 改为浅拷贝
 
 ### 变更
 
-- 头像不再写入 localStorage:mock 上传返回 base64 data URL,2MB 的图约 2.7MB,会挤爆配额且失败时无提示
-- 筛选条件的初始值改为浅拷贝,修掉"重置按钮重置不掉被调用方改过的筛选条件"
-- CI 的 Node 版本改为读 `.nvmrc`,与仓库声明保持单一来源
+- CI 的 Node 版本改为读 `.nvmrc`(由 22 改为 24.21.0),与本地开发保持单一来源
 - `.gitattributes` 不再把 `*.svg` 当二进制,恢复 SVG 的可读 diff
+- README 移除已失效的 Gitee 镜像说明(Gitee 仓库仍是历史重写前的版本)
+- 收紧 `UserAvatar` 尺寸测试断言:原来断言 `"120"`,HTML 里任何 120 都能通过
 
-## [1.0.0] - 2026-09-30
+## [1.0.0] - 2026-10-10
 
 首个可开源版本。在原有后台管理系统的基础上做了系统性加固:
 
 ### 新增
 
+- `UserAvatar` 组件与内置默认头像(`public/avatar.svg`):未设置头像时自动回落,不再出现裂图
 - 单元测试(Vitest):`utils/storage`、`utils/time`、`const/rules` 共 16 个用例,另加 8 个共享组件 SSR 冒烟测试
 - `.env.example`、`.editorconfig`、`.nvmrc`、CI 工作流
 - `utils/storage.ts`:集中管理本地存储 key,`safeParse` 兜住损坏数据
@@ -60,5 +63,6 @@
 - 颜色、层级统一收敛到 `styles/variable.scss`;SCSS `@import` 迁移到 `@use`
 - echarts 改为按需注册 + vendor 分包,`element-plus` 不再打包全部图标
 
-[Unreleased]: https://github.com/hunterlihao/vue-template/commits/main
+[Unreleased]: https://github.com/hunterlihao/vue-template/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/hunterlihao/vue-template/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/hunterlihao/vue-template/releases
