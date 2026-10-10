@@ -131,6 +131,8 @@ describe('UserAvatar', () => {
 
   it('支持自定义尺寸', async () => {
     const html = await render(UserAvatar, { size: 120 });
-    expect(html).toContain('120');
+    // el-avatar 用 CSS 变量控制尺寸;断言具体变量(容忍 SSR 序列化的空格差异),
+    // 比断言 "120" 可靠 —— 后者 HTML 里任何地方出现 120 都会通过
+    expect(html).toMatch(/--el-avatar-size:\s*120px/);
   });
 });
