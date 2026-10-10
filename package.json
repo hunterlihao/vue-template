@@ -6,11 +6,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://gitee.com/li-yuanhao04/vue-templet.git"
+    "url": "https://github.com/hunterlihao/vue-template.git"
   },
-  "homepage": "https://gitee.com/li-yuanhao04/vue-templet",
+  "homepage": "https://github.com/hunterlihao/vue-template",
   "bugs": {
-    "url": "https://gitee.com/li-yuanhao04/vue-templet/issues"
+    "url": "https://github.com/hunterlihao/vue-template/issues"
   },
   "type": "module",
   "keywords": [

@@ -1,6 +1,11 @@
 # vue-template
 
+[![CI](https://github.com/hunterlihao/vue-template/actions/workflows/ci.yml/badge.svg)](https://github.com/hunterlihao/vue-template/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 基于 **Vue 3 + TypeScript + Vite + Element Plus** 的后台管理模板。内置本地 mock,**克隆下来不需要后端就能跑通全部流程**:登录、动态菜单、按钮级权限、增删改查。
+
+> 仓库:GitHub(主)https://github.com/hunterlihao/vue-template · Gitee(镜像)https://gitee.com/li-yuanhao04/vue-templet
 
 ## 特性
 
