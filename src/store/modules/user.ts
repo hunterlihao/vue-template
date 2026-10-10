@@ -128,10 +128,13 @@ export const useUserStore = defineStore('User', {
     },
   },
 
-  // 只持久化展示用的用户信息;token / 权限码 / 菜单路由都在 select 之外
+  // 只持久化展示用的用户信息;token / 权限码 / 菜单路由都在 pick 之外。
+  // 头像也不持久化:mock 上传返回的是 base64 data URL,一张 2MB 的图约 2.7MB,
+  // 会挤爆 localStorage 配额(超限时持久化插件静默失败,表现为"刷新后头像没了");
+  // 而每次会话都会重新拉取用户信息,本来也不需要存。
   persist: {
     key: 'user',
     storage: localStorage,
-    pick: ['userId', 'nickName', 'avatarUrl'],
+    pick: ['userId', 'nickName'],
   },
 });

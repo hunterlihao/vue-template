@@ -10,7 +10,7 @@
 export const STORAGE_KEYS = {
   /** 登录令牌 */
   token: 'TOKEN',
-  /** 用户展示信息(昵称/头像),由 pinia 持久化插件写入 */
+  /** 用户展示信息(昵称),由 pinia 持久化插件写入 */
   user: 'user',
   /** 历史遗留的权限码缓存,清理时需要一并删除 */
   codeList: 'codeList',
